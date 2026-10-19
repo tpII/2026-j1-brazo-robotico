@@ -1,1 +1,13 @@
 .DS_Store
+code/simulacion/.venv/
+
+# Caches de Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Build de Arduino 
+build/
+*.elf
+*.bin
+*.map
