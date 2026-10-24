@@ -1,0 +1,32 @@
+Objetivo (5.0, -5.0, 7.0) con la muñeca en 0.0° y la pinza en 90.0°
+
+Sección 5.2 (Paso 1): ρ = 7.07 cm, d = 0.00 cm, r_c = 7.07 cm, θ0 = -45.00° - (0.00°) = -45.00°, T = [7.07, 3.0] cm
+Figura 4: (6.0, 1.0, 6.0) con la muñeca en 20° y la pinza en 140°: φ = 9.46°, d = 1.13 cm, r_c = 5.98 cm, θ0 = -1.21°, error 0.35 cm
+
+Tabla 6: iteraciones de la v3 desde la pose cero (cm, dentro del plano)
+  k = 0: codo [6.9, 0.0], punta [18.9, 0.5], error 12.09
+  k = 1: forward deja el codo en [6.39, -8.99], espejado a [-2.03, 10.84]; backward: codo [-1.27, 6.78], punta [9.67, 1.82], error 2.85
+  k = 2: forward deja el codo en [-3.87, 7.96]; backward: codo [-3.01, 6.21], punta [8.43, 2.57], error 1.43
+  k = 3: forward deja el codo en [-4.37, 6.64]; backward: codo [-3.8, 5.76], punta [7.84, 2.8], error 0.80
+  k = 4: forward deja el codo en [-4.57, 5.96]; backward: codo [-4.2, 5.48], punta [7.53, 2.9], error 0.47
+Sección 5.6: ángulos (θ0, θ1, θ2) = [-45.0, 127.49, -142.26], p5 = [5.33, -5.33, 6.9], a 0.47 cm
+
+Sección 6.1: codo arriba (θ1, θ2) = [133.79, -145.67], codo abajo = [-87.81, 140.9]
+Sección 6.2 (v1): (θ1, θ2) = [-81.51, 137.49], error 0.47 cm en 4 iteración
+Sección 6.3 (v1 con recorte al final): [0.0, -180.0], p5 a 12.66 cm
+Sección 6.4 (v2): el primer backward deja el hombro en -54.61° y el recorte lo lleva a 0.00°; termina en [0.0, 0.0], error 12.09 cm, 1 iteraciones, corta por eta
+Sección 6.4 (v2 con (5.0, -5.0, 8.0)): el primer backward deja el hombro en -50.66° y el recorte lo lleva a 0.00°; queda en [0.0, 0.0], error 12.34 cm, 1 iteración, corta por eta
+
+Coordenadas de las figuras (cm)
+  home: [[0.0, 0.0, 0.0], [0.0, 0.0, 4.0], [6.9, 0.0, 4.0], [11.4, 0.0, 4.5], [14.6, 0.0, 4.5], [14.6, 0.0, 0.2]]
+  inicial: [[0.0, 0.0, 0.0], [0.0, 0.0, 4.0], [4.879, -4.879, 4.0], [8.061, -8.061, 4.5], [10.324, -10.324, 4.5], [13.364, -13.364, 4.5]]
+  arriba: [[0.0, 0.0, 0.0], [0.0, 0.0, 4.0], [-3.376, 3.376, 8.981], [-0.19, 0.19, 8.544], [2.025, -2.025, 7.885], [5.0, -5.0, 7.0]]
+  abajo: [[0.0, 0.0, 0.0], [0.0, 0.0, 4.0], [0.186, -0.186, -2.895], [1.815, -1.815, 1.003], [3.174, -3.174, 3.562], [5.0, -5.0, 7.0]]
+  sin-regla: [[0.0, 0.0, 0.0], [0.0, 0.0, 4.0], [0.721, -0.721, -2.824], [2.208, -2.208, 1.185], [3.474, -3.474, 3.838], [5.175, -5.175, 7.402]]
+  con-regla: [[0.0, 0.0, 0.0], [0.0, 0.0, 4.0], [-2.969, 2.969, 9.475], [0.198, -0.198, 8.811], [2.386, -2.386, 7.995], [5.326, -5.326, 6.899]]
+  codo-forward: [4.517, -4.517, -4.991]
+  codo-reflejado: [-1.433, 1.433, 14.841]
+  latigo: [[0.0, 0.0, 0.0], [-0.514, -0.009, 3.967], [6.384, 0.112, 3.875], [10.695, -0.813, 4.907], [8.717, -3.063, 6.032], [5.002, -4.999, 7.0]]
+  objetivo-plano: [5.0, -5.0, 7.0]
+  u-plano: [0.707, -0.707]
+  superior: [6.0, 1.0, 9.462, -1.211, 5.978, 1.127]

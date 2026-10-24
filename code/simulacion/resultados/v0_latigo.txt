@@ -1,0 +1,12 @@
+Tabla 3: FABRIK 3D libre hacia (5.0, -5.0, 7.0) desde la pose cero: 1 iteración, error 0.0020 cm (corta por eps)
+  columna de la base inclinada 7.4°
+  hombro p1 movido a [-0.51, -0.01, 3.97]
+  ángulo del antebrazo en p3: 111.4° (en el modelo, 6.3°)
+
+Figura 3 (a): puntos p0 a p5 (cm)
+  p0: [0.0, 0.0, 0.0]
+  p1: [-0.514, -0.009, 3.967]
+  p2: [6.384, 0.112, 3.875]
+  p3: [10.695, -0.813, 4.907]
+  p4: [8.717, -3.063, 6.032]
+  p5: [5.002, -4.999, 7.0]

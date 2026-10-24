@@ -1,0 +1,14 @@
+Sección 9: búsqueda de la muñeca y la pinza sobre 2000 objetivos, desde el home, sin choques
+  muñeca y pinza neutras: 1699 (84.95 %); búsqueda: 1995 (99.75 %)
+  de los resueltos, 1912 con la muñeca neutra (la neutra y la pinza sola) y 83 con la muñeca girada y la pinza
+  posiciones probadas: 6.671 en promedio, mediana 1 (máximo 325); iteraciones de FABRIK por objetivo: 24.06 en promedio, mediana 2
+  objetivos sin resolver (5):
+    #145: [-1.15, 3.34, 4.02], a 3.53 cm del eje de la base (bloqueado_por_limites; generado con la muñeca en 34.3° y la pinza en 13.0°)
+    #696: [0.89, 3.0, 4.34], a 3.13 cm del eje de la base (bloqueado_por_limites; generado con la muñeca en 10.2° y la pinza en 21.5°)
+    #846: [1.26, 3.86, 4.25], a 4.06 cm del eje de la base (bloqueado_por_limites; generado con la muñeca en -41.0° y la pinza en 16.4°)
+    #955: [0.71, 0.16, 22.9], a 0.73 cm del eje de la base (fuera_de_alcance; generado con la muñeca en -38.5° y la pinza en 93.2°)
+    #1816: [0.55, 3.93, 8.69], a 3.96 cm del eje de la base (bloqueado_por_limites; generado con la muñeca en -67.2° y la pinza en 0.2°)
+  ejemplo (3.0, -3.0, 0.0): con la muñeca y la pinza neutras queda a 0.68 cm; la búsqueda llega con la muñeca en +0° y la pinza en 30°, a 0.41 cm, después de 13 posiciones (ángulos [-45.0, 72.0, -132.58])
+
+Tabla 8 (k_max): de las 10822 ejecuciones que no llegan, 912 cortan por k_max (8 %) y 9910 por η
+  de las 912 por k_max, 643 recortaron algún ángulo y 415 terminan contra un tope del codo

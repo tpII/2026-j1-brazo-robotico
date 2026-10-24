@@ -1,0 +1,18 @@
+Tabla 1: posición y eje de giro de cada articulación en la pose cero (cm)
+  p0: [0.0, 0.0, 0.0]  eje: [0.0, 0.0, 1.0]
+  p1: [0.0, 0.0, 4.0]  eje: [0.0, -1.0, 0.0]
+  p2: [6.9, 0.0, 4.0]  eje: [0.0, -1.0, 0.0]
+  p3: [11.4, 0.0, 4.5]  eje: [-1.0, 0.0, 0.0]
+  p4: [14.6, 0.0, 4.5]  eje: [0.0, -1.0, 0.0]
+  p5: [14.6, 0.0, 0.2]  eje: ---
+
+Sección 2.2: home del firmware
+  pulsos: [400, 1400, 1200, 960, 400] µs
+  ángulos del modelo: [0.0, 140.0, -114.6049, 4.5, 0.0]
+
+Tabla 9: pulsos de main.ino, rango del servo y rango del modelo (grados)
+  Base    400 a 2600 µs | servo (0.0, 180.0) | modelo (-180.0, 0.0)
+  Hombro  400 a 1800 µs | servo (0.0, 180.0) | modelo (0.0, 180.0)
+  Codo    400 a 2600 µs | servo (0.0, 180.0) | modelo (-180.0, 0.0)
+  Muñeca  400 a 2000 µs | servo (0.0, 180.0) | modelo (-90.0, 90.0)
+  Pinza   400 a 2600 µs | servo (0.0, 180.0) | modelo (0.0, 180.0)

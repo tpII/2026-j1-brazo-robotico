@@ -199,7 +199,7 @@ El primero indica que el efector llegó al objetivo. El segundo compara la posic
 
 Los pasos anteriores corresponden a la forma sin restricciones, en la que cada articulación se comporta como una rótula libre. Las restricciones articulares se aplican dentro de la iteración y no después de converger. Cada vez que el forward o el backward reubica una articulación, se verifica que la orientación resultante esté dentro del rango permitido. Si no lo está, se la lleva a ese rango antes de calcular la siguiente. Según el paper, los algoritmos de cinemática inversa suelen ser más efectivos si las restricciones se aplican en cada paso y no al final. Además, FABRIK con restricciones llega a la solución siempre que el objetivo esté al alcance y exista una configuración de las articulaciones que permita llegar @aristidou2011fabrik.
 
-Para articulaciones de un solo grado de libertad, como una bisagra, el paper propone una simplificación. La raíz y el objetivo, junto con la orientación del objetivo, definen un plano. Las articulaciones se proyectan sobre ese plano y FABRIK se aplica en 2D dentro de él (sección 4.3 y Fig. 7 del paper).
+Para articulaciones de un solo grado de libertad, como una bisagra, el paper propone una simplificación. La raíz y el objetivo, junto con la orientación del objetivo, definen un plano. Las articulaciones se proyectan sobre ese plano y FABRIK se aplica en 2D dentro de él.
 
 Con restricciones, la verificación del Paso 0 es necesaria pero no suficiente. Un objetivo que está dentro del rango máximo puede quedar fuera de alcance por los límites de los servos. En ese caso el efector deja de acercarse y la iteración termina por el segundo criterio o, si la cadena sigue deslizándose contra un tope, por el tercero.
 
@@ -212,7 +212,7 @@ Con restricciones, la verificación del Paso 0 es necesaria pero no suficiente. 
     inset: 6pt,
     fill: (_, row) => if row == 0 { luma(220) } else { white },
     [*Parámetro*], [*Valor*], [*Justificación*],
-    [$epsilon$ (tolerancia)], [0.5 cm], [Resolución mecánica del SG90 (~1° ≈ 0.3 cm en el extremo)],
+    [$epsilon$ (tolerancia)], [0.5 cm], [Resolución mecánica del SG90 (~1° ≈ 0.33 cm en el extremo)],
     [$eta$ (sin movimiento)], [$10^(-4)$ cm], [Detecta que el efector dejó de moverse entre dos iteraciones],
     [$k_"max"$ (iteraciones)], [20], [Se reportan convergencias en 5–15 iteraciones para cadenas similares],
   )
@@ -226,11 +226,11 @@ $ theta_i = op("atan2")(bold(z)_i dot.op (bold(r)_i times bold(d)_i), quad bold(
 
 donde $bold(d)_i = bold(p)_(i+1) - bold(p)_i$ es el vector director del eslabón, $bold(z)_i$ es el eje de rotación del servo $i$ expresado en coordenadas globales y $bold(r)_i$ es la dirección que tendría el eslabón con $theta_i = 0$. Los vectores $bold(d)_i$ y $bold(r)_i$ se toman proyectados sobre el plano perpendicular a $bold(z)_i$. Tanto $bold(z)_i$ como $bold(r)_i$ se obtienen de la cadena FK con los ángulos ya recuperados de los servos anteriores, así que el cálculo avanza en orden, desde la base hacia la pinza. El signo surge del propio $op("atan2")$, que da un valor positivo cuando el giro de $bold(r)_i$ a $bold(d)_i$ es antihorario visto desde la punta de $bold(z)_i$.
 
-Medir en cambio el ángulo entre el eslabón y su propio eje, $op("atan2")(norm(bold(d)_i times bold(z)_i), bold(d)_i dot.op bold(z)_i)$, no sirve, porque una rotación alrededor de $bold(z)_i$ no cambia el ángulo que forma un vector con $bold(z)_i$. Con la geometría actual del modelo de nuestro brazo, ese cálculo da siempre $(0°, 90°, 90°, 180°, 0°)$, sin importar la pose.
+Medir en cambio el ángulo entre el eslabón y su propio eje, $op("atan2")(norm(bold(d)_i times bold(z)_i), bold(d)_i dot.op bold(z)_i)$, no sirve, porque una rotación alrededor de $bold(z)_i$ no cambia el ángulo que forma un vector con $bold(z)_i$. Con la geometría actual del modelo de nuestro brazo, ese cálculo da siempre $(0°, 90°, 90°, 180°, 90°)$, sin importar la pose.
 
 Por último, los ángulos recuperados solo reproducen las posiciones de FABRIK si esas posiciones respetan la estructura del brazo. En el modelo actual, en el hombro y el codo cada eslabón tiene que quedar perpendicular a su eje, y en la base y la muñeca, alineado con él. Un eslabón alineado con su eje no cambia al girar, así que en la base y la muñeca el ángulo no se puede obtener de su propio eslabón. En nuestro brazo, el de la base surge de la orientación del plano del brazo y los de la muñeca y la pinza los elige el programa antes de iterar (@sec-aplicacion).
 
-Los rangos de los servos son los que permite el firmware (`main.ino`), porque todavía no se midieron sobre el brazo. Se expresan en grados del servo, que el firmware obtiene a partir del ancho de pulso con sus tablas de calibración, y se convierten a los ángulos del modelo con la misma regla que usa el firmware:
+Los rangos de los servos son los que permite el firmware (`main.ino`). Se expresan en grados del servo, que el firmware obtiene a partir del ancho de pulso con sus tablas de calibración, y se convierten a los ángulos del modelo con la misma regla que usa el firmware:
 
 #align(center)[
   #table(
@@ -256,7 +256,7 @@ Hasta aquí se describió FABRIK en su forma general. En nuestro brazo las artic
 Esta aplicación se encuentra documentada en detalle en el informe *Implementación FABRIK* (`implementacion-fabrik.pdf`).
 
 #pagebreak()
-= Modelo de Esferas para Detección de Autocolisiones — Hito 1.3
+= Modelo de Esferas para Detección de Autocolisiones - Hito 1.3
 
 == Contexto: el modelo del año anterior
 
@@ -268,7 +268,6 @@ Se evaluaron otras alternativas, como *cápsulas* o *AABB / OBB*. Sin embargo, s
 
 - *Ya está implementado:* El grupo J5 lo programó en C y lo integró al firmware del ESP32 @grupo_j5_2025.
 - *Costo computacional bajo:* La evaluación de colisión entre dos esferas se reduce a una sola operación de distancia euclidiana.
-- *Compatibilidad directa:* El código C heredado ya implementa este modelo. Solo hay que pasarlo a memoria estática, porque hoy usa `malloc`, `realloc` y `free`, que las reglas de firmware de la cátedra prohíben.
 - *Suficiente para el caso de uso:* Los eslabones del brazo SG90 son cilindros cortos; las esferas proporcionan un margen de seguridad adecuado sin precisar geometrías más complejas.
 
 Las cápsulas (Swept Sphere Volumes) serían una mejora futura si se detectan falsos negativos con el hardware real, por el momento se mantendrá el modelo de esferas.
@@ -351,7 +350,7 @@ Si cualquier esfera penetra el plano, la pose se rechaza inmediatamente.
 
 La investigación establece que:
 
-+ El modelo de *cinemática directa* (FK) del año anterior es matemáticamente correcto y se adopta sin cambios en su lógica. Sus medidas, en particular `SALTO_3` y `SALTO_4`, se van a corregir cuando se mida el brazo.
++ El modelo de *cinemática directa* (FK) del año anterior es matemáticamente correcto y se adopta sin cambios en su lógica. Sus medidas se reemplazaron por las del brazo armado, y `configuracion.c` se corrige en el pasaje a C.
 + El modelo de *esferas delimitadoras* para colisiones fue implementado por el grupo J5 y es el más adecuado para las restricciones del ESP32. Se adopta, y sus posiciones y radio se van a validar con el brazo armado.
 + *FABRIK* es el algoritmo óptimo para IK en nuestro contexto: sin matrices, convergencia rápida, implementación simple en C. Es la contribución técnica nueva del grupo J1.
 

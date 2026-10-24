@@ -1,0 +1,7 @@
+Investigación 4.5: 100000 poses al azar dentro de los rangos del firmware (semilla 7)
+  par (0, 2): 0 poses con choque; sin detectar por el piso ni por otro par: 0
+  par (1, 3): 9803 poses con choque; sin detectar por el piso ni por otro par: 504
+  última esfera del codo y primera de la pinza: entre 3.700000 y 3.700000 cm (2r = 2.0 cm)
+  junta (1, 2), última esfera del brazo y primera del codo: entre 4.900000 y 4.900000 cm
+  esfera de la muñeca y última del codo: a lo sumo 5.00e-01 cm (no coinciden)
+  par (1, 4): menor distancia entre esferas 0.944 cm, así que puede chocar; la matriz revisa ese par

@@ -1,0 +1,8 @@
+Tabla 5: cadena virtual según la muñeca y la pinza (l1 = 6.90 cm)
+  θ3 = +0°, θ4 = 0°: l2 = 8.59 cm, α = -26.27°, d = 0.00 cm, p5 = [14.6, 0.0, 0.2]
+  θ3 = +0°, θ4 = 90°: l2 = 12.01 cm, α = 2.39°, d = 0.00 cm, p5 = [18.9, 0.0, 4.5]
+  θ3 = +0°, θ4 = 180°: l2 = 9.07 cm, α = 31.94°, d = 0.00 cm, p5 = [14.6, 0.0, 8.8]
+  θ3 = +90°, θ4 = 0°: l2 = 7.72 cm, α = 3.72°, d = -4.30 cm, p5 = [14.6, -4.3, 4.5]
+
+Sección 5.1: l1 + l2 = 18.91 cm con la muñeca y la pinza neutras; según la pinza, va de 15.49 cm (θ4 = 0.0°) a 18.92 cm (θ4 = 93.5°)
+Tabla 8 (ε): con ese alcance máximo, un grado en el hombro mueve la punta hasta 0.33 cm

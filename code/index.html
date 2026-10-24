@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gemelo digital del brazo</title>
+    <!--
+      Sirven el emulador code/simulacion/servidor.py y tambien el ESP32, con los mismos pedidos:
+      GET data (telemetría), POST set (objetivo x, y, z) y POST detener.
+    -->
+    <link rel="stylesheet" href="web/estilos.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+      }
+    </script>
+    <script type="module" src="web/principal.js"></script>
+  </head>
+  <body>
+    <div id="vista"></div>
+
+    <section id="panel">
+      <h1>Gemelo digital del brazo</h1>
+      <div class="conexion">
+        <span id="punto" class="punto"></span
+        ><span id="conexion">Conectando…</span>
+      </div>
+
+      <form id="formulario">
+        <label for="objetivo">Objetivo x, y, z (cm)</label>
+        <div class="fila">
+          <input id="objetivo" placeholder="5, -5, 7" autocomplete="off" />
+          <button id="mover" type="submit">Mover</button>
+        </div>
+      </form>
+      <p class="ayuda">
+        También se elige con dos clics: el primero en el piso marca x e y, y el
+        segundo, sobre la línea vertical, la altura z. Escape cancela.
+      </p>
+      <label class="opcion">
+        <input id="esferas" type="checkbox" checked />
+        Mostrar las esferas de colisión
+      </label>
+      <button id="detener" type="button">Detener</button>
+
+      <div id="mensaje">Esperando datos…</div>
+      <dl>
+        <dt>Estado</dt>
+        <dd id="estado">—</dd>
+        <dt
+          title="Distancia entre el objetivo y la punta del brazo (p5) en la pose elegida. Si no llega, la del mejor intento."
+        >
+          Error
+        </dt>
+        <dd id="error">—</dd>
+        <dt
+          title="Iteraciones de FABRIK de la pose elegida (20 como máximo) y, entre paréntesis, las de todos los intentos de la búsqueda."
+        >
+          Iteraciones
+        </dt>
+        <dd id="iteraciones">—</dd>
+        <dt
+          title="Posiciones de la muñeca y la pinza que probó la búsqueda, de 361, hasta encontrar una pose que llega sin chocar."
+        >
+          Posiciones
+        </dt>
+        <dd id="posiciones">—</dd>
+        <dt title="Lo que tardó la búsqueda en el emulador o en el ESP32.">
+          Cálculo
+        </dt>
+        <dd id="tiempo">—</dd>
+        <dt>Ángulos (°)</dt>
+        <dd id="angulos">—</dd>
+        <dt
+          id="intento-titulo"
+          title="Ángulos de la silueta gris: base, hombro, codo, muñeca y pinza. En rojo, los servos que no dejan llegar: los que la cadena estirada saca de su rango o, si bloquean los límites, el hombro o el codo que quedaron en un tope."
+          hidden
+        >
+          Mejor intento (°)
+        </dt>
+        <dd id="intento" hidden>—</dd>
+        <dt>Pulsos (µs)</dt>
+        <dd id="pulsos">—</dd>
+      </dl>
+    </section>
+  </body>
+</html>
