@@ -8,7 +8,7 @@ Continuación del desarrollo de un brazo robótico manipulador de 5 grados de li
 
 ## Equipo
 
-| Integrante |
+| Integrantes |
 |---|
 | Armando Ezequiel Tarifa |
 | Emma Guitarra Woida |
@@ -35,19 +35,17 @@ Docente responsable: Julián Delekta.
 .
 ├── README.md
 ├── code/
-│   ├── firmware/          firmware del ESP32 heredado del grupo J5 (2025)
-│   ├── simulacion/        simulación en Python del firmware (Hito 2); ver su README
-│   │   ├── tests/         un test por módulo
-│   │   ├── experimentos/  un script por cada resultado de los informes
-│   │   ├── resultados/    salida de los experimentos
-│   │   ├── datos/         datos de entrada y de referencia
-│   │   └── herramientas/  programas auxiliares en C
-│   ├── index.html         página web del gemelo digital: hoy la sirve el emulador de la simulación, después el ESP32
-│   ├── web/               estilo y módulos de JavaScript de la página (escena, brazo 3D, esferas, selección, panel y pedidos)
-│   └── mapeoServos.c      calibración de un servo con potenciómetro (grupo J5)
+│   ├── firmware/          
+│   ├── simulacion/        
+│   │   ├── tests/         
+│   │   ├── experimentos/  
+│   │   ├── resultados/    
+│   ├── index.html         
+│   ├── web/               
+│   └── mapeoServos.c      
 └── docs/
-    ├── entregas/          Plan de Proyecto y presentación
-    └── investigaciones/   investigación de modelos e implementación de FABRIK (Typst y PDF)
+    ├── entregas/          
+    └── investigaciones/   
 ```
 
 ---
