@@ -98,6 +98,19 @@ bool calcular_configuracion_modular(const double *angulos_grados,
  */
 bool validador_limites_fisico(double angulo, double min_angulo, double max_angulo);
 
+
+// Para abajo es implementado por el grupo J1.
+
+/**
+ * Puntos p0 a p5 del brazo para cinco ángulos del modelo, con las medidas del brazo real.
+ * @param angulos Los cinco ángulos del modelo, en grados.
+ * @param puntos (Salida) p0 a p5.
+ */
+void cinematica_directa(const double angulos[5], Vector3D puntos[6]);
+
+// Está en la parte de J5 de cinematica.c; se declara acá para usarla en plano.c.
+double np_linalg_norm(const double *a, const double *b);
+
 #ifdef __cplusplus
 }
 #endif

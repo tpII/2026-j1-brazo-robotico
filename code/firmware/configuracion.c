@@ -99,3 +99,42 @@ void inicializar_matrices_offset() {
     // T_E4 = matriz_traslacion(0, 2.2, 0.0)
     matriz_traslacion(T_E4, 0.0, 2.2, 0.0);
 }
+
+
+// Para abajo es implementado por el grupo J1.
+
+// --- 5. SERVOS (main.ino) --- //
+const int SERVO_MIN_US[5] = {400, 400, 400, 400, 400};
+const int SERVO_MAX_US[5] = {2600, 1800, 2600, 2000, 2600};
+
+// Tablas de calibración (us, grados del servo), una por servo como en getAngleForServo. Son las LUT
+// de main.ino; van en un solo arreglo porque esos nombres ya existen allá.
+const PuntoCalibracion LUT_POR_SERVO[5][7] = {
+    {{400, 0.0}, {767, 30.0}, {1134, 60.0}, {1501, 90.0}, {1868, 120.0}, {2235, 150.0}, {2600, 180.0}}, // LUT_GENERICO
+    {{400, 0.0}, {800, 30.0}, {1000, 60.0}, {1100, 90.0}, {1200, 120.0}, {1500, 150.0}, {1800, 180.0}}, // LUT1
+    {{400, 180.0}, {767, 150.0}, {1134, 120.0}, {1501, 90.0}, {1868, 60.0}, {2235, 30.0}, {2600, 0.0}}, // LUT2
+    {{400, 0.0}, {500, 30.0}, {600, 60.0}, {900, 90.0}, {1300, 120.0}, {1700, 150.0}, {2000, 180.0}},   // LUT3
+    {{400, 0.0}, {767, 30.0}, {1134, 60.0}, {1501, 90.0}, {1868, 120.0}, {2235, 150.0}, {2600, 180.0}}  // LUT_GENERICO
+};
+
+// Grados del modelo: theta = signo * s + desvío (home() y loop() de main.ino).
+const int SIGNO_MODELO[5] = {-1, 1, -1, 1, 1};
+const double DESVIO_MODELO[5] = {0.0, 0.0, 0.0, -90.0, 0.0};
+
+// --- 6. FABRIK --- //
+const double EPSILON = 0.5;  // cm: el error que se acepta
+const double ETA = 1e-4;     // cm: p5 dejó de moverse
+const int K_MAX = 20;        // iteraciones como máximo
+
+// --- 8. PUNTA DE LA PINZA (medida en el brazo real) --- //
+const Vector3D SALTO_4_MEDIDO = {0.0, -4.3, 0.0};
+
+// --- 9. MEDIDAS DEL BRAZO REAL (los valores pueden tener cierto error) --- //
+const Vector3D SALTO_0_MEDIDO = {0.0, 0.0, 4.0};
+const Vector3D SALTO_1_MEDIDO = {6.9, 0.0, 0.0};
+const Vector3D SALTO_2_MEDIDO = {4.5, 0.5, 0.0};
+const Vector3D SALTO_3_MEDIDO = {0.0, 0.0, -3.2};
+
+// Los saltos que usa la cinemática de J1 en lugar de SALTO_ESLABONES.
+const Vector3D *SALTO_ESLABONES_MEDIDOS[5] = {&SALTO_0_MEDIDO, &SALTO_1_MEDIDO, &SALTO_2_MEDIDO,
+                                              &SALTO_3_MEDIDO, &SALTO_4_MEDIDO};

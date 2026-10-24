@@ -70,6 +70,40 @@ void inicializar_matrices_offset(); // Necesaria para inicializar T_Ex matrices
 // // --- Función de Vista ---
 // void set_view(void *ax, const char *plane);
 
+
+// Para abajo es implementado por el grupo J1.
+
+// --- 5. SERVOS (main.ino) --- //
+extern const int SERVO_MIN_US[5];
+extern const int SERVO_MAX_US[5];
+
+// Un punto de una tabla de calibración: el pulso y los grados del servo.
+typedef struct {
+    int us;
+    double grados;
+} PuntoCalibracion;
+
+extern const PuntoCalibracion LUT_POR_SERVO[5][7];
+
+extern const int SIGNO_MODELO[5];
+extern const double DESVIO_MODELO[5];
+
+// --- 6. FABRIK --- //
+extern const double EPSILON;
+extern const double ETA;
+extern const int K_MAX;
+
+// --- 8. PUNTA DE LA PINZA (medida en el brazo real) --- //
+extern const Vector3D SALTO_4_MEDIDO;
+
+// --- 9. MEDIDAS DEL BRAZO REAL (los valores pueden tener cierto error) --- //
+extern const Vector3D SALTO_0_MEDIDO;
+extern const Vector3D SALTO_1_MEDIDO;
+extern const Vector3D SALTO_2_MEDIDO;
+extern const Vector3D SALTO_3_MEDIDO;
+
+extern const Vector3D *SALTO_ESLABONES_MEDIDOS[5];
+
 #ifdef __cplusplus
 }
 #endif

@@ -257,3 +257,36 @@ bool validador_limites_fisico(double angulo, double min_angulo, double max_angul
     }
     return false;
 }
+
+
+// Para abajo es implementado por el grupo J1.
+
+void cinematica_directa(const double angulos[5], Vector3D puntos[6]) {
+    /* Puntos p0 a p5 del brazo para cinco ángulos del modelo. */
+
+    // Para cada eslabón i: M = M_acum * (Rfix_i * Rz(theta_i)) y después M_acum = M * T(SALTO_i),
+    // con las rotaciones fijas de calcular_configuracion_modular.
+    Matrix4x4 Rfix[5];
+    np_eye(Rfix[0], 4);
+    matriz_rotacion_x(Rfix[1], 90.0);
+    np_eye(Rfix[2], 4);
+    matriz_rotacion_y(Rfix[3], -90.0);
+    matriz_rotacion_y(Rfix[4], 90.0);
+    Matrix4x4 M_acum, M, R_junta, M_temp, T_salto;
+    matriz_traslacion(M_acum, T_BASE_GLOBAL[0], T_BASE_GLOBAL[1], T_BASE_GLOBAL[2]);
+
+    for (int i = 0; i < 5; i++) {
+        matriz_rotacion_z(R_junta, angulos[i]);
+        np_matmul_4x4_4x4(M_temp, Rfix[i], R_junta);
+        np_matmul_4x4_4x4(M, M_acum, M_temp);
+        for (int j = 0; j < 3; j++) {
+            puntos[i][j] = M[j][3];
+        }
+        const double *salto = *SALTO_ESLABONES_MEDIDOS[i];
+        matriz_traslacion(T_salto, salto[0], salto[1], salto[2]);
+        np_matmul_4x4_4x4(M_acum, M, T_salto);
+    }
+    for (int j = 0; j < 3; j++) {
+        puntos[5][j] = M_acum[j][3];
+    }
+}
