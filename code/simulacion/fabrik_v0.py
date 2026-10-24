@@ -1,7 +1,7 @@
 """FABRIK v0: el modelo general de la investigación, en 3D sobre p0 a p5 como rótulas libres.
 
 Descartada: la cadena se acomoda como un látigo y las posiciones que da no tienen ángulos de servo que las reproduzcan,
-así que no recupera ángulos. 
+así que no recupera ángulos.
 Implementación J1.
 """
 from dataclasses import dataclass

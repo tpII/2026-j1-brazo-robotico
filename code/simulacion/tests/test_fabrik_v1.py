@@ -1,4 +1,4 @@
-"""fabrik_v1.py: plano sin límites y chequeo al final (implementación, secciones 6.2 y 6.3)."""
+"""fabrik_v1.py: plano sin límites y chequeo al final."""
 import unittest
 
 import numpy as np
@@ -16,7 +16,7 @@ T_EJEMPLO = plano.objetivo_en_plano(OBJ, RC_EJEMPLO, CADENA_NEUTRA)
 class TestFabrikV1(unittest.TestCase):
     """FABRIK v1, sin límites durante la iteración."""
     def test_v1_converge_con_el_codo_abajo(self):
-        """6.2: θ1 = -81.51°, θ2 = +137.49°, 0.47 cm en cuatro iteraciones."""
+        """theta1 = -81.51°, theta2 = +137.49°, 0.47 cm en cuatro iteraciones."""
         r = fabrik_v1.iterar(T_EJEMPLO, CADENA_NEUTRA, 0.0, 0.0)
         self.assertAlmostEqual(r.theta1, -81.51, delta=0.005)
         self.assertAlmostEqual(r.theta2, 137.49, delta=0.005)

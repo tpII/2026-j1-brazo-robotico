@@ -15,8 +15,8 @@ import servos
 from experimentos import guardar, v0_latigo
 
 OBJETIVO = np.array([5.0, -5.0, 7.0])
-OBJETIVO_COSTADO = np.array([6.0, 1.0, 6.0])   # Figura 4: del lado +y, la base no puede apuntarle
-OBJETIVO_TRABA = np.array([5.0, -5.0, 8.0])     # sección 6.4: un centímetro más arriba, v2 se traba
+OBJETIVO_COSTADO = np.array([6.0, 1.0, 6.0])   # del lado +y, la base no puede apuntarle
+OBJETIVO_TRABA = np.array([5.0, -5.0, 8.0])     # un centímetro más arriba, v2 se traba
 
 
 def _redondear(v, n=3):
@@ -24,12 +24,17 @@ def _redondear(v, n=3):
     return (np.round(np.asarray(v, dtype=float), n) + 0.0).tolist()
 
 
+def _iteraciones(n):
+    """«1 iteración» o «n iteraciones»."""
+    return f"{n} iteración" if n == 1 else f"{n} iteraciones"
+
+
 def calcular():
     """Recorre el ejemplo (5, -5, 7) con todas las versiones y arma las poses de las figuras.
 
     Returns:
-        Un diccionario con el Paso 1 (rho, d, r_c, theta y T), el Paso 1 de (6, 1, 6) (Figura 4), la
-        traza de v3 (Tabla 6), las poses de las figuras, las soluciones exactas con el codo arriba y
+        Un diccionario con el Paso 1 (rho, d, r_c, theta y T), el Paso 1 de (6, 1, 6), la
+        traza de v3, las poses de las figuras, las soluciones exactas con el codo arriba y
         abajo, y lo que dan v3, v1, v1 recortada y v2, también con (5, -5, 8).
     """
     c = plano.cadena_virtual(cfg.MUNECA_NEUTRA, cfg.PINZA_NEUTRA)
@@ -135,16 +140,16 @@ def main():
                f"Sección 6.1: codo arriba (θ1, θ2) = {_redondear(r['exactas']['arriba'], 2)}, "
                f"codo abajo = {_redondear(r['exactas']['abajo'], 2)}",
                f"Sección 6.2 (v1): (θ1, θ2) = {_redondear(r['v1']['angulos'], 2)}, error {r['v1']['error']:.2f} cm "
-               f"en {r['v1']['iteraciones']} iteración",
+               f"en {_iteraciones(r['v1']['iteraciones'])}",
                f"Sección 6.3 (v1 con recorte al final): {_redondear(r['v1_recortado']['angulos'], 2)}, p5 a "
                f"{r['v1_recortado']['error']:.2f} cm",
                f"Sección 6.4 (v2): el primer backward deja el hombro en {r['v2']['hombro_sin_recortar']:.2f}° y el "
                f"recorte lo lleva a {r['v2']['hombro_recortado']:.2f}°; termina en {_redondear(r['v2']['angulos'], 2)}, "
-               f"error {r['v2']['error']:.2f} cm, {r['v2']['iteraciones']} iteraciones, corta por {r['v2']['motivo']}",
+               f"error {r['v2']['error']:.2f} cm, {_iteraciones(r['v2']['iteraciones'])}, corta por {r['v2']['motivo']}",
                f"Sección 6.4 (v2 con {tuple(_redondear(OBJETIVO_TRABA, 1))}): el primer backward deja el hombro en "
                f"{r['v2_traba']['hombro_sin_recortar']:.2f}° y el recorte lo lleva a "
                f"{r['v2_traba']['hombro_recortado']:.2f}°; queda en {_redondear(r['v2_traba']['angulos'], 2)}, error "
-               f"{r['v2_traba']['error']:.2f} cm, {r['v2_traba']['iteraciones']} iteración, corta por "
+               f"{r['v2_traba']['error']:.2f} cm, {_iteraciones(r['v2_traba']['iteraciones'])}, corta por "
                f"{r['v2_traba']['motivo']}",
                "",
                "Coordenadas de las figuras (cm)"]

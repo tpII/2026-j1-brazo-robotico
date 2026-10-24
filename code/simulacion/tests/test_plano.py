@@ -1,4 +1,4 @@
-"""plano.py: lo común a las versiones de FABRIK en el plano (implementación, secciones 5.1 a 5.5 y 8.1)."""
+"""plano.py: lo común a las versiones de FABRIK en el plano."""
 import math
 import unittest
 
@@ -12,8 +12,8 @@ import plano
 
 class TestPlano(unittest.TestCase):
     """Lo común a las versiones de FABRIK en el plano."""
-    def test_cadena_virtual_tabla_5(self):
-        """Impl. Tabla 5: l2, α y d según la muñeca y la pinza."""
+    def test_cadena_virtual(self):
+        """l2, alpha y d según la muñeca y la pinza."""
         filas = {(0, 0): (8.59, -26.27, 0), (0, 90): (12.01, 2.39, 0), (0, 180): (9.07, 31.94, 0),
                  (90, 0): (7.72, 3.72, -4.3)}
         for (t3, t4), (l2, alfa, d) in filas.items():
@@ -27,7 +27,7 @@ class TestPlano(unittest.TestCase):
         self.assertEqual([(f["theta3"], f["theta4"]) for f in filas_experimento], list(filas))
 
     def test_cadena_virtual_igual_a_la_formula(self):
-        """La fórmula cerrada de la sección 5.3."""
+        """La fórmula cerrada de la cadena virtual."""
         for t3 in range(-90, 91, 15):
             for t4 in range(0, 181, 15):
                 c = plano.cadena_virtual(t3, t4)
@@ -57,13 +57,13 @@ class TestPlano(unittest.TestCase):
         self.assertEqual((r["pinza_min"], r["pinza_max"]), (0.0, 93.5))
 
     def test_desplazamiento_por_grado(self):
-        """Tabla 8 (ε): un grado en el hombro mueve la punta hasta 0.33 cm."""
+        """Un grado en el hombro mueve la punta hasta 0.33 cm."""
         r = experimentos.cadena_virtual.calcular()
         self.assertAlmostEqual(r["cm_por_grado"], r["alcance_max"] * math.pi / 180)
         self.assertAlmostEqual(r["cm_por_grado"], 0.33, delta=0.005)
 
     def test_paso_1_ejemplo(self):
-        """Sección 5.2: con p5 en el plano (d = 0), θ0 = -45°, r_c = ρ = 7.07, T = (7.07, 3.00)."""
+        """Con p5 en el plano (d = 0), theta0 = -45°, r_c = rho = 7.07, T = (7.07, 3.00)."""
         objetivo = np.array([5.0, -5.0, 7.0])
         c = plano.cadena_virtual(0, 90)
         (t0, rc), = plano.planos_candidatos(objetivo, c.d)
@@ -79,8 +79,8 @@ class TestPlano(unittest.TestCase):
         self.assertAlmostEqual(rc, -7.07, delta=0.005)
 
     def test_planos_degenerados(self):
-        """Puntos a revisar, 3."""
-        self.assertEqual(plano.planos_candidatos(np.array([0.0, 0.0, 9.0]), -2.0), [])   # ρ < |d|
+        """Objetivos sobre el eje de la base o más cerca que |d|."""
+        self.assertEqual(plano.planos_candidatos(np.array([0.0, 0.0, 9.0]), -2.0), [])   # rho < |d|
         for o, d in (((0.0, 0.0, 9.0), 0.0), ((0.0, -2.0, 5.0), -2.0)):                 # r_c = 0
             planos = plano.planos_candidatos(np.array(o), d)
             self.assertTrue(planos)
@@ -89,7 +89,7 @@ class TestPlano(unittest.TestCase):
                 self.assertAlmostEqual(rc, 0.0, places=9)
 
     def test_recorte_angular(self):
-        """Sección 8.1: -170° se lleva a 180° con el rango del hombro."""
+        """-170° se lleva a 180° con el rango del hombro."""
         self.assertEqual(plano.ajustar_angulo(-170, 0, 180), (180, True))
         self.assertEqual(plano.ajustar_angulo(350, 0, 180), (0, True))
         self.assertEqual(plano.ajustar_angulo(90, 0, 180), (90, False))
@@ -118,8 +118,8 @@ class TestPlano(unittest.TestCase):
         self.assertAlmostEqual(cinematica.cinematica_directa((t0, t1, t2, 0, 90)).puntos[5][2],
                                c.z_hombro + c.l1 + c.l2, places=9)
 
-    def test_formula_ingenua_tabla_4(self):
-        """Impl. Tabla 4: la fórmula con el propio eje da siempre (0, 90, 90, 180, 90)."""
+    def test_formula_ingenua(self):
+        """La fórmula con el propio eje da siempre (0, 90, 90, 180, 90)."""
         for fila in experimentos.formula_ingenua.calcular()["filas"]:
             np.testing.assert_allclose(fila["resultado"], [0, 90, 90, 180, 90], atol=0.01)
 

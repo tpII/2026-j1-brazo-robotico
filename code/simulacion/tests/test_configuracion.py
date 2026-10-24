@@ -56,7 +56,7 @@ class TestConfiguracion(unittest.TestCase):
             self.assertEqual(cfg.esferas_local[i].flatten().tolist(), _numeros(c, f"esf_{i}"))
 
     def test_saltos_son_las_medidas_del_brazo(self):
-        """Los saltos son las medidas del brazo armado (secciones 8 y 9); el firmware todavía tiene los de J5."""
+        """Los saltos son las medidas del brazo armado; el firmware todavía tiene los de J5."""
         medidas = [[0.0, 0.0, 4.0], [6.9, 0.0, 0.0], [4.5, 0.5, 0.0], [0.0, 0.0, -3.2], [0.0, -4.3, 0.0]]
         self.assertEqual([salto.tolist() for salto in cfg.SALTO_ESLABONES], medidas)
         j5 = [[0.0, 0.0, 3.0], [3.3, 0.0, 0.0], [4.0, 0.5, 0.0], [0.0, 0.0, -2.0], [0.0, 0.0, 2.0]]

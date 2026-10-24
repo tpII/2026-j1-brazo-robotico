@@ -1,4 +1,4 @@
-"""trayectoria.py: movimiento sincronizado con límites de velocidad y rampas (diseño §6.8 y D9)."""
+"""trayectoria.py: movimiento sincronizado con límites de velocidad y rampas."""
 import unittest
 
 import numpy as np
@@ -10,7 +10,7 @@ import trayectoria
 
 HOME = tuple(servos.home_modelo())
 POSE_B = (-30.0, 90.0, -90.0, 0.0, 90.0)
-# Extremos libres y camino que choca: la segunda esfera de la pinza toca el piso desde θ4 = 31°.
+# Extremos libres y camino que choca: la segunda esfera de la pinza toca el piso desde theta4 = 31°.
 PAR_QUE_CHOCA = ((-90.0, 40.0, -100.0, -90.0, 0.0), (-90.0, 40.0, -100.0, -90.0, 180.0))
 
 
@@ -69,7 +69,7 @@ class TestTrayectoria(unittest.TestCase):
         np.testing.assert_allclose(avance[15:-15], avance[15], rtol=1e-9)
 
     def test_mismo_punto(self):
-        """Puntos a revisar, 2."""
+        """De una pose a la misma, un solo paso y 0 s."""
         t = trayectoria.planificar(HOME, HOME)
         self.assertEqual((t.pasos, t.duracion), ([HOME], 0.0))
 

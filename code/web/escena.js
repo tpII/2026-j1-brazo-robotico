@@ -1,14 +1,12 @@
 /**
  * @file La escena 3D: cámara, luces, piso, bucle de dibujo y marca del objetivo.
  *
- * Las dos primeras funciones vienen de la página del grupo J5 (2025). En 2026 la escena pasó a
- * las coordenadas del robot, con z hacia arriba: J5 cambiaba y por z y el brazo quedaba espejado.
- * Lo que sigue a cada `// 2026` es del grupo J1.
+ * Las dos primeras funciones vienen de la página del grupo J5 (2025). La escena usa las
+ * coordenadas del robot, con z hacia arriba.
  */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-// 2025 (grupo J5)
 /**
  * Crea la escena, la cámara, el renderer, las luces y el piso dentro de un contenedor.
  *
@@ -39,7 +37,6 @@ export function crearEscena(contenedor) {
   return { escena, camara, renderer };
 }
 
-// 2025 (grupo J5)
 /**
  * Dibuja la escena en cada cuadro.
  *
@@ -53,7 +50,8 @@ export function dibujarSiempre({ escena, camara, renderer }, antes = () => {}) {
   });
 }
 
-// 2026
+// Para abajo es implementado por el grupo J1.
+
 /**
  * Controles de órbita: arrastrar gira la vista, la rueda la acerca y el botón derecho la corre.
  *
@@ -69,7 +67,6 @@ export function agregarControles(camara, lienzo) {
   return controles;
 }
 
-// 2026
 /**
  * Grilla de 1 cm sobre el piso (z = 0) y los ejes: x en rojo, y en verde y z en azul.
  *
@@ -82,7 +79,6 @@ export function agregarGrilla(escena) {
   escena.add(new THREE.AxesHelper(4));
 }
 
-// 2026
 /**
  * Ajusta la imagen al tamaño del contenedor cada vez que cambia.
  *
@@ -108,7 +104,6 @@ export function ajustarTamano({ camara, renderer }, contenedor, panel) {
   }).observe(contenedor);
 }
 
-// 2026
 /**
  * Crea la marca del objetivo: una esfera roja con una línea punteada hasta el piso.
  *

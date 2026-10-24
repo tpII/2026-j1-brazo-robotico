@@ -1,4 +1,4 @@
-"""Investigación de modelos, sección 4.5: por qué la matriz de colisiones excluye ciertos pares.
+"""Por qué la matriz de colisiones excluye ciertos pares.
 
 Con poses al azar dentro de los rangos del firmware se mide si valen las reglas que explican la
 matriz de J5:
@@ -7,7 +7,7 @@ matriz de J5:
 - en la junta (1, 2), la última esfera del brazo y la primera del codo están siempre a 1.3 cm;
 - la esfera de la muñeca coincide con la última del codo, así que el par (0, 3) repite al (0, 2).
 También informa la menor distancia entre las esferas del brazo y las de la pinza (par (1, 4)). Con las
-medidas de J5 valían todas; con las del brazo armado (23-oct) varias dejan de valer, porque las
+medidas de J5 valían todas; con las del brazo armado varias dejan de valer, porque las
 esferas siguen siendo las de configuracion.c.
 """
 import numpy as np

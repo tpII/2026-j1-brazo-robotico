@@ -1,4 +1,4 @@
-"""servidor.py: el emulador del ESP32, con los mismos endpoints que el firmware (diseño §6.10).
+"""servidor.py: el emulador del ESP32, con los mismos endpoints que el firmware.
 
 El test levanta el servidor en un puerto libre y corre su bucle en un hilo del test; el servidor
 mismo no usa hilos.
@@ -83,7 +83,7 @@ class TestServidor(unittest.TestCase):
         self.assertEqual(self._post("/detener")["estado"], "detenido")
 
     def test_entrada_invalida(self):
-        """Puntos a revisar, 1 y 4."""
+        """Un /set con campos faltantes, no numéricos, NaN, infinitos o bajo el piso da 400."""
         antes = self._data()["angles"]
         for campos in ({"x": 1, "y": 2}, {"x": "a", "y": 2, "z": 3}, {"x": "nan", "y": 2, "z": 3},
                        {"x": "inf", "y": 2, "z": 3}, {"x": 6, "y": -3, "z": -1}):
@@ -97,10 +97,10 @@ class TestServidor(unittest.TestCase):
         self.assertEqual(self._pedir("/nada")[0], 404)
 
     def test_pagina_del_gemelo(self):
-        """Diseño §6.11."""
+        """La página del gemelo digital, con su estilo y sus módulos."""
         pagina = self._pedir("/")[2].decode("utf-8")
         for fragmento in ('type="importmap"', "three@0.160.0", 'id="mover"', 'id="detener"', 'id="esferas"',
-                          'id="intento"', 'href="web/estilos.css"', 'src="web/principal.js"'):
+                          'id="intento"', 'href="web/style.css"', 'src="web/principal.js"'):
             self.assertIn(fragmento, pagina)
         conexion = self._pedir("/web/conexion.js")[2].decode("utf-8")
         for fragmento in ('url("data")', 'url("set")', 'url("detener")'):
@@ -108,7 +108,7 @@ class TestServidor(unittest.TestCase):
 
     def test_archivos_web(self):
         """La página está en módulos dentro de code/web/."""
-        for ruta, tipo in (("/web/estilos.css", "text/css"), ("/web/principal.js", "text/javascript")):
+        for ruta, tipo in (("/web/style.css", "text/css"), ("/web/principal.js", "text/javascript")):
             estado, cabeceras, cuerpo = self._pedir(ruta)
             self.assertEqual(estado, 200, ruta)
             self.assertIn(tipo, cabeceras["Content-Type"])

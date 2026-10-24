@@ -1,6 +1,6 @@
 """La cadena virtual según la muñeca y la pinza, y el alcance l1 + l2.
 
-También la Tabla 8 (epsilon): lo que mueve la punta un grado en el hombro, con el alcance máximo.
+También lo que mueve la punta un grado en el hombro, con el alcance máximo.
 """
 import math
 
@@ -12,15 +12,15 @@ import plano
 import servos
 from experimentos import guardar
 
-# (θ3, θ4) de la Tabla 5: la pinza abajo, alineada y arriba con la muñeca neutra, y la muñeca girada.
+# (theta3, theta4): la pinza abajo, alineada y arriba con la muñeca neutra, y la muñeca girada.
 POSICIONES = ((0.0, 0.0), (0.0, 90.0), (0.0, 180.0), (90.0, 0.0))
 
 
 def calcular():
-    """Calcula la cadena virtual de la Tabla 5 y el alcance según la pinza.
+    """Calcula la cadena virtual y el alcance según la pinza.
 
     Returns:
-        Un diccionario con las filas de la Tabla 5, l1, el alcance con la muñeca y la pinza neutras,
+        Un diccionario con las filas de la cadena virtual, l1, el alcance con la muñeca y la pinza neutras,
         el mínimo y el máximo según la pinza (con la muñeca neutra) con la pinza en que ocurren, y
         lo que mueve la punta un grado en el hombro.
     """

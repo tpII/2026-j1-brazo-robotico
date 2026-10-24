@@ -1,6 +1,6 @@
 """Cinemática directa: la misma cadena que calcular_configuracion_modular (cinematica.c).
 
-Para cada eslabón i: M = M_acum · (Rfix_i · Rz(θ_i)) y después M_acum = M · T(SALTO_i).
+Para cada eslabón i: M = M_acum * (Rfix_i * Rz(theta_i)) y después M_acum = M * T(SALTO_i).
 A diferencia del C, también devuelve los puntos p0 a p5 y los ejes de giro de los servos.
 """
 from dataclasses import dataclass
@@ -52,7 +52,7 @@ def cinematica_directa(angulos, con_esferas=True):
         M = M_acum @ (RFIX[i] @ matriz_rotacion_z(angulo))
         marcos.append(M[:3])
         puntos.append(M[:3, 3])
-        ejes.append(M[:3, 2])   # el giro en z no cambia la tercera columna de M_acum · Rfix
+        ejes.append(M[:3, 2])   # el giro en z no cambia la tercera columna de M_acum * Rfix
         if con_esferas:
             esferas.append(np.array([aplicar_transformada(M, c) for c in cfg.esferas_local[i]]))
         M_acum = M @ T_SALTO[i]

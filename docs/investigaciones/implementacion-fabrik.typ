@@ -688,7 +688,7 @@ Esto pasa porque en una bisagra, como el hombro, el codo y la pinza, el eslabón
 
 == Por qué se eligió el método de bisagras
 
-El método de bisagras coincide con la mecánica del brazo. Las figuras 2 y 4 del informe final del grupo J5 @informe_final_j5_2025 muestran una base giratoria y dos bisagras paralelas. La muñeca rota sobre el eje del antebrazo y el servo 4 inclina la pinza. Con la muñeca y la pinza quietas, todo lo que está después del codo se comporta como un cuerpo rígido. Es un caso análogo al de la Fig. 7 del paper, que resuelve una bisagra pasando a un plano que contiene a la raíz y al objetivo. Proyectar sobre ese plano y resolver en 2D es la técnica que la sección 4.3 propone para bisagras.
+El método de bisagras coincide con la mecánica del brazo. Las figuras 2 y 4 del informe final del grupo J5 @informe_final_j5_2025 muestran una base giratoria y dos bisagras paralelas. La muñeca rota sobre el eje del antebrazo y el servo 4 inclina la pinza. Con la muñeca y la pinza quietas, todo lo que está después del codo se comporta como un cuerpo rígido. Es el caso de la Fig. 7 del paper, donde la bisagra se resuelve proyectando la cadena sobre un plano que contiene a la raíz y al objetivo y aplicando FABRIK en 2D, como propone la sección 4.3.
 
 Además, sigue siendo FABRIK iterativo. Dentro del plano se hacen las mismas etapas forward y backward, con los tres criterios de corte del paper, y lo único que se calcula de forma directa es la orientación del plano. En el paper, ese plano pasa por la raíz y por el objetivo. En nuestro brazo es siempre vertical y, cuando $bold(p)_5$ sale del plano, queda a una distancia $d$ del objetivo (@sec-cadena-virtual).
 
@@ -791,6 +791,7 @@ La @tab-iteraciones muestra cómo evoluciona la cadena para el objetivo de ejemp
     [codo en $(6.39, -8.99)$: lado prohibido, se espeja a $(-2.03, 10.84)$],
     [codo $(-1.27, 6.78)$, punta $(9.67, 1.82)$],
     [2.85 cm],
+
     [2], [codo en $(-3.87, 7.96)$], [codo $(-3.01, 6.21)$, punta $(8.43, 2.57)$], [1.43 cm],
     [3], [codo en $(-4.37, 6.64)$], [codo $(-3.80, 5.76)$, punta $(7.84, 2.80)$], [0.80 cm],
     [4], [codo en $(-4.57, 5.96)$], [codo $(-4.20, 5.48)$, punta $(7.53, 2.90)$], [0.47 cm],
@@ -883,7 +884,6 @@ Para medirlo se generaron 2000 objetivos alcanzables a partir de ángulos válid
   caption: [Objetivos resueltos (error $<= 0.5$ cm y ángulos en rango) sobre 2000 objetivos alcanzables. Simulación en Python, con los límites del firmware (@tab-convencion).],
 ) <tab-medicion>
 
-#pagebreak()
 
 = La solución: la técnica _pole_ de Blender y Maya <sec-pole>
 
@@ -1090,39 +1090,25 @@ Para la medición, cada objetivo se generó eligiendo al azar los cinco ángulos
 
 == Simulación en Python
 
-- *`fabrik.py`* (nuevo): la función principal recibe el objetivo, los ángulos actuales y los límites, y devuelve los ángulos (incluidas la muñeca y la pinza elegidas), el error, las iteraciones y un estado (`ok`, `fuera_de_alcance` o `bloqueado_por_limites`). Internamente separa la búsqueda de la muñeca y la pinza, el Paso 1 (planos candidatos), la iteración en el plano con la regla del codo y las restricciones, y la recuperación de ángulos.
-- *`configuracion.py`*: los límites del firmware en grados del servo y las funciones de conversión servo ↔ modelo (@tab-convencion).
-- *`test_fabrik.py`* (nuevo):
+- *`fabrik.py`*: la iteración de la v3 dentro del plano, con la regla del codo y las restricciones en cada paso. Lo que comparte con las versiones descartadas (la cadena virtual, los planos candidatos, la recuperación de los ángulos y el control final) está en `plano.py`.
+- *`busqueda.py`*: la búsqueda de la muñeca y la pinza. Recibe el objetivo y la pose actual, y devuelve los ángulos, el error, las iteraciones y un estado (`ok`, `fuera_de_alcance`, `bloqueado_por_limites` o `colision`), con la silueta cuando el brazo no se mueve.
+- *`configuracion.py`* y *`servos.py`*: los límites del firmware en grados del servo y la conversión servo ↔ modelo (@tab-convencion).
+- Los tests de `code/simulacion/tests/` prueban:
   - FK(IK($bold(p)$)) $approx bold(p)$ sobre objetivos generados con ángulos válidos;
   - objetivos fuera de alcance;
   - ángulos siempre dentro de rango;
   - el ejemplo $(5, -5, 7)$ como caso fijo;
   - la búsqueda de la muñeca y la pinza, con $(3, -3, 0)$ y $(6, 1, 6)$ como casos fijos (se resuelven con la pinza en 30° y con la muñeca en 20° y la pinza en 140°);
-  - cadena recta;
-  - cantidad de iteraciones y tiempo.
-- La interfaz es una ventana de matplotlib con:
-  - el cuadro de texto $x, y, z$;
-  - doble clic sobre un _plano de trabajo_ horizontal, cuya altura se elige en la interfaz. El clic define una recta de visión, y su intersección con ese plano da el punto;
-  - la silueta gris con mensajes.
-
-  La consola se usa solo para mensajes, ya que `input()` congela la ventana.
+  - los números de la @tab-medicion y de la @sec-incognitas.
+- La interfaz es el gemelo digital, una página web que sirve el emulador del ESP32 (`servidor.py`) con los mismos pedidos que va a atender el firmware. Dibuja el brazo en 3D y permite:
+  - escribir el objetivo $x, y, z$;
+  - elegirlo con dos clics sobre la vista: el primero, sobre el piso, fija $x$ e $y$, y el segundo, sobre una línea vertical, la altura;
+  - ver la silueta gris con su mensaje cuando el brazo no llega.
 
 == Pasaje a C (ESP32)
 
-Una vez validada la simulación, se porta respetando las reglas de firmware de la cátedra:
-- sin memoria dinámica (`malloc`/`free`), con arreglos de tamaño fijo;
-- sin `delay()`;
-- máquina de estados dentro del super-loop disparado por tiempo;
-- cada tarea dentro del tiempo de tick (WCET); si la búsqueda no entra en un tick, se reparte entre ciclos de la máquina de estados.
+Una vez validada la simulación en Python, se porta a C y se prueba su correcto funcionamiento utilizando el hardaware.
 
-Como la iteración trabaja con tres puntos en 2D, el costo por iteración es de unas pocas operaciones de punto flotante y una raíz cuadrada por punto.
-
-== Pendientes
-
-- Medir el desvío de 0.5 cm entre el eje del codo y el del antebrazo, la única medida que todavía viene del grupo J5, y pasar todas las medidas a `configuracion.c` con el pasaje a C.
-- Rehacer las esferas de colisión para el brazo medido: las del grupo J5 se pensaron para las medidas de `configuracion.c` y dejan partes del brazo sin cubrir.
-- Medir qué ángulo del servo 4 deja la pinza alineada con el antebrazo, que es su posición neutra.
-- Confirmar el sentido de giro de la base y de la muñeca, y medir los topes reales de los cinco servos (FABRIK usa los del firmware).
 
 == Mejora a futuro: la pinza dentro de FABRIK <sec-mejora>
 
@@ -1150,7 +1136,6 @@ El punto extra no cambia el costo de forma apreciable. Para decidir, las dos opc
 + La técnica _pole_ de Blender y Maya resuelve esta ambigüedad. En nuestro brazo se traduce en espejar el codo respecto de la recta hombro→objetivo cuando cae del lado prohibido; como el espejo conserva las distancias, no altera el funcionamiento de FABRIK.
 + Con restricciones en cada paso y la regla del codo (v3), la simulación resuelve el 99 % de los objetivos alcanzables partiendo de la pose cero, con 3.1 iteraciones en promedio.
 + El usuario solo indica el punto. La muñeca y la pinza las elige una búsqueda que empieza en su posición neutra y prueba otras de a 10°, primero en la pinza y después en la muñeca junto con la pinza. La búsqueda resuelve el 99.75 % de los objetivos de la prueba, contra el 84.95 % con la muñeca y la pinza siempre neutras.
-+ Los valores numéricos de este informe salen de las medidas del brazo armado y de los límites del firmware. El método no depende de esas medidas, y antes del pasaje a C falta medir los topes reales de los servos.
 
 #pagebreak()
 #bibliography("referencias.bib", title: "Referencias", style: "ieee")

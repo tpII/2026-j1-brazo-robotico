@@ -1,4 +1,4 @@
-"""fabrik.py (v3): límites en cada paso y regla del codo (implementación, secciones 5 a 8)."""
+"""fabrik.py (v3): límites en cada paso y regla del codo."""
 import unittest
 
 import numpy as np
@@ -24,14 +24,14 @@ def _objetivos(n, semilla):
 
 class TestFabrik(unittest.TestCase):
     """FABRIK v3, la versión adoptada."""
-    def _corrida_ejemplo(self):
+    def _ejecucion_ejemplo(self):
         c = plano.cadena_virtual(0, 90)
         (t0, rc), = plano.planos_candidatos(OBJ, c.d)
         return fabrik.iterar(plano.objetivo_en_plano(OBJ, rc, c), c, 0.0, 0.0, traza=True)
 
-    def test_traza_tabla_6(self):
-        """Impl. Tabla 6: la traza de las iteraciones del ejemplo."""
-        r = self._corrida_ejemplo()
+    def test_traza(self):
+        """La traza de las iteraciones del ejemplo."""
+        r = self._ejecucion_ejemplo()
         filas = [   # codo después del forward, codo espejado, codo y punta después del backward, error
             (None, None, [6.90, 0.00], [18.90, 0.50], 12.09),
             ([6.39, -8.99], [-2.03, 10.84], [-1.27, 6.78], [9.67, 1.82], 2.85),
@@ -51,8 +51,8 @@ class TestFabrik(unittest.TestCase):
             self.assertAlmostEqual(paso.error, error, delta=0.005)
         self.assertEqual((r.iteraciones, r.motivo), (4, "eps"))
 
-    def test_ejemplo_seccion_5_6(self):
-        """Impl. 5.6: los ángulos y la punta del ejemplo."""
+    def test_ejemplo(self):
+        """Los ángulos y la punta del ejemplo."""
         s = fabrik.resolver(OBJ, 0.0, 90.0, 0.0, 0.0)
         self.assertTrue(s.valida)
         np.testing.assert_allclose(s.angulos[:3], [-45.0, 127.49, -142.26], atol=0.005)
@@ -65,16 +65,16 @@ class TestFabrik(unittest.TestCase):
         for o, t3, t4 in _objetivos(50, 2026):
             s = fabrik.resolver(o, t3, t4, 0.0, 0.0)
             for p in s.planos:
-                if p.corrida:   # v3 recorta en cada paso: el hombro y el codo nunca salen de rango
-                    self.assertTrue(plano.en_rango(p.corrida.theta1, 0, 180))
-                    self.assertTrue(plano.en_rango(p.corrida.theta2, -180, 0))
+                if p.ejecucion:   # v3 recorta en cada paso: el hombro y el codo nunca salen de rango
+                    self.assertTrue(plano.en_rango(p.ejecucion.theta1, 0, 180))
+                    self.assertTrue(plano.en_rango(p.ejecucion.theta2, -180, 0))
             if s.valida:
                 validas += 1
                 self.assertLessEqual(np.linalg.norm(cinematica.cinematica_directa(s.angulos).puntos[5] - o), 0.5 + 1e-9)
         self.assertGreaterEqual(validas, 48)
 
     def test_fuera_de_alcance(self):
-        """El plano existe, pero ‖T‖ = 19.80 > l1 + l2."""
+        """El plano existe, pero ||T|| = 19.80 > l1 + l2."""
         s = fabrik.resolver(np.array([14.0, -14.0, 4.0]), 0.0, 90.0, 0.0, 0.0)
         self.assertFalse(s.valida)
         self.assertTrue(s.planos)
@@ -83,7 +83,7 @@ class TestFabrik(unittest.TestCase):
     def test_mejor_intento_5_5_7(self):
         """El plano de -135° no llega por los límites y guarda la iteración de menor error."""
         s = fabrik.resolver(np.array([5.0, 5.0, 7.0]), 0.0, 90.0, HOME[1], HOME[2])
-        c = s.planos[0].corrida
+        c = s.planos[0].ejecucion
         self.assertFalse(s.valida)
         self.assertAlmostEqual(s.planos[0].theta0, -135.0, delta=1e-9)
         self.assertAlmostEqual(c.mejor_error, 9.0055, delta=0.0005)
@@ -91,13 +91,13 @@ class TestFabrik(unittest.TestCase):
         self.assertAlmostEqual(c.mejor_theta2, -89.12, delta=0.005)
         self.assertEqual((c.motivo, c.iteraciones), ("eta", 2))
 
-    def test_regla_del_codo_seccion_7_3(self):
-        """Impl. 7.3: las fronteras de la regla del codo y el espejo módulo 360°."""
+    def test_regla_del_codo(self):
+        """Las fronteras de la regla del codo y el espejo módulo 360°."""
         r = experimentos.regla_del_codo.calcular()
-        self.assertAlmostEqual(r["frontera_pinza"], 83.32, delta=0.005)   # cos θ4 = 0.5 / 4.3
+        self.assertAlmostEqual(r["frontera_pinza"], 83.32, delta=0.005)   # cos theta4 = 0.5 / 4.3
         self.assertLess(r["max_dif_s"], 1e-9)
         self.assertEqual([caso["theta4"] for caso in r["espejos"]], [90.0, 60.0])
-        for caso in r["espejos"]:   # θ4 = 90 con θ2 = -2 y θ4 = 60 con θ2 = -176
+        for caso in r["espejos"]:   # theta4 = 90 con theta2 = -2 y theta4 = 60 con theta2 = -176
             self.assertLess(caso["s_antes"], 0)
             self.assertAlmostEqual(caso["theta2_espejo"], caso["formula"], places=6)
             self.assertTrue(caso["valido"])

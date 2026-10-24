@@ -1,10 +1,11 @@
 /**
  * @file Elegir el objetivo con dos clics sobre la vista 3D.
  *
- * Archivo nuevo de 2026 (grupo J1). El primer clic sobre el piso fija x e y y levanta una línea
- * vertical en ese punto. El segundo clic fija la altura z: el rayo del clic se corta con un plano
- * vertical que pasa por la línea y mira hacia la cámara. Escape cancela. Arrastrar sigue girando
- * la vista: solo cuenta como clic si el puntero casi no se movió.
+ * El primer clic sobre el piso fija x e y y levanta una línea vertical en ese punto. El segundo
+ * clic fija la altura z: el rayo del clic se corta con un plano vertical que pasa por la línea y
+ * mira hacia la cámara. Escape cancela. Arrastrar sigue girando la vista, porque solo cuenta como
+ * clic si el puntero casi no se movió.
+ * Implementación J1.
  */
 import * as THREE from "three";
 

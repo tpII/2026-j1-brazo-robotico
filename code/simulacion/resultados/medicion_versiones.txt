@@ -1,9 +1,8 @@
 Tabla 7: objetivos resueltos sobre 2000 alcanzables (semilla 12345)
   variante: desde la pose cero | desde una pose al azar (iteraciones promedio de las resueltas, ms por objetivo)
-  v1        (plano sin límites y chequeo al final): 723 (36.15 %), 4.26 it., 0.079 ms | 1383 (69.15 %), 2.83 it., 0.082 ms
-  v1+espejo (v1 + espejo del codo una sola vez, al final): 1947 (97.35 %), 3.06 it., 0.094 ms | 1902 (95.10 %), 2.81 it., 0.087 ms
-  v2        (límites en cada paso, sin regla del codo): 823 (41.15 %), 4.73 it., 0.140 ms | 1451 (72.55 %), 3.00 it., 0.117 ms
-  v3        (límites en cada paso y regla del codo): 1980 (99.00 %), 3.06 it., 0.094 ms | 1980 (99.00 %), 2.74 it., 0.089 ms
+  v1        (plano sin límites y chequeo al final): 723 (36.15 %), 4.26 it., 0.075 ms | 1383 (69.15 %), 2.83 it., 0.076 ms
+  v1+espejo (v1 + espejo del codo una sola vez, al final): 1947 (97.35 %), 3.06 it., 0.091 ms | 1902 (95.10 %), 2.81 it., 0.084 ms
+  v2        (límites en cada paso, sin regla del codo): 823 (41.15 %), 4.73 it., 0.127 ms | 1451 (72.55 %), 3.00 it., 0.112 ms
+  v3        (límites en cada paso y regla del codo): 1980 (99.00 %), 3.06 it., 0.095 ms | 1980 (99.00 %), 2.74 it., 0.086 ms
 
 Tabla 10: v3 con 3.1 iteraciones en promedio y 0.09 ms por objetivo en esta máquina
-Los 2000 objetivos quedaron en datos/objetivos_semilla_12345.csv

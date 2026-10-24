@@ -1,9 +1,10 @@
 /**
  * @file Punto de entrada de la página: une la escena, el brazo, las esferas, el panel y los pedidos.
  *
- * Archivo nuevo de 2026 (grupo J1). Se dibujan tres brazos: la pose actual con sus colores, la
- * pose a la que va mientras se mueve (azul transparente) y la silueta gris del mejor intento
- * cuando no llega. Cada uno tiene sus esferas de colisión.
+ * Se dibujan tres brazos: la pose actual con sus colores, la pose a la que va mientras se mueve
+ * (azul transparente) y la silueta gris del mejor intento cuando no llega. Cada uno tiene sus
+ * esferas de colisión.
+ * Implementación J1.
  */
 import { crearBrazo } from "./brazo.js";
 import { detener, mandarObjetivo, pedirDatosCada } from "./conexion.js";

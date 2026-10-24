@@ -1,14 +1,14 @@
 """FABRIK v1: método de bisagras sin restricciones, con chequeo de límites al final.
 
 Descartada: según la pose inicial converge con el codo abajo. Con espejo_final=True es la variante que espeja el codo una
-sola vez, al final. 
-Implementación J1
+sola vez, al final.
+Implementación J1.
 """
 import numpy as np
 
 import configuracion as cfg
 import plano
-from plano import Corrida, Paso, ang, u2
+from plano import Ejecucion, Paso, ang, u2
 
 
 def iterar(T, cadena, theta1_ini, theta2_ini, traza=False):
@@ -19,10 +19,10 @@ def iterar(T, cadena, theta1_ini, theta2_ini, traza=False):
         cadena: la CadenaVirtual de la muñeca y la pinza elegidas.
         theta1_ini: hombro de partida (grados del modelo).
         theta2_ini: codo de partida (grados del modelo).
-        traza: si guarda cada iteración en Corrida.traza.
+        traza: si guarda cada iteración en Ejecucion.traza.
 
     Returns:
-        La plano.Corrida, sin recortes.
+        La plano.Ejecucion, sin recortes.
     """
     l1, l2, alfa = cadena.l1, cadena.l2, cadena.alfa
     E = l1 * u2(theta1_ini)
@@ -63,7 +63,7 @@ def iterar(T, cadena, theta1_ini, theta2_ini, traza=False):
 
     if k == 0:
         mejor = (error, theta1, rel - alfa)
-    return Corrida(theta1, rel - alfa, error, k, motivo, 0, *mejor, pasos)
+    return Ejecucion(theta1, rel - alfa, error, k, motivo, 0, *mejor, pasos)
 
 
 def resolver(objetivo, theta3, theta4, theta1_ini, theta2_ini, espejo_final=False):
@@ -75,7 +75,7 @@ def resolver(objetivo, theta3, theta4, theta1_ini, theta2_ini, espejo_final=Fals
         theta4: ángulo de la pinza (grados del modelo).
         theta1_ini: hombro de partida (grados del modelo).
         theta2_ini: codo de partida (grados del modelo).
-        espejo_final: la variante de la Tabla 7 que espeja el codo una vez, al final.
+        espejo_final: la variante que espeja el codo una vez, al final.
 
     Returns:
         La plano.Solucion.

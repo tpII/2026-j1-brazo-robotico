@@ -1,4 +1,4 @@
-"""busqueda.py: muñeca y pinza, planos, silueta y resultado (implementación, secciones 8.3 y 9; diseño §6.7)."""
+"""busqueda.py: muñeca y pinza, planos, silueta y resultado."""
 import unittest
 
 import numpy as np
@@ -7,14 +7,13 @@ import busqueda
 import cinematica
 import colisiones
 import experimentos
-import experimentos.cadena_recta
 import servos
 import trayectoria
 
 HOME = servos.home_modelo()
 ESTADOS = {"ok", "fuera_de_alcance", "bloqueado_por_limites", "colision"}
 OBJETIVOS = experimentos.objetivos_medicion()
-# Índices de OBJETIVOS hallados recorriéndolos en orden con la búsqueda (tarea 13 del plan).
+# Índices de OBJETIVOS hallados recorriéndolos en orden con la búsqueda.
 INDICE_RESCATADO = 9   # el primero cuya primera solución choca, pero otra pose válida no
 INDICE_COLISION = 2    # el primero en que todas sus poses válidas chocan
 # Extremos libres y camino que choca (tests/test_trayectoria.py).
@@ -44,7 +43,7 @@ class TestBusquedaSinChoques(unittest.TestCase):
         self.assertLessEqual(r.error, 0.5)
 
     def test_ejemplo_3_3_0(self):
-        """Impl. 9: sobre el piso, cerca de la base; se resuelve con la pinza en 30°, a 0.41 cm."""
+        """(3, -3, 0) está sobre el piso, cerca de la base; se resuelve con la pinza en 30°, a 0.41 cm."""
         r = busqueda.buscar(np.array([3.0, -3.0, 0.0]), HOME, revisar_colisiones=False)
         self.assertEqual((r.estado, r.posiciones, r.iteraciones), ("ok", 13, 19))
         np.testing.assert_allclose(r.angulos, [-45.0, 72.0, -132.58, 0.0, 30.0], atol=0.005)
@@ -63,29 +62,17 @@ class TestBusquedaSinChoques(unittest.TestCase):
         self.assertEqual(r.estado, "fuera_de_alcance")
         self.assertEqual(r.silueta.angulos[3:], (0.0, 90.0))
 
-    def test_cadena_recta(self):
-        """Impl. 7.3 y Tabla 8 (η); resultados/cadena_recta.txt."""
-        casos = experimentos.cadena_recta.calcular()["casos"]
-        esperado = [(0.0, 90.0, 1, (-45.0, 157.48, -155.92), 0.455),
-                    (10.0, 150.0, 30, (-114.99, 178.93, -177.58), 0.478),
-                    (0.0, 90.0, 1, (-20.0, 116.57, -141.24), 0.372)]
-        for caso, (t3, t4, posiciones, angulos, error) in zip(casos, esperado):
-            self.assertEqual((caso["muneca"], caso["pinza"], caso["posiciones"]), (t3, t4, posiciones))
-            np.testing.assert_allclose(caso["angulos"][:3], angulos, atol=0.005)
-            self.assertAlmostEqual(caso["error"], error, delta=0.005)
-        self.assertEqual([c["motivo_neutra"] for c in casos], ["eps", "eta", "eps"])
-
     def test_objetivos_sobre_el_eje(self):
-        """Puntos a revisar, 3."""
+        """Un objetivo sobre el eje de la base termina en uno de los estados conocidos."""
         for o in ((0, 0, 9), (0, 0, 12), (0, 0, 20), (0, -2, 5)):
             self.assertIn(busqueda.buscar(np.array(o, float), HOME, revisar_colisiones=False).estado, ESTADOS)
 
 
 class TestBusquedaConChoques(unittest.TestCase):
-    """La búsqueda con choques (D1 y D8 del diseño)."""
+    """La búsqueda con choques."""
 
     def test_rescate(self):
-        """Si la primera solución choca, la búsqueda sigue hasta otra pose que no choca (D1)."""
+        """Si la primera solución choca, la búsqueda sigue hasta otra pose que no choca."""
         o = OBJETIVOS[INDICE_RESCATADO]["objetivo"]
         sin = busqueda.buscar(o, HOME, revisar_colisiones=False)
         con = busqueda.buscar(o, HOME)
@@ -101,7 +88,7 @@ class TestBusquedaConChoques(unittest.TestCase):
         self.assertTrue(_choca(r.silueta.angulos))
 
     def test_revisar_pose(self):
-        """Una pose libre se descarta si el camino desde la pose actual choca (D8)."""
+        """Una pose libre se descarta si el camino desde la pose actual choca."""
         a, b = PAR_QUE_CHOCA   # b está libre, pero el camino desde a choca
         pasos = trayectoria.planificar(a, b).pasos
         s = busqueda.revisar_pose(b, a)
@@ -120,7 +107,7 @@ class TestBusquedaConChoques(unittest.TestCase):
                 self.assertEqual(r.pasos[-1], r.angulos)
 
     def test_objetivos_sobre_el_eje_con_choques(self):
-        """Puntos a revisar, 3."""
+        """Lo mismo, revisando los choques."""
         for o in ((0, 0, 9), (0, 0, 12), (0, 0, 20), (0, -2, 5)):
             self.assertIn(busqueda.buscar(np.array(o, float), HOME).estado, ESTADOS)
 

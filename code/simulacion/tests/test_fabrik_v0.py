@@ -1,4 +1,4 @@
-"""fabrik_v0.py: FABRIK 3D con rótulas libres, el modelo general aplicado directo (implementación, sección 4)."""
+"""fabrik_v0.py: FABRIK 3D con rótulas libres, el modelo general aplicado directo."""
 import unittest
 
 import numpy as np
@@ -9,8 +9,8 @@ import fabrik_v0
 
 class TestFabrikV0(unittest.TestCase):
     """FABRIK v0, en 3D con rótulas libres."""
-    def test_latigo_tabla_3(self):
-        """Impl. Tabla 3: FABRIK 3D llega, pero deforma la cadena como un látigo."""
+    def test_latigo(self):
+        """FABRIK 3D llega, pero deforma la cadena como un látigo."""
         r = experimentos.v0_latigo.calcular()
         self.assertEqual(r["iteraciones"], 1)
         self.assertLess(r["error"], 0.01)

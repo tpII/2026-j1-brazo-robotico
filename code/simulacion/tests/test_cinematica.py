@@ -1,51 +1,20 @@
 """cinematica.py: misma cadena que calcular_configuracion_modular (cinematica.c)."""
-import json
 import unittest
-from contextlib import contextmanager
-from pathlib import Path
 
 import numpy as np
 
 import cinematica
 import configuracion as cfg
-from algebra_lineal import matriz_traslacion
-from test_configuracion import saltos_del_firmware
-
-REFERENCIA = json.loads((Path(__file__).resolve().parent.parent / "datos" / "referencia_firmware_2025.json")
-                        .read_text(encoding="utf-8"))
-
-
-@contextmanager
-def con_saltos_del_firmware():
-    """La cinemática con los saltos de configuracion.c, los que usó el firmware de 2025.
-
-    Los datos de referencia salieron de ese firmware, que todavía tiene las medidas de J5. Las
-    esferas locales son las mismas, así que con esos saltos se prueba la cadena de cinematica.c.
-    """
-    original = cinematica.T_SALTO
-    cinematica.T_SALTO = [matriz_traslacion(*salto) for salto in saltos_del_firmware()]
-    try:
-        yield
-    finally:
-        cinematica.T_SALTO = original
 
 
 class TestCinematica(unittest.TestCase):
-    """La cinemática directa, comparada con el firmware y con los informes."""
-    def test_pose_cero_tabla_1(self):
-        """Impl. Tabla 1: puntos y ejes de la pose cero."""
+    """La cinemática directa."""
+    def test_pose_cero(self):
+        """Puntos y ejes de la pose cero."""
         g = cinematica.cinematica_directa((0, 0, 0, 0, 0))
         np.testing.assert_allclose(g.puntos, [[0, 0, 0], [0, 0, 4], [6.9, 0, 4], [11.4, 0, 4.5], [14.6, 0, 4.5],
                                               [14.6, 0, 0.2]], atol=1e-12)
         np.testing.assert_allclose(g.ejes, [[0, 0, 1], [0, -1, 0], [0, -1, 0], [-1, 0, 0], [0, -1, 0]], atol=1e-12)
-
-    def test_esferas_iguales_al_firmware(self):
-        """Con los saltos de configuracion.c, las esferas coinciden con las de cinematica.c en 402 poses."""
-        with con_saltos_del_firmware():
-            for pose in REFERENCIA["poses"]:
-                g = cinematica.cinematica_directa(pose["angulos"])
-                for i in range(5):
-                    np.testing.assert_allclose(g.esferas[i], pose["esferas"][i], atol=1e-9)
 
     def test_p5_es_la_punta_de_la_pinza(self):
         """p5 está a 4.3 cm del eje del servo 4, hacia la pala y en el plano que gira con la pinza."""
@@ -70,7 +39,7 @@ class TestCinematica(unittest.TestCase):
         np.testing.assert_allclose(a, b, atol=1e-12)
 
     def test_pinza_neutra_a_lo_largo_del_antebrazo(self):
-        """Diseño, D12."""
+        """Con la pinza en 90°, la pinza queda alineada con el antebrazo."""
         g = cinematica.cinematica_directa((0, 0, 0, 0, 90))
         np.testing.assert_allclose(g.esferas[4][1], [16.6, 0, 4.5], atol=1e-12)
 

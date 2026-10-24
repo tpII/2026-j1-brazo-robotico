@@ -2,21 +2,17 @@
  * @file Las esferas de colisión de cada eslabón.
  *
  * De la página del grupo J5 (2025) vienen los colores de los eslabones, el rojo de las esferas que
- * chocan y la forma de reconocerlas por sus coordenadas (`colliding_centers`), que es lo único que
- * manda el firmware de 2025. Lo que sigue a cada `// 2026` es del grupo J1: las esferas se dibujan
- * con poca opacidad encima del brazo 3D y se pueden ocultar, salvo las que chocan.
+ * chocan y la forma de reconocerlas por sus coordenadas (`colliding_centers`). Las esferas se
+ * dibujan con poca opacidad encima del brazo 3D y se pueden ocultar, salvo las que chocan.
  */
 import * as THREE from "three";
 
-// 2025 (grupo J5)
 /** Color de las esferas de cada eslabón, de la base a la pinza. */
 export const COLORES_ESLABON = [0x228b22, 0xffff00, 0xffa500, 0x00ffff, 0xff00ff];
 
-// 2025 (grupo J5)
 /** Color de las esferas que chocan. */
 export const COLOR_CHOQUE = 0xff0000;
 
-// 2025 (grupo J5)
 /**
  * Reconoce las esferas que chocan comparando sus coordenadas con `colliding_centers`.
  *
@@ -35,15 +31,14 @@ function chocanPorCoordenadas(dibujo) {
   return chocan;
 }
 
-// 2026
+// Para abajo es implementado por el grupo J1.
+
 /** Opacidad de las esferas que chocan: casi opacas, para que se vean a través del brazo. */
 const OPACIDAD_CHOQUE = 0.9;
 
-// 2026
 /** Geometría de radio 1 que comparten todas las esferas; cada malla la escala a su radio. */
 const GEOMETRIA_ESFERA = new THREE.SphereGeometry(1, 24, 16);
 
-// 2026
 /**
  * Las esferas que chocan, con los índices que manda la simulación (`esferas_en_choque`).
  * Si no vienen, como con el firmware de 2025, se reconocen por sus coordenadas.
@@ -58,7 +53,6 @@ function esferasQueChocan(dibujo) {
   return chocanPorCoordenadas(dibujo);
 }
 
-// 2026
 /**
  * Crea la capa de esferas de un brazo. Las mallas se agregan a medida que hacen falta, así que no
  * depende de cuántas esferas tenga cada eslabón.
@@ -76,7 +70,6 @@ export function crearEsferas(escena, { color = null, opacidad = 0.22 } = {}) {
   return { grupo, mallas: [], color, opacidad };
 }
 
-// 2026
 /**
  * Ubica las esferas de una pose. Las que chocan se ven siempre, en rojo; las demás, solo si
  * `visibles` es true.
@@ -104,7 +97,6 @@ export function actualizarEsferas(capa, dibujo, radio, visibles) {
   });
 }
 
-// 2026
 /**
  * Una esfera de radio 1, transparente y sin escribir en el buffer de profundidad.
  *

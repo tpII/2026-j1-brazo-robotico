@@ -13,7 +13,7 @@ Con los choques, una pose válida se acepta solo si ni ella ni el camino desde
 la pose actual chocan. Si choca, se descarta igual que una que no llega: se prueba el otro plano y
 después la siguiente posición. Una posición con la misma cadena que otra que llegó pero chocaba
 reusa sus ángulos con su propia muñeca y su propia pinza.
-En C será a busqueda.c. Implementación J1,.
+En C va a busqueda.c. Implementación J1.
 """
 import time
 from dataclasses import dataclass, field
@@ -60,7 +60,7 @@ class Resultado:
         iteraciones_totales: iteraciones de todas las ejecuciones.
         tiempo_ms: lo que tardó la búsqueda.
         pasos: la trayectoria validada, cuando se revisan los choques.
-        corridas: todas las plano.Corrida, para las mediciones.
+        detalle_ejecuciones: todas las plano.Ejecucion, para las mediciones.
     """
     estado: str
     angulos: tuple | None
@@ -72,7 +72,7 @@ class Resultado:
     iteraciones_totales: int
     tiempo_ms: float
     pasos: list | None = None
-    corridas: list = field(default_factory=list)
+    detalle_ejecuciones: list = field(default_factory=list)
 
 
 def _alrededor(neutra, rango):
@@ -83,7 +83,7 @@ def _alrededor(neutra, rango):
         rango: la tupla (mínimo, máximo) del servo, en grados del modelo.
 
     Returns:
-        neutra + paso, neutra − paso, neutra + 2·paso, ... sin salir del rango.
+        neutra + paso, neutra - paso, neutra + 2*paso, ... sin salir del rango.
     """
     lo, hi = rango
     valores, k = [], 1
@@ -102,7 +102,7 @@ def posiciones_busqueda():
     sola no mueve p5: solo lo saca del plano del brazo cuando la pinza está inclinada.
 
     Returns:
-        Una lista de tuplas (θ3, θ4); son 361 con los rangos del firmware.
+        Una lista de tuplas (theta3, theta4); son 361 con los rangos del firmware.
     """
     munecas = [cfg.MUNECA_NEUTRA] + _alrededor(cfg.MUNECA_NEUTRA, servos.rango_modelo(3))
     pinzas = [cfg.PINZA_NEUTRA] + _alrededor(cfg.PINZA_NEUTRA, servos.rango_modelo(4))
@@ -156,7 +156,7 @@ def buscar(objetivo, actual, revisar_colisiones=True):
         objetivo: el punto (x, y, z) en cm.
         actual: la pose donde está el brazo (cinco ángulos del modelo, en grados).
         revisar_colisiones: con False no se revisan choques ni trayectoria; es el modo con el que
-            se midieron los números de la sección 9 de la implementación.
+            se midieron los números del informe.
 
     Returns:
         El Resultado.
@@ -165,7 +165,7 @@ def buscar(objetivo, actual, revisar_colisiones=True):
     objetivo = np.asarray(objetivo, dtype=float)
     theta1_ini, theta2_ini = actual[1], actual[2]
     posiciones = ejecuciones = iteraciones_totales = 0
-    corridas, fallidas, chocadas = [], [], []   # chocadas: (cadena, [(ángulos, error, iteraciones)])
+    detalle_ejecuciones, fallidas, chocadas = [], [], []   # chocadas: (cadena, [(ángulos, error, iteraciones)])
     mejor = None              # (error, pose) de la iteración de menor error de todas
     paso0 = False             # si alguna posición pasó el Paso 0 en algún plano
     primera_silueta = None    # la primera pose válida que chocaba (o el primer paso que chocaba)
@@ -173,7 +173,7 @@ def buscar(objetivo, actual, revisar_colisiones=True):
     def resultado(estado, angulos=None, error=None, silueta=None, iteraciones=0, pasos=None):
         """El Resultado con los contadores de la búsqueda hasta ahora."""
         return Resultado(estado, angulos, error, silueta, posiciones, ejecuciones, iteraciones, iteraciones_totales,
-                         1000 * (time.perf_counter() - comienzo), pasos, corridas)
+                         1000 * (time.perf_counter() - comienzo), pasos, detalle_ejecuciones)
 
     def aceptar(pose):
         """Revisa los choques de una pose válida; devuelve los pasos si se acepta."""
@@ -191,7 +191,7 @@ def buscar(objetivo, actual, revisar_colisiones=True):
             continue
         posiciones += 1
         anterior = next((validas for otra, validas in chocadas if _misma_cadena(cadena, otra)), None)
-        if anterior is not None:   # misma cadena que una que llegó pero chocaba: mismos ángulos, otro θ4
+        if anterior is not None:   # misma cadena que una que llegó pero chocaba: mismos ángulos, otro theta4
             for angulos, error, iteraciones in anterior:
                 pose = tuple(angulos[:3]) + (theta3, theta4)
                 pasos = aceptar(pose)
@@ -205,20 +205,20 @@ def buscar(objetivo, actual, revisar_colisiones=True):
             if not solucion.alcanzable:
                 continue
             paso0 = True
-            corrida = solucion.corrida
+            ejecucion = solucion.ejecucion
             ejecuciones += 1
-            iteraciones_totales += corrida.iteraciones
-            corridas.append(corrida)
-            if mejor is None or corrida.mejor_error < mejor[0]:
-                mejor = (corrida.mejor_error, (theta0, corrida.mejor_theta1, corrida.mejor_theta2, theta3, theta4))
+            iteraciones_totales += ejecucion.iteraciones
+            detalle_ejecuciones.append(ejecucion)
+            if mejor is None or ejecucion.mejor_error < mejor[0]:
+                mejor = (ejecucion.mejor_error, (theta0, ejecucion.mejor_theta1, ejecucion.mejor_theta2, theta3, theta4))
             if not solucion.valida:
                 continue
             if not revisar_colisiones:
-                return resultado("ok", solucion.angulos, solucion.error, iteraciones=corrida.iteraciones)
+                return resultado("ok", solucion.angulos, solucion.error, iteraciones=ejecucion.iteraciones)
             pasos = aceptar(solucion.angulos)
             if pasos is not None:
-                return resultado("ok", solucion.angulos, solucion.error, iteraciones=corrida.iteraciones, pasos=pasos)
-            validas.append((solucion.angulos, solucion.error, corrida.iteraciones))
+                return resultado("ok", solucion.angulos, solucion.error, iteraciones=ejecucion.iteraciones, pasos=pasos)
+            validas.append((solucion.angulos, solucion.error, ejecucion.iteraciones))
         if validas:
             chocadas.append((cadena, validas))
         else:

@@ -1,10 +1,9 @@
-"""Implementación, Tabla 7, Tabla 10 y Figura 9: cuántos de los 2000 objetivos resuelve cada versión.
+"""Cuántos de los 2000 objetivos resuelve cada versión.
 
 Cada versión se corre con la muñeca y la pinza con las que se generó el objetivo, desde la pose
-cero (θ1 = θ2 = 0) y desde una pose al azar. Un objetivo está resuelto si el control final lo
+cero (theta1 = theta2 = 0) y desde una pose al azar. Un objetivo está resuelto si el control final lo
 acepta: error <= 0.5 cm, ángulos en rango y p5 a 0.5 cm o menos. El tiempo depende de la máquina.
 """
-import csv
 import time
 
 import numpy as np
@@ -47,21 +46,10 @@ def calcular():
                 s = resolver(item["objetivo"], item["angulos"][3], item["angulos"][4], theta1, theta2, **opciones)
                 if s.valida:
                     resueltos += 1
-                    iteraciones.append(s.planos[-1].corrida.iteraciones)
+                    iteraciones.append(s.planos[-1].ejecucion.iteraciones)
             ms = 1000 * (time.perf_counter() - comienzo) / len(objetivos)
             resultado[nombre][inicio] = {"resueltos": resueltos, "iteraciones": float(np.mean(iteraciones)), "ms": ms}
     return resultado
-
-
-def _guardar_objetivos(objetivos):
-    """Guarda los objetivos en datos/objetivos_semilla_12345.csv, para revisarlos sin correr nada."""
-    ruta = CARPETA_SIM / "datos" / "objetivos_semilla_12345.csv"
-    with open(ruta, "w", newline="", encoding="utf-8") as archivo:
-        escritor = csv.writer(archivo)
-        escritor.writerow(["i", "x", "y", "z", "theta0", "theta1", "theta2", "theta3", "theta4", "ini_theta1",
-                           "ini_theta2"])
-        for i, item in enumerate(objetivos):
-            escritor.writerow([i, *map(float, item["objetivo"]), *item["angulos"], *item["inicio_azar"]])
 
 
 def main():
@@ -77,8 +65,6 @@ def main():
     v3 = r["v3"]["cero"]
     lineas += ["", f"Tabla 10: v3 con {v3['iteraciones']:.1f} iteraciones en promedio y {v3['ms']:.2f} ms por objetivo "
                f"en esta máquina"]
-    _guardar_objetivos(objetivos_medicion())
-    lineas.append("Los 2000 objetivos quedaron en datos/objetivos_semilla_12345.csv")
     guardar("medicion_versiones", lineas)
 
 

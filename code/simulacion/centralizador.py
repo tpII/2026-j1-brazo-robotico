@@ -1,13 +1,13 @@
-"""Modulo central de lógica.
+"""Módulo central de lógica.
 
 Guarda el estado del brazo, atiende los pedidos de objetivo, avanza un paso del movimiento cada
 vez que se lo llama (cada 20 ms) y arma la telemetría que lee la página del gemelo digital.
-- Un pedido mientras el brazo se mueve se rechaza con «ocupado» (D10); «Detener» frena el brazo
-  en el paso en que está (D14).
+- Un pedido mientras el brazo se mueve se rechaza con «ocupado»; «Detener» frena el brazo
+  en el paso en que está.
 - Un objetivo con valores que no son números finitos, o debajo del piso, se rechaza sin buscar:
   p5 no tiene esfera, así que las esferas no lo detectarían.
 En C será centralizador.c y la parte del loop() de main.ino que mueve los servos.
-Implementación J1
+Implementación J1.
 """
 import dataclasses
 import math
@@ -44,7 +44,7 @@ def _servos_fuera_de_rango(estado, pose):
 
     La cadena estirada de «fuera de alcance» no tiene en cuenta los límites, así que se marcan los
     ángulos que salen del rango. En «bloqueado por límites», FABRIK ya recortó el hombro y el codo
-    en cada paso (implementación, sección 8.1): el que quedó en un tope es el que no deja llegar.
+    en cada paso: el que quedó en un tope es el que no deja llegar.
     Una pose que choca respeta los rangos y no marca ninguno.
 
     Args:
@@ -71,7 +71,7 @@ class Centralizador:
 
     Attributes:
         angulos: la pose actual, en grados del modelo.
-        pulsos: los pulsos que reciben los servos, en µs.
+        pulsos: los pulsos que reciben los servos, en us.
         estado: "quieto", "moviendo" o "detenido".
         objetivo: el último objetivo (x, y, z) pedido, o None.
         resultado: el busqueda.Resultado de la última búsqueda, o None.

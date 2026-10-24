@@ -1,6 +1,6 @@
-"""Implementación, Tabla 4: el ángulo entre cada eslabón y su propio eje no depende de la pose.
+"""El ángulo entre cada eslabón y su propio eje no depende de la pose.
 
-Para cada pose se calcula atan2(‖dᵢ × zᵢ‖, dᵢ · zᵢ), con dᵢ = p(i+1) - p(i) y zᵢ el eje de giro
+Para cada pose se calcula atan2(||d_i x z_i||, d_i . z_i), con d_i = p(i+1) - p(i) y z_i el eje de giro
 del servo i que da la cinemática directa.
 """
 import math

@@ -1,6 +1,6 @@
 """Movimiento seguro de una pose a otra.
 
-El camino es la recta en ángulos del modelo, θ(s) = a + s·(b - a) con s de 0 a 1, así todas las
+El camino es la recta en ángulos del modelo, theta(s) = a + s*(b - a) con s de 0 a 1, así todas las
 articulaciones arrancan y terminan juntas. La duración es la menor que cumple:
 - ninguna articulación gira más de VEL_MAX_ARTICULACION (°/s);
 - ningún punto del brazo (p1 a p5 y los centros de las esferas) va más rápido que VEL_MAX_PUNTO (cm/s);

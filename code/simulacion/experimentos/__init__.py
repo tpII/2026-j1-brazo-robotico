@@ -33,7 +33,7 @@ def guardar(nombre, lineas):
 
 
 def objetivos_medicion(semilla=12345, n=2000):
-    """Los objetivos alcanzables de las mediciones de la implementación (Tabla 7 y sección 9).
+    """Los objetivos alcanzables de las mediciones.
 
     Para cada uno se eligen al azar la base, el hombro, el codo y la muñeca dentro del rango del
     modelo y después una pose al azar para empezar, en ese orden, el mismo que usó el prototipo que
@@ -47,7 +47,7 @@ def objetivos_medicion(semilla=12345, n=2000):
 
     Returns:
         Una lista de diccionarios con el objetivo (x, y, z), los cinco ángulos que lo generaron y la
-        pose de inicio al azar (θ1, θ2).
+        pose de inicio al azar (theta1, theta2).
     """
     rng = np.random.default_rng(semilla)
     rangos = [servos.rango_modelo(i) for i in range(5)]

@@ -54,7 +54,7 @@ def servo_a_pulso(i, s):
 
 
 def servo_a_modelo(i, s):
-    """Grados del modelo a partir de grados del servo: θ = signo · s + desvío.
+    """Grados del modelo a partir de grados del servo: theta = signo * s + desvío.
 
     Args:
         i: índice del servo (0 a 4).

@@ -12,9 +12,9 @@ Tabla 6: iteraciones de la v3 desde la pose cero (cm, dentro del plano)
 Sección 5.6: ángulos (θ0, θ1, θ2) = [-45.0, 127.49, -142.26], p5 = [5.33, -5.33, 6.9], a 0.47 cm
 
 Sección 6.1: codo arriba (θ1, θ2) = [133.79, -145.67], codo abajo = [-87.81, 140.9]
-Sección 6.2 (v1): (θ1, θ2) = [-81.51, 137.49], error 0.47 cm en 4 iteración
+Sección 6.2 (v1): (θ1, θ2) = [-81.51, 137.49], error 0.47 cm en 4 iteraciones
 Sección 6.3 (v1 con recorte al final): [0.0, -180.0], p5 a 12.66 cm
-Sección 6.4 (v2): el primer backward deja el hombro en -54.61° y el recorte lo lleva a 0.00°; termina en [0.0, 0.0], error 12.09 cm, 1 iteraciones, corta por eta
+Sección 6.4 (v2): el primer backward deja el hombro en -54.61° y el recorte lo lleva a 0.00°; termina en [0.0, 0.0], error 12.09 cm, 1 iteración, corta por eta
 Sección 6.4 (v2 con (5.0, -5.0, 8.0)): el primer backward deja el hombro en -50.66° y el recorte lo lleva a 0.00°; queda en [0.0, 0.0], error 12.34 cm, 1 iteración, corta por eta
 
 Coordenadas de las figuras (cm)

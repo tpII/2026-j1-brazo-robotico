@@ -1,13 +1,13 @@
 """FABRIK v2: v1 con los límites del hombro y del codo en cada paso, sin regla del codo.
 
-Descartada: si el codo choca contra su límite por el lado equivocado, la cadena queda trabada y recta. 
+Descartada: si el codo choca contra su límite por el lado equivocado, la cadena queda trabada y recta.
 Implementación J1.
 """
 import numpy as np
 
 import configuracion as cfg
 import plano
-from plano import Corrida, Paso, ajustar_angulo, ang, u2
+from plano import Ejecucion, Paso, ajustar_angulo, ang, u2
 
 _, (LO_HOMBRO, HI_HOMBRO), (LO_CODO, HI_CODO) = plano.rangos_fabrik()
 
@@ -20,10 +20,10 @@ def iterar(T, cadena, theta1_ini, theta2_ini, traza=False):
         cadena: la CadenaVirtual de la muñeca y la pinza elegidas.
         theta1_ini: hombro de partida (grados del modelo).
         theta2_ini: codo de partida (grados del modelo).
-        traza: si guarda cada iteración en Corrida.traza.
+        traza: si guarda cada iteración en Ejecucion.traza.
 
     Returns:
-        La plano.Corrida.
+        La plano.Ejecucion.
     """
     l1, l2, alfa = cadena.l1, cadena.l2, cadena.alfa
     E = l1 * u2(theta1_ini)
@@ -67,7 +67,7 @@ def iterar(T, cadena, theta1_ini, theta2_ini, traza=False):
 
     if k == 0:
         mejor = (error, theta1, rel - alfa)
-    return Corrida(theta1, rel - alfa, error, k, motivo, recortes, *mejor, pasos)
+    return Ejecucion(theta1, rel - alfa, error, k, motivo, recortes, *mejor, pasos)
 
 
 def resolver(objetivo, theta3, theta4, theta1_ini, theta2_ini):

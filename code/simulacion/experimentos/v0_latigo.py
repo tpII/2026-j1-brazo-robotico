@@ -1,4 +1,4 @@
-"""Implementación, Tabla 3 y Figura 3: FABRIK 3D con rótulas libres (v0) hacia (5, -5, 7) desde la pose cero.
+"""FABRIK 3D con rótulas libres (v0) hacia (5, -5, 7) desde la pose cero.
 
 El ángulo en p3 es entre las direcciones consecutivas p2->p3 y p3->p4. La inclinación de la
 columna es el ángulo entre p0->p1 y el eje z.
@@ -26,7 +26,7 @@ def calcular():
 
     Returns:
         Un diccionario con las iteraciones, el error, el motivo de corte, los puntos finales, el
-        hombro movido y los ángulos de la Tabla 3 (columna y p3), también en el modelo.
+        hombro movido y los ángulos de la columna y de p3, también en el modelo.
     """
     r = fabrik_v0.resolver(np.array(OBJETIVO), POSE_INICIAL)
     p, m = r.puntos, cinematica.cinematica_directa(POSE_INICIAL).puntos

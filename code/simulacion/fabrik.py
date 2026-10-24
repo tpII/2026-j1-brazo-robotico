@@ -7,29 +7,29 @@ En el plano del brazo, cada iteración hace:
 3. backward: el codo a l1 del hombro, con el hombro recortado a su rango, y la punta a l2
    del codo, con el giro relativo theta2 + alpha recortado a [-180° + alpha, alpha].
 Corta por epsilon (llegó), por eta (p5 dejó de moverse) o por k_max, en ese orden.
-En C va a fabrik.c. Implmentación J1.
+En C va a fabrik.c. Implementación J1.
 """
 import numpy as np
 
 import configuracion as cfg
 import plano
-from plano import Corrida, Paso, ajustar_angulo, ang, u2
+from plano import Ejecucion, Paso, ajustar_angulo, ang, u2
 
 _, (LO_HOMBRO, HI_HOMBRO), (LO_CODO, HI_CODO) = plano.rangos_fabrik()
 
 
 def iterar(T, cadena, theta1_ini, theta2_ini, traza=False):
-    """Paso 2: itera en el plano desde la pose (θ1, θ2) hasta el objetivo T.
+    """Paso 2: itera en el plano desde la pose (theta1, theta2) hasta el objetivo T.
 
     Args:
         T: el objetivo en el plano, medido desde el hombro (cm).
         cadena: la CadenaVirtual de la muñeca y la pinza elegidas.
         theta1_ini: hombro de partida (grados del modelo).
         theta2_ini: codo de partida (grados del modelo).
-        traza: si guarda cada iteración en Corrida.traza.
+        traza: si guarda cada iteración en Ejecucion.traza.
 
     Returns:
-        La plano.Corrida.
+        La plano.Ejecucion.
     """
     l1, l2, alfa = cadena.l1, cadena.l2, cadena.alfa
     E = l1 * u2(theta1_ini)
@@ -79,7 +79,7 @@ def iterar(T, cadena, theta1_ini, theta2_ini, traza=False):
 
     if k == 0:
         mejor = (error, theta1, rel - alfa)
-    return Corrida(theta1, rel - alfa, error, k, motivo, recortes, *mejor, pasos)
+    return Ejecucion(theta1, rel - alfa, error, k, motivo, recortes, *mejor, pasos)
 
 
 def resolver(objetivo, theta3, theta4, theta1_ini, theta2_ini):

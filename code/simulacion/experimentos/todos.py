@@ -6,16 +6,15 @@ import importlib
 import time
 
 ORDEN = (
-    "pose_cero_y_home",      # Implementación, Tabla 1, sección 2.2 y Tabla 9
-    "v0_latigo",             # Tabla 3 y Figura 3
-    "formula_ingenua",       # Tabla 4
-    "cadena_virtual",        # Tabla 5 y sección 5.1
-    "ejemplo_principal",     # secciones 5.2 a 6.4, Tabla 6 y figuras 4 a 7
-    "medicion_versiones",    # Tabla 7, Tabla 10 y Figura 9
-    "regla_del_codo",        # sección 7.3
-    "cadena_recta",          # sección 7.3 y Tabla 8 (η)
-    "medicion_busqueda",     # sección 9 y Tabla 8 (k_max)
-    "reglas_esferas",        # Investigación de modelos, sección 4.5
+    "pose_cero_y_home",
+    "v0_latigo",
+    "formula_ingenua",
+    "cadena_virtual",
+    "ejemplo_principal",
+    "medicion_versiones",
+    "regla_del_codo",
+    "medicion_busqueda",
+    "reglas_esferas",
 )
 
 

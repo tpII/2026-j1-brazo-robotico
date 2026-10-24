@@ -1,7 +1,7 @@
-"""Implementación, sección 9 y Tabla 8 (k_max): la búsqueda de la muñeca y la pinza sobre los 2000 objetivos.
+"""La búsqueda de la muñeca y la pinza sobre los 2000 objetivos.
 
 Desde el home del firmware y sin usar la muñeca ni la pinza con las que se generó cada objetivo. Como en el
-informe, sin revisar choques (los choques de D1 se prueban en tests/test_busqueda.py).
+informe, sin revisar choques (los choques se prueban en tests/test_busqueda.py).
 """
 import math
 
@@ -28,7 +28,7 @@ def calcular():
     Returns:
         Un diccionario con los resueltos con la muñeca y la pinza neutras y con la búsqueda (y cuántos
         de estos con la muñeca girada), las posiciones y las iteraciones (promedio y mediana), cuántas
-        ejecuciones no llegan y por qué cortan, las fallas y el ejemplo (3, −3, 0).
+        ejecuciones no llegan y por qué cortan, las fallas y el ejemplo (3, -3, 0).
     """
     objetivos = objetivos_medicion()
     home = servos.home_modelo()
@@ -36,8 +36,8 @@ def calcular():
                  for item in objetivos)
     resultados = [busqueda.buscar(item["objetivo"], home, revisar_colisiones=False) for item in objetivos]
 
-    corridas = [c for r in resultados for c in r.corridas]
-    no_llegan = [c for c in corridas if c.error > cfg.EPSILON]
+    ejecuciones = [c for r in resultados for c in r.detalle_ejecuciones]
+    no_llegan = [c for c in ejecuciones if c.error > cfg.EPSILON]
     por_kmax = [c for c in no_llegan if c.motivo == "kmax"]
     con_recortes = [c for c in por_kmax if c.recortes > 0]
     (lo1, hi1), (lo2, hi2) = servos.rango_modelo(1), servos.rango_modelo(2)
@@ -53,7 +53,7 @@ def calcular():
 
     n = fabrik.resolver(EJEMPLO, cfg.MUNECA_NEUTRA, cfg.PINZA_NEUTRA, home[1], home[2])
     e = busqueda.buscar(EJEMPLO, home, revisar_colisiones=False)
-    ejemplo = {"valida_neutra": n.valida, "error_neutra": min(p.corrida.mejor_error for p in n.planos if p.corrida),
+    ejemplo = {"valida_neutra": n.valida, "error_neutra": min(p.ejecucion.mejor_error for p in n.planos if p.ejecucion),
                "estado": e.estado, "muneca": e.angulos[3], "pinza": e.angulos[4], "angulos": e.angulos,
                "error": e.error, "posiciones": e.posiciones}
 

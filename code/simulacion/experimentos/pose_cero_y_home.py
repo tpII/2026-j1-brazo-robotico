@@ -1,4 +1,4 @@
-"""Implementación, Tabla 1, sección 2.2 y Tabla 9: la pose cero, el home y los rangos de cada servo."""
+"""La pose cero, el home y los rangos de cada servo."""
 import numpy as np
 
 import cinematica

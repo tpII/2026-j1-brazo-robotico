@@ -31,13 +31,13 @@ class TestServos(unittest.TestCase):
         for i in range(5):
             self.assertAlmostEqual(servos.modelo_a_servo(i, servos.servo_a_modelo(i, 37.0)), 37.0)
 
-    def test_rangos_del_modelo_tabla_9(self):
-        """Impl. Tabla 9: los rangos en grados del modelo."""
+    def test_rangos_del_modelo(self):
+        """Los rangos en grados del modelo."""
         self.assertEqual([servos.rango_modelo(i) for i in range(5)],
                          [(-180.0, 0.0), (0.0, 180.0), (-180.0, 0.0), (-90.0, 90.0), (0.0, 180.0)])
 
     def test_home(self):
-        """Impl. 2.2: el home en grados del modelo."""
+        """El home en grados del modelo."""
         esperado = (0.0, 140.0, -114.6049, 4.5, 0.0)
         for a, b in zip(servos.home_modelo(), esperado):
             self.assertAlmostEqual(a, b, places=4)
@@ -47,12 +47,12 @@ class TestServos(unittest.TestCase):
         self.assertEqual(servos.pulsos_de(servos.home_modelo()), [400, 1400, 1200, 960, 400])
 
     def test_redondeo_hacia_arriba_en_el_medio(self):
-        """Un pulso con medio µs se redondea hacia arriba, como lround."""
+        """Un pulso con medio us se redondea hacia arriba, como lround."""
         s = servos.pulso_a_servo(4, 400.5)
         self.assertEqual(servos.pulsos_de((0.0, 90.0, -90.0, 0.0, s))[4], 401)
 
     def test_experimento_pose_cero_y_home(self):
-        """Impl. 2.2 y Tabla 9; Inv. tabla de rangos."""
+        """El home y los rangos de cada servo."""
         r = experimentos.pose_cero_y_home.calcular()
         np.testing.assert_allclose(r["home"], (0.0, 140.0, -114.6, 4.5, 0.0), atol=0.005)
         self.assertEqual([s["pulsos"] for s in r["servos"]],

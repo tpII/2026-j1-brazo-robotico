@@ -37,23 +37,23 @@ class TestObjetivos(unittest.TestCase):
 class TestMedicion(unittest.TestCase):
     """Los números que salen de miles de poses u objetivos; tardan alrededor de un minuto."""
     def test_reglas_esferas(self):
-        """Inv. 4.5."""
+        """Las reglas de las esferas con 100000 poses al azar."""
         r = experimentos.reglas_esferas.calcular()
         self.assertEqual(r["n"], 100000)
         self.assertEqual((r["pares"]["(0, 2)"]["choques"], r["pares"]["(1, 3)"]["choques"]), (0, 9803))
         self.assertEqual((r["pares"]["(0, 2)"]["sin_detectar"], r["pares"]["(1, 3)"]["sin_detectar"]), (0, 504))
         self.assertAlmostEqual(r["dist_1_4"], 0.944, delta=0.0005)   # el par (1, 4) ya puede chocar; la matriz lo revisa
 
-    def test_tabla_7_y_tabla_10(self):
-        """Impl. Tabla 7, Tabla 10 y Fig. 9."""
+    def test_versiones(self):
+        """Cuántos objetivos resuelve cada versión y cuántas iteraciones usa la v3."""
         r = experimentos.medicion_versiones.calcular()
         esperado = {"v1": (723, 1383), "v1+espejo": (1947, 1902), "v2": (823, 1451), "v3": (1980, 1980)}
         for version, (cero, azar) in esperado.items():
             self.assertEqual((r[version]["cero"]["resueltos"], r[version]["azar"]["resueltos"]), (cero, azar), version)
         self.assertAlmostEqual(r["v3"]["cero"]["iteraciones"], 3.06, delta=0.005)   # «3.1 iteraciones»
 
-    def test_seccion_9_y_k_max(self):
-        """Impl. 9 y Tabla 8 (k_max)."""
+    def test_busqueda_y_k_max(self):
+        """La búsqueda sobre los 2000 objetivos y los cortes por k_max."""
         r = experimentos.medicion_busqueda.calcular()
         self.assertEqual((r["neutra"], r["resueltos"], r["con_muneca"]), (1699, 1995, 83))   # 84.95 % y 99.75 %
         self.assertAlmostEqual(r["posiciones_promedio"], 6.6715, delta=0.0005)  # «6.7 posiciones»

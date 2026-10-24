@@ -2,12 +2,10 @@
  * @file El panel: conexión, mensaje del resultado y datos de la búsqueda.
  *
  * De la página del grupo J5 (2025) viene el cuadro de información con el estado y los ángulos.
- * Lo que sigue a cada `// 2026` es del grupo J1.
  */
 
-// 2025 (grupo J5)
 /**
- * Los ángulos con un decimal, separados por comas, como los mostraba la página de J5.
+ * Los ángulos con un decimal, separados por comas.
  *
  * @param {number[]} angulos - Ángulos del modelo en grados.
  * @returns {string}
@@ -16,22 +14,19 @@ export function textoAngulos(angulos) {
   return angulos.map((a) => a.toFixed(1)).join(", ");
 }
 
-// 2026
+// Para abajo es implementado por el grupo J1.
+
 /** Mensaje cuando llega un objetivo mientras el brazo se mueve. */
 export const OCUPADO = "El brazo se está moviendo: apretá Detener antes de mandar otro objetivo";
 
-// 2026
 /** Cuánto dura en pantalla el aviso de una acción (ms) antes de volver al mensaje del estado. */
 const DURACION_AVISO = 4000;
 
-// 2026
 const $ = (id) => document.getElementById(id);
 
-// 2026
 let ultima = null; // la última telemetría
 let aviso = null; // { texto, clase, hasta }
 
-// 2026
 /**
  * Muestra un aviso sobre la última acción (por ejemplo, un error al mandar el objetivo) durante
  * unos segundos.
@@ -44,14 +39,12 @@ export function avisar(texto, clase) {
   pintarMensaje();
 }
 
-// 2026
 /** Borra el aviso, para que el mensaje vuelva a mostrar el estado. */
 export function olvidarAviso() {
   aviso = null;
   pintarMensaje();
 }
 
-// 2026
 /**
  * Marca si llega la telemetría.
  *
@@ -62,7 +55,6 @@ export function mostrarConexion(hay) {
   $("conexion").textContent = hay ? "Conectado" : "Sin conexión";
 }
 
-// 2026
 /**
  * Llena el panel con una telemetría de /data.
  *
@@ -91,7 +83,6 @@ export function mostrarDatos(t) {
   pintarMensaje();
 }
 
-// 2026
 /**
  * Muestra los ángulos de la silueta cuando la búsqueda no llega, con los de los servos que no
  * dejan llegar en rojo.
@@ -113,7 +104,6 @@ function mostrarIntento(silueta) {
   );
 }
 
-// 2026
 function pintarMensaje() {
   const vigente = aviso && performance.now() < aviso.hasta;
   const [texto, clase] = vigente ? [aviso.texto, aviso.clase] : mensajeDe(ultima);
@@ -121,7 +111,6 @@ function pintarMensaje() {
   $("mensaje").className = clase;
 }
 
-// 2026
 /**
  * El mensaje que corresponde al estado y al resultado de la última búsqueda.
  *
@@ -152,7 +141,6 @@ function mensajeDe(t) {
   }
 }
 
-// 2026
 function numero(valor, decimales = 2) {
   return typeof valor === "number" ? valor.toFixed(decimales) : "—";
 }

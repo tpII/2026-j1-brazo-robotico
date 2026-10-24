@@ -1,9 +1,9 @@
 """Este archivo es común para todas las versiones del algoritmo de FABRIK.
 
-Impplementación de la cadena virtual, el Paso 0, el Paso 1 (planos
+Implementación de la cadena virtual, el Paso 0, el Paso 1 (planos
 candidatos), los ángulos del Paso 3, el recorte angular, la cadena estirada, el control final
 y la resolución de los planos en orden. Cada versión pone su propio paso de iteración.
-En C va a plano.c. 
+En C va a plano.c.
 Implementación J1.
 """
 import math
@@ -59,7 +59,7 @@ class Paso:
 
 
 @dataclass
-class Corrida:
+class Ejecucion:
     """Resultado de una ejecución de la iteración en un plano.
 
     Attributes:
@@ -94,15 +94,15 @@ class SolucionPlano:
         theta0: ángulo de la base de ese plano (grados del modelo).
         r_c: distancia horizontal del objetivo dentro del plano (cm).
         alcanzable: si pasó el Paso 0 dentro del plano.
-        corrida: la Corrida de la iteración, si se iteró.
-        angulos: (θ0, θ1, θ2, θ3, θ4) al terminar la corrida.
+        ejecucion: la Ejecucion de la iteración, si se iteró.
+        angulos: (theta0, theta1, theta2, theta3, theta4) al terminar la ejecución.
         error: distancia final de la punta al objetivo (cm).
         valida: si pasó el control final.
     """
     theta0: float
     r_c: float
     alcanzable: bool
-    corrida: Corrida | None = None
+    ejecucion: Ejecucion | None = None
     angulos: tuple | None = None
     error: float | None = None
     valida: bool = False
@@ -143,13 +143,13 @@ def ang(v):
         v: vector (r, h).
 
     Returns:
-        atan2(h, r) en grados, entre −180 y 180.
+        atan2(h, r) en grados, entre -180 y 180.
     """
     return math.atan2(v[1], v[0]) / D2R
 
 
 def _norm180(a):
-    """Lleva un ángulo en grados a [−180, 180)."""
+    """Lleva un ángulo en grados a [-180, 180)."""
     return (a + 180) % 360 - 180
 
 
@@ -174,14 +174,14 @@ def cadena_virtual(theta3, theta4):
 def planos_candidatos(objetivo, d):
     """Paso 1: los planos que dejan p5 sobre el objetivo, primero el que apunta hacia él.
 
-    Descarta los que dejan la base fuera de su rango. Si p < |d| no hay ninguno.
+    Descarta los que dejan la base fuera de su rango. Si rho < |d| no hay ninguno.
 
     Args:
         objetivo: el punto (x, y, z) en cm.
         d: distancia de p5 al plano, de la cadena virtual (cm).
 
     Returns:
-        Una lista de 0 a 2 tuplas (θ0, r_c).
+        Una lista de 0 a 2 tuplas (theta0, r_c).
     """
     x, y = objetivo[0], objetivo[1]
     rho = math.hypot(x, y)
@@ -198,7 +198,7 @@ def planos_candidatos(objetivo, d):
 
 
 def objetivo_en_plano(objetivo, r_c, cadena):
-    """El objetivo dentro del plano, medido desde el hombro: T = (r_c, z − z_hombro).
+    """El objetivo dentro del plano, medido desde el hombro: T = (r_c, z - z_hombro).
 
     Args:
         objetivo: el punto (x, y, z) en cm.
@@ -225,7 +225,7 @@ def alcanzable(T, cadena):
 
 
 def angulos_desde_puntos(E, P, alfa):
-    """Paso 3: θ1 y θ2 a partir del codo y la punta del plano.
+    """Paso 3: theta1 y theta2 a partir del codo y la punta del plano.
 
     Args:
         E: el codo (r, h), desde el hombro.
@@ -233,7 +233,7 @@ def angulos_desde_puntos(E, P, alfa):
         alfa: el ángulo alfa de la cadena virtual (grados).
 
     Returns:
-        La tupla (θ1, θ2) en grados del modelo.
+        La tupla (theta1, theta2) en grados del modelo.
     """
     theta1 = ang(E)
     return theta1, ang(P - E) - alfa - theta1
@@ -247,7 +247,7 @@ def cadena_estirada(objetivo, cadena):
         cadena: la CadenaVirtual.
 
     Returns:
-        La tupla (θ0, θ1, θ2) en grados del modelo.
+        La tupla (theta0, theta1, theta2) en grados del modelo.
     """
     x, y, z = objetivo
     rho = math.hypot(x, y)
@@ -306,7 +306,7 @@ def es_valida(objetivo, angulos, error):
 
     Args:
         objetivo: el punto (x, y, z) en cm.
-        angulos: la pose (θ0, θ1, θ2, θ3, θ4) en grados del modelo.
+        angulos: la pose (theta0, theta1, theta2, theta3, theta4) en grados del modelo.
         error: el error que dio la iteración (cm).
 
     Returns:
@@ -341,8 +341,8 @@ def resolver_plano(iterar, objetivo, theta0, r_c, cadena, theta3, theta4, theta1
     T = objetivo_en_plano(objetivo, r_c, cadena)
     if not alcanzable(T, cadena):
         return SolucionPlano(theta0, r_c, alcanzable=False)
-    corrida = iterar(T, cadena, theta1_ini, theta2_ini)
-    theta1, theta2, error = corrida.theta1, corrida.theta2, corrida.error
+    ejecucion = iterar(T, cadena, theta1_ini, theta2_ini)
+    theta1, theta2, error = ejecucion.theta1, ejecucion.theta2, ejecucion.error
     if espejo_final:
         E = cadena.l1 * u2(theta1)
         if T[0] * E[1] - T[1] * E[0] < 0:   # el codo quedó del lado prohibido: se espeja una vez
@@ -353,7 +353,7 @@ def resolver_plano(iterar, objetivo, theta0, r_c, cadena, theta3, theta4, theta1
             theta2 = ang(P - E) - cadena.alfa - theta1
             error = float(np.linalg.norm(P - T))
     angulos = (theta0, theta1, theta2, theta3, theta4)
-    return SolucionPlano(theta0, r_c, True, corrida, angulos, error, es_valida(objetivo, angulos, error))
+    return SolucionPlano(theta0, r_c, True, ejecucion, angulos, error, es_valida(objetivo, angulos, error))
 
 
 def resolver(iterar, objetivo, theta3, theta4, theta1_ini, theta2_ini, espejo_final=False):

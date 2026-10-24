@@ -1,4 +1,4 @@
-"""centralizador.py: el «centralizador de lógica» del Plan (diseño §6.9; D10 y D14)."""
+"""centralizador.py: el módulo central de lógica."""
 import json
 import unittest
 
@@ -6,7 +6,7 @@ import numpy as np
 
 import centralizador
 
-OBJ_OK = (5.0, -5.0, 7.0)   # llega con los choques activados (plan, «Estado»)
+OBJ_OK = (5.0, -5.0, 7.0)   # llega con los choques activados
 
 
 def _nuevo():
@@ -40,7 +40,7 @@ class TestCentralizador(unittest.TestCase):
         self.assertEqual(n, len(c._pasos))
 
     def test_ocupado(self):
-        """D10."""
+        """Mientras el brazo se mueve, un objetivo nuevo se responde como ocupado."""
         c = _nuevo()
         c.pedir_objetivo(*OBJ_OK)
         c.avanzar()
@@ -49,7 +49,7 @@ class TestCentralizador(unittest.TestCase):
         self.assertEqual(c.telemetria()["resultado"], "ok")   # la telemetría sigue mostrando el movimiento en curso
 
     def test_detener_y_seguir(self):
-        """D14; Puntos a revisar, 5."""
+        """Detener frena el brazo donde está, y el próximo objetivo se busca desde ahí."""
         c = _nuevo()
         c.detener()
         self.assertEqual(c.telemetria()["estado"], "quieto")
@@ -63,7 +63,7 @@ class TestCentralizador(unittest.TestCase):
         self.assertEqual(c.pedir_objetivo(*OBJ_OK)["resultado"], "ok")   # busca desde donde quedó
 
     def test_mismo_punto(self):
-        """Puntos a revisar, 2."""
+        """Pedir el punto donde ya está el brazo responde ok y el brazo queda quieto."""
         c = _nuevo()
         c.pedir_objetivo(*OBJ_OK)
         _hasta_quieto(c)
@@ -72,7 +72,7 @@ class TestCentralizador(unittest.TestCase):
         self.assertEqual(c.telemetria()["estado"], "quieto")
 
     def test_entrada_rechazada(self):
-        """Puntos a revisar, 4."""
+        """Un objetivo bajo el piso, NaN o infinito se rechaza sin cambiar nada."""
         c = _nuevo()
         antes = c.telemetria()
         for x, y, z in ((6.0, -3.0, -1.0), (float("nan"), 0.0, 5.0), (0.0, float("inf"), 5.0)):

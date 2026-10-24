@@ -3,7 +3,7 @@
     GET  /         la página del gemelo digital (code/index.html)
     GET  /web/...  el estilo y los módulos de JavaScript de la página (code/web/)
     GET  /data     la telemetría
-    POST /set      el objetivo, con los campos de  x, y y z
+    POST /set      el objetivo, con los campos x, y y z
     POST /detener  frena el brazo
 
 El bucle es el mismo que va a tener loop() en el ESP32: atiende una petición si hay una y, si
