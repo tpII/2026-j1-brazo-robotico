@@ -10,14 +10,14 @@
  * @param {number[]} angulos - Ángulos del modelo en grados.
  * @returns {string}
  */
-export function textoAngulos(angulos) {
+function textoAngulos(angulos) {
   return angulos.map((a) => a.toFixed(1)).join(", ");
 }
 
 // Para abajo es implementado por el grupo J1.
 
 /** Mensaje cuando llega un objetivo mientras el brazo se mueve. */
-export const OCUPADO = "El brazo se está moviendo: apretá Detener antes de mandar otro objetivo";
+const OCUPADO = "El brazo se está moviendo: apretá Detener antes de mandar otro objetivo";
 
 /** Cuánto dura en pantalla el aviso de una acción (ms) antes de volver al mensaje del estado. */
 const DURACION_AVISO = 4000;
@@ -34,13 +34,13 @@ let aviso = null; // { texto, clase, hasta }
  * @param {string} texto
  * @param {"ok" | "alerta" | "error" | ""} clase - Color del mensaje.
  */
-export function avisar(texto, clase) {
+function avisar(texto, clase) {
   aviso = { texto, clase, hasta: performance.now() + DURACION_AVISO };
   pintarMensaje();
 }
 
 /** Borra el aviso, para que el mensaje vuelva a mostrar el estado. */
-export function olvidarAviso() {
+function olvidarAviso() {
   aviso = null;
   pintarMensaje();
 }
@@ -50,7 +50,7 @@ export function olvidarAviso() {
  *
  * @param {boolean} hay
  */
-export function mostrarConexion(hay) {
+function mostrarConexion(hay) {
   $("punto").className = "punto " + (hay ? "si" : "no");
   $("conexion").textContent = hay ? "Conectado" : "Sin conexión";
 }
@@ -60,7 +60,7 @@ export function mostrarConexion(hay) {
  *
  * @param {object} t - El JSON de /data.
  */
-export function mostrarDatos(t) {
+function mostrarDatos(t) {
   ultima = t;
   const m = t.metricas;
   $("estado").textContent = t.estado ?? "—";

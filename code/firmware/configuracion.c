@@ -103,12 +103,20 @@ void inicializar_matrices_offset() {
 
 // Para abajo es implementado por el grupo J1.
 
-// --- 5. SERVOS (main.ino) --- //
+// --- 3. ESFERAS LOCALES --- //
+const int CANTIDAD_ESFERAS[5] = {1, 2, 3, 1, 2};
+
+// --- 4. PISO Y TOLERANCIA (cinematica.c: plano_z = 0.0 y tol = 1e-9) --- //
+const double PLANO_PISO_Z = 0.0;
+const double TOL_COLISION = 1e-9;
+
+// --- 5. SERVOS (firmware.ino) --- //
 const int SERVO_MIN_US[5] = {400, 400, 400, 400, 400};
 const int SERVO_MAX_US[5] = {2600, 1800, 2600, 2000, 2600};
+const int SERVO_HOME_US[5] = {400, 1400, 1200, 960, 400};
 
 // Tablas de calibración (us, grados del servo), una por servo como en getAngleForServo. Son las LUT
-// de main.ino; van en un solo arreglo porque esos nombres ya existen allá.
+// de firmware.ino; van en un solo arreglo porque esos nombres ya existen allá.
 const PuntoCalibracion LUT_POR_SERVO[5][7] = {
     {{400, 0.0}, {767, 30.0}, {1134, 60.0}, {1501, 90.0}, {1868, 120.0}, {2235, 150.0}, {2600, 180.0}}, // LUT_GENERICO
     {{400, 0.0}, {800, 30.0}, {1000, 60.0}, {1100, 90.0}, {1200, 120.0}, {1500, 150.0}, {1800, 180.0}}, // LUT1
@@ -117,14 +125,23 @@ const PuntoCalibracion LUT_POR_SERVO[5][7] = {
     {{400, 0.0}, {767, 30.0}, {1134, 60.0}, {1501, 90.0}, {1868, 120.0}, {2235, 150.0}, {2600, 180.0}}  // LUT_GENERICO
 };
 
-// Grados del modelo: theta = signo * s + desvío (home() y loop() de main.ino).
+// Grados del modelo: theta = signo * s + desvío (home() y loop() de firmware.ino).
 const int SIGNO_MODELO[5] = {-1, 1, -1, 1, 1};
 const double DESVIO_MODELO[5] = {0.0, 0.0, 0.0, -90.0, 0.0};
 
-// --- 6. FABRIK --- //
-const double EPSILON = 0.5;  // cm: el error que se acepta
-const double ETA = 1e-4;     // cm: p5 dejó de moverse
-const int K_MAX = 20;        // iteraciones como máximo
+// --- 6. FABRIK Y BÚSQUEDA --- //
+const double EPSILON = 0.5;          // cm: el error que se acepta
+const double ETA = 1e-4;             // cm: p5 dejó de moverse
+const int K_MAX = 20;                // iteraciones como máximo
+const double PASO_BUSQUEDA = 10.0;   // grados entre posiciones de la muñeca y de la pinza
+const double MUNECA_NEUTRA = 0.0;
+const double PINZA_NEUTRA = 90.0;    // alineada con el antebrazo en el modelo
+
+// --- 7. MOVIMIENTO --- //
+const double DT = 0.02;                    // s entre pasos
+const double VEL_MAX_ARTICULACION = 60.0;  // °/s
+const double VEL_MAX_PUNTO = 10.0;         // cm/s, para p1 a p5 y los centros de las esferas
+const double T_RAMPA = 0.3;                // s para arrancar y para frenar
 
 // --- 8. PUNTA DE LA PINZA (medida en el brazo real) --- //
 const Vector3D SALTO_4_MEDIDO = {0.0, -4.3, 0.0};

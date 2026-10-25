@@ -4,8 +4,6 @@
  * Las dos primeras funciones vienen de la página del grupo J5 (2025). La escena usa las
  * coordenadas del robot, con z hacia arriba.
  */
-import * as THREE from "three";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 /**
  * Crea la escena, la cámara, el renderer, las luces y el piso dentro de un contenedor.
@@ -13,7 +11,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
  * @param {HTMLElement} contenedor - Elemento donde va el lienzo de WebGL.
  * @returns {{escena: THREE.Scene, camara: THREE.PerspectiveCamera, renderer: THREE.WebGLRenderer}}
  */
-export function crearEscena(contenedor) {
+function crearEscena(contenedor) {
   THREE.Object3D.DEFAULT_UP.set(0, 0, 1);
   const escena = new THREE.Scene();
   escena.background = new THREE.Color(0x1d2126);
@@ -43,7 +41,7 @@ export function crearEscena(contenedor) {
  * @param {{escena: THREE.Scene, camara: THREE.Camera, renderer: THREE.WebGLRenderer}} vista
  * @param {() => void} [antes] - Se llama antes de cada cuadro, por ejemplo para los controles.
  */
-export function dibujarSiempre({ escena, camara, renderer }, antes = () => {}) {
+function dibujarSiempre({ escena, camara, renderer }, antes = () => {}) {
   renderer.setAnimationLoop(() => {
     antes();
     renderer.render(escena, camara);
@@ -59,7 +57,7 @@ export function dibujarSiempre({ escena, camara, renderer }, antes = () => {}) {
  * @param {HTMLCanvasElement} lienzo
  * @returns {OrbitControls}
  */
-export function agregarControles(camara, lienzo) {
+function agregarControles(camara, lienzo) {
   const controles = new OrbitControls(camara, lienzo);
   controles.target.set(2, 0, 7);
   controles.enableDamping = true;
@@ -72,7 +70,7 @@ export function agregarControles(camara, lienzo) {
  *
  * @param {THREE.Scene} escena
  */
-export function agregarGrilla(escena) {
+function agregarGrilla(escena) {
   const grilla = new THREE.GridHelper(50, 50, 0x5b6672, 0x3a414a);
   grilla.rotation.x = Math.PI / 2; // GridHelper viene en el plano xz
   escena.add(grilla);
@@ -90,7 +88,7 @@ export function agregarGrilla(escena) {
  * @param {HTMLElement} contenedor
  * @param {HTMLElement} panel
  */
-export function ajustarTamano({ camara, renderer }, contenedor, panel) {
+function ajustarTamano({ camara, renderer }, contenedor, panel) {
   new ResizeObserver(() => {
     const { clientWidth: ancho, clientHeight: alto } = contenedor;
     if (!ancho || !alto) return;
@@ -116,7 +114,7 @@ export function ajustarTamano({ camara, renderer }, contenedor, panel) {
  * @returns {(objetivo: number[] | null) => void} Función que muestra la marca en un punto
  *   (x, y, z) o la oculta si recibe null.
  */
-export function crearMarcaObjetivo(escena) {
+function crearMarcaObjetivo(escena) {
   const marca = new THREE.Mesh(
     new THREE.SphereGeometry(0.3, 16, 12),
     new THREE.MeshBasicMaterial({ color: 0xff5252 }),

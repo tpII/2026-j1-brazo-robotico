@@ -1,8 +1,8 @@
 /**
  * @file Los pedidos al ESP32 o a su emulador: telemetría, objetivo y Detener.
  *
- * De la página del grupo J5 (2025) viene pedir /data cada 100 ms y pasarle el JSON a quien dibuja.
- * La página lo pide a quien la sirvió, o a la dirección de `?servidor=http://IP`.
+ * De la página del grupo J5 (2025) vienen pedir /data cada 100 ms y pasarle el JSON a quien dibuja,
+ * y tener escrita la dirección del ESP32.
  */
 
 /**
@@ -14,7 +14,7 @@
  * @param {(hay: boolean) => void} alCambiarConexion - Recibe si el pedido salió bien.
  * @returns {() => Promise<void>} Una función para pedir la telemetría en el momento.
  */
-export function pedirDatosCada(ms, alLlegar, alCambiarConexion) {
+function pedirDatosCada(ms, alLlegar, alCambiarConexion) {
   let pidiendo = false;
   async function pedirDatos() {
     if (pidiendo) return;
@@ -37,8 +37,15 @@ export function pedirDatosCada(ms, alLlegar, alCambiarConexion) {
 
 // Para abajo es implementado por el grupo J1.
 
-/** La dirección de `?servidor=`, o null si la página le pide a quien la sirvió. */
-const SERVIDOR = new URLSearchParams(location.search).get("servidor");
+/** La dirección del ESP32: la IP que muestra el monitor serie cuando arranca la placa. */
+const ESP32 = "http://192.168.0.167";
+
+/**
+ * A quién le pide la página. Abierta con doble clic, al ESP32; servida por un servidor, como el
+ * emulador de code/simulacion, a ese servidor. `?servidor=http://IP` elige otra dirección.
+ */
+const SERVIDOR =
+  new URLSearchParams(location.search).get("servidor") ?? (location.protocol === "file:" ? ESP32 : null);
 
 /**
  * La URL de un pedido.
@@ -46,7 +53,7 @@ const SERVIDOR = new URLSearchParams(location.search).get("servidor");
  * @param {string} ruta - "data", "set" o "detener".
  * @returns {string}
  */
-export function url(ruta) {
+function url(ruta) {
   return SERVIDOR ? SERVIDOR.replace(/\/$/, "") + "/" + ruta : ruta;
 }
 
@@ -60,7 +67,7 @@ export function url(ruta) {
  *   código HTTP y la respuesta (`resultado`, o `error` si lo rechazó).
  * @throws {TypeError} Si no hay conexión.
  */
-export async function mandarObjetivo(x, y, z) {
+async function mandarObjetivo(x, y, z) {
   const respuesta = await fetch(url("set"), { method: "POST", body: new URLSearchParams({ x, y, z }) });
   const datos = await respuesta.json().catch(() => ({}));
   return { ok: respuesta.ok, codigo: respuesta.status, datos };
@@ -71,6 +78,6 @@ export async function mandarObjetivo(x, y, z) {
  *
  * @throws {TypeError} Si no hay conexión.
  */
-export async function detener() {
+async function detener() {
   await fetch(url("detener"), { method: "POST" });
 }

@@ -232,7 +232,7 @@ bool calcular_configuracion_modular(const double *angulos_grados,
 
     // 3. Combinación de Resultados
     
-    // NOTA: 'centros_colisionantes' de salida YA FUE INICIALIZADO A NULL en main.ino
+    // NOTA: 'centros_colisionantes' de salida YA FUE INICIALIZADO A NULL en firmware.ino
     ColisionSet_union(centros_colisionantes, &centros_colisionantes_internos, &centros_colisionantes_plano);
     
     // Liberar memoria temporal de los sets parciales (Ahora son seguros)
@@ -261,17 +261,21 @@ bool validador_limites_fisico(double angulo, double min_angulo, double max_angul
 
 // Para abajo es implementado por el grupo J1.
 
-void cinematica_directa(const double angulos[5], Vector3D puntos[6]) {
-    /* Puntos p0 a p5 del brazo para cinco ángulos del modelo. */
+void cinematica_directa(const double angulos[5], bool con_esferas, Geometria *g) {
+    /* Puntos, marcos y esferas del brazo para cinco ángulos del modelo. */
 
     // Para cada eslabón i: M = M_acum * (Rfix_i * Rz(theta_i)) y después M_acum = M * T(SALTO_i),
-    // con las rotaciones fijas de calcular_configuracion_modular.
-    Matrix4x4 Rfix[5];
-    np_eye(Rfix[0], 4);
-    matriz_rotacion_x(Rfix[1], 90.0);
-    np_eye(Rfix[2], 4);
-    matriz_rotacion_y(Rfix[3], -90.0);
-    matriz_rotacion_y(Rfix[4], 90.0);
+    // con las rotaciones fijas de calcular_configuracion_modular. Se arman en la primera llamada.
+    static Matrix4x4 Rfix[5];
+    static bool rfix_armadas = false;
+    if (!rfix_armadas) {
+        np_eye(Rfix[0], 4);
+        matriz_rotacion_x(Rfix[1], 90.0);
+        np_eye(Rfix[2], 4);
+        matriz_rotacion_y(Rfix[3], -90.0);
+        matriz_rotacion_y(Rfix[4], 90.0);
+        rfix_armadas = true;
+    }
     Matrix4x4 M_acum, M, R_junta, M_temp, T_salto;
     matriz_traslacion(M_acum, T_BASE_GLOBAL[0], T_BASE_GLOBAL[1], T_BASE_GLOBAL[2]);
 
@@ -280,13 +284,22 @@ void cinematica_directa(const double angulos[5], Vector3D puntos[6]) {
         np_matmul_4x4_4x4(M_temp, Rfix[i], R_junta);
         np_matmul_4x4_4x4(M, M_acum, M_temp);
         for (int j = 0; j < 3; j++) {
-            puntos[i][j] = M[j][3];
+            for (int k = 0; k < 4; k++) {
+                g->marcos[i][j][k] = M[j][k];
+            }
+            g->puntos[i][j] = M[j][3];
+        }
+        if (con_esferas) {
+            const Vector3D *esferas_locales_i = (const Vector3D *)esferas_local[i];
+            for (int e = 0; e < CANTIDAD_ESFERAS[i]; e++) {
+                aplicar_transformada(g->esferas[i][e], M, esferas_locales_i[e]);
+            }
         }
         const double *salto = *SALTO_ESLABONES_MEDIDOS[i];
         matriz_traslacion(T_salto, salto[0], salto[1], salto[2]);
         np_matmul_4x4_4x4(M_acum, M, T_salto);
     }
     for (int j = 0; j < 3; j++) {
-        puntos[5][j] = M_acum[j][3];
+        g->puntos[5][j] = M_acum[j][3];
     }
 }

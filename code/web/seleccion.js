@@ -7,7 +7,6 @@
  * clic si el puntero casi no se movió.
  * Implementación J1.
  */
-import * as THREE from "three";
 
 /** Altura de la línea vertical (cm): un poco más que el alcance del brazo. */
 const ALTURA_MAXIMA = 25;
@@ -28,7 +27,7 @@ const COLOR_GUIA = 0xffc04d;
  * @param {(x: number, y: number, z: number) => void} opciones.alElegir - Se llama con el objetivo
  *   elegido, redondeado a centésimas de cm.
  */
-export function activarSeleccion({ escena, camara, lienzo, alCambiar, alElegir }) {
+function activarSeleccion({ escena, camara, lienzo, alCambiar, alElegir }) {
   const guias = crearGuias(escena);
   const rayo = new THREE.Raycaster();
   const piso = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);

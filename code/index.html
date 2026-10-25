@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Gemelo digital del brazo</title>
     <!--
-      Sirven el emulador code/simulacion/servidor.py y tambien el ESP32, con los mismos pedidos:
-      GET data (telemetría), POST set (objetivo x, y, z) y POST detener.
+      Como la página de J5, se abre con doble clic y le pide los datos al ESP32, cuya dirección está
+      en web/conexion.js: GET data (telemetría), POST set (objetivo x, y, z) y POST detener.
     -->
     <link rel="stylesheet" href="web/style.css" />
     <script type="importmap">
@@ -17,7 +17,24 @@
         }
       }
     </script>
-    <script type="module" src="web/principal.js"></script>
+    <!--
+      three.js solo viene como módulo; queda en window para los scripts de web/, que no son módulos
+      porque el navegador no carga módulos desde un archivo abierto con doble clic. Con defer, todos
+      corren en este orden cuando termina de leerse la página.
+    -->
+    <script type="module">
+      import * as THREE from "three";
+      import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+      window.THREE = THREE;
+      window.OrbitControls = OrbitControls;
+    </script>
+    <script defer src="web/conexion.js"></script>
+    <script defer src="web/escena.js"></script>
+    <script defer src="web/esferas.js"></script>
+    <script defer src="web/brazo.js"></script>
+    <script defer src="web/seleccion.js"></script>
+    <script defer src="web/panel.js"></script>
+    <script defer src="web/principal.js"></script>
   </head>
   <body>
     <div id="vista"></div>

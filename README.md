@@ -29,6 +29,16 @@ Docente responsable: Julián Delekta.
 
 ---
 
+## Cómo se usa con el brazo
+
+Como en 2025, el ESP32 levanta el servidor web y la página se abre desde la computadora. No hace falta Python: `code/simulacion/` es solo para probar sin el brazo.
+
+1. Se abre `code/firmware/firmware.ino` en el Arduino IDE, con la placa *ESP32 Dev Module* y las librerías ESP32Servo y ArduinoJson instaladas. Se completan el nombre y la contraseña de la red WiFi y se sube a la placa.
+2. En el monitor serie, a 115200 baudios, la placa muestra su IP al arrancar.
+3. Esa IP se escribe en la constante `ESP32` de `code/web/conexion.js` y se abre `code/index.html` con doble clic. La computadora tiene que estar en la misma red WiFi que la placa y tener internet, porque la página baja three.js.
+
+---
+
 ## Estructura del repositorio
 
 ```

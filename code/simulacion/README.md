@@ -45,30 +45,32 @@ Se ejecuta desde (`code/simulacion/`). Se necesita la libreria numpy.
 - *Posiciones:* cuántas combinaciones de muñeca y pinza probó la búsqueda, de 361 posibles.
 - *Cálculo:* cuánto tardó la búsqueda.
 
-El emulador atiende los mismos pedidos que va a atender el firmware:
+El emulador atiende los pedidos del firmware (`/data`, `/set` y `/detener`) y además sirve la página:
 
 | Pedido | Qué hace |
 |---|---|
 | `GET /` | La página |
-| `GET /web/...` | El estilo y los módulos de JavaScript |
+| `GET /web/...` | El estilo y los scripts de la página |
 | `GET /data` | La telemetría en JSON |
 | `POST /set` | Manda un objetivo con los campos `x`, `y` y `z` |
 | `POST /detener` | Frena el brazo |
 
+Con el brazo no se usa nada de esta carpeta: el README del repositorio explica cómo se usa.
+
 ## Qué hay en cada archivo
 
-Lo que se va a pasar a C:
+Lo que se pasó a C, en `code/firmware/`:
 
 | Archivo | Para qué sirve | En C |
 |---|---|---|
-| `configuracion.py` | Medidas del brazo, esferas, pulsos de los servos y parámetros de FABRIK y del movimiento | `configuracion.c` y los arreglos de `main.ino` |
+| `configuracion.py` | Medidas del brazo, esferas, pulsos de los servos y parámetros de FABRIK y del movimiento | `configuracion.c` y los arreglos de `firmware.ino` |
 | `algebra_lineal.py` | Rotaciones y traslaciones con matrices 4x4 | `algebra_lineal.c` |
-| `servos.py` | Pasar de pulso a grados del servo y a grados del modelo, rangos y home | `main.ino` (después, `servos.c`) |
+| `servos.py` | Pasar de pulso a grados del servo y a grados del modelo, rangos y home | `servos.c` |
 | `cinematica.py` | Cinemática directa: dónde queda cada articulación y cada esfera | `cinematica.c` |
-| `colisiones.py` | Choques entre eslabones y contra el piso | `cinematica.c` (después, `colisiones.c`) |
+| `colisiones.py` | Choques entre eslabones y contra el piso | `colisiones.c` |
 | `plano.py` | Lo que comparten las versiones de FABRIK: la cadena virtual, los planos de la base y el control final | `plano.c` |
 | `fabrik.py` | FABRIK v3, la versión elegida | `fabrik.c` |
 | `busqueda.py` | Elige la muñeca y la pinza y arma el resultado | `busqueda.c` |
 | `trayectoria.py` | Mueve el brazo sin pasarse de velocidad y revisa que el camino no choque | `trayectoria.c` |
-| `centralizador.py` | Estado del brazo, objetivo, Detener y telemetría | `centralizador.c` y el `loop()` de `main.ino` |
-| `servidor.py` | El emulador del ESP32 | El servidor web de `main.ino` |
+| `centralizador.py` | Estado del brazo, objetivo, Detener y telemetría | `centralizador.c` y el `loop()` de `firmware.ino` |
+| `servidor.py` | El emulador del ESP32 | El servidor web de `firmware.ino` |

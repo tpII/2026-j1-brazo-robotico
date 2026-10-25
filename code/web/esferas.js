@@ -5,13 +5,12 @@
  * chocan y la forma de reconocerlas por sus coordenadas (`colliding_centers`). Las esferas se
  * dibujan con poca opacidad encima del brazo 3D y se pueden ocultar, salvo las que chocan.
  */
-import * as THREE from "three";
 
 /** Color de las esferas de cada eslabón, de la base a la pinza. */
-export const COLORES_ESLABON = [0x228b22, 0xffff00, 0xffa500, 0x00ffff, 0xff00ff];
+const COLORES_ESLABON = [0x228b22, 0xffff00, 0xffa500, 0x00ffff, 0xff00ff];
 
 /** Color de las esferas que chocan. */
-export const COLOR_CHOQUE = 0xff0000;
+const COLOR_CHOQUE = 0xff0000;
 
 /**
  * Reconoce las esferas que chocan comparando sus coordenadas con `colliding_centers`.
@@ -63,7 +62,7 @@ function esferasQueChocan(dibujo) {
  * @param {number} [opciones.opacidad=0.22] - Opacidad de las esferas que no chocan.
  * @returns {{grupo: THREE.Group, mallas: THREE.Mesh[][], color: number | null, opacidad: number}}
  */
-export function crearEsferas(escena, { color = null, opacidad = 0.22 } = {}) {
+function crearEsferas(escena, { color = null, opacidad = 0.22 } = {}) {
   const grupo = new THREE.Group();
   grupo.renderOrder = 2; // después del brazo, porque son transparentes
   escena.add(grupo);
@@ -79,7 +78,7 @@ export function crearEsferas(escena, { color = null, opacidad = 0.22 } = {}) {
  * @param {number} radio - Radio de las esferas en cm (`sphere_radius`).
  * @param {boolean} visibles - Si se muestran las esferas que no chocan.
  */
-export function actualizarEsferas(capa, dibujo, radio, visibles) {
+function actualizarEsferas(capa, dibujo, radio, visibles) {
   capa.grupo.visible = Boolean(dibujo);
   if (!dibujo) return;
   const chocan = esferasQueChocan(dibujo);

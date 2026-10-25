@@ -6,7 +6,7 @@ vez que se lo llama (cada 20 ms) y arma la telemetría que lee la página del ge
   en el paso en que está.
 - Un objetivo con valores que no son números finitos, o debajo del piso, se rechaza sin buscar:
   p5 no tiene esfera, así que las esferas no lo detectarían.
-En C será centralizador.c y la parte del loop() de main.ino que mueve los servos.
+En C será centralizador.c y la parte del loop() de firmware.ino que mueve los servos.
 Implementación J1.
 """
 import dataclasses

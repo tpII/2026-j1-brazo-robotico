@@ -2,8 +2,8 @@
  * Este archivo es común para todas las versiones del algoritmo de FABRIK.
  *
  * Implementación de la cadena virtual, el Paso 0, el Paso 1 (planos candidatos), el recorte
- * angular, el control final y la resolución de los planos en orden. Cada versión pone su propio
- * paso de iteración.
+ * angular, la cadena estirada, el control final y la resolución de los planos en orden. Cada
+ * versión pone su propio paso de iteración.
  * Implementación J1.
  */
 #include "plano.h"
@@ -68,8 +68,9 @@ static double norm180(double a) {
 CadenaVirtual cadena_virtual(double theta3, double theta4) {
     /* Cadena virtual para una muñeca y una pinza dadas. */
     double pose_cero[5] = {0.0, 0.0, 0.0, theta3, theta4};
-    Vector3D p[6];
-    cinematica_directa(pose_cero, p);
+    Geometria g;
+    cinematica_directa(pose_cero, false, &g);
+    Vector3D *p = g.puntos;
     Vector2D v = {p[5][0] - p[2][0], p[5][2] - p[2][2]};
     CadenaVirtual cadena = {.l1 = np_linalg_norm(p[2], p[1]), .l2 = hypot(v.r, v.h), .alfa = ang(v),
                             .d = p[5][1], .z_hombro = p[1][2]};
@@ -110,6 +111,17 @@ bool alcanzable(Vector2D T, CadenaVirtual cadena) {
     return norma(T) <= cadena.l1 + cadena.l2;
 }
 
+void cadena_estirada(const Vector3D objetivo, CadenaVirtual cadena, double angulos[3]) {
+    /* La cadena estirada hacia el objetivo, sin límites: la silueta de «fuera de alcance». */
+    double x = objetivo[0], y = objetivo[1], z = objetivo[2];
+    double rho = hypot(x, y);
+    double r_c = sqrt(fmax(rho * rho - cadena.d * cadena.d, 0.0));
+    Vector2D v = {r_c, z - cadena.z_hombro};
+    angulos[0] = norm180(atan2(y, x) / D2R - atan2(cadena.d, r_c) / D2R);
+    angulos[1] = ang(v);
+    angulos[2] = -cadena.alfa;
+}
+
 double ajustar_angulo(double a, double lo, double hi, bool *recorte) {
     /* Recorte angular. */
     a = lo + modulo(a - lo, 360.0);
@@ -147,9 +159,9 @@ bool es_valida(const Vector3D objetivo, const double angulos[5], double error) {
             return false;
         }
     }
-    Vector3D p[6];
-    cinematica_directa(angulos, p);
-    return np_linalg_norm(p[5], objetivo) <= EPSILON + 1e-9;
+    Geometria g;
+    cinematica_directa(angulos, false, &g);
+    return np_linalg_norm(g.puntos[5], objetivo) <= EPSILON + 1e-9;
 }
 
 SolucionPlano resolver_plano(FuncionIterar iterar, const Vector3D objetivo, double theta0, double r_c,

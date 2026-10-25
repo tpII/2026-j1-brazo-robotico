@@ -73,9 +73,18 @@ void inicializar_matrices_offset(); // Necesaria para inicializar T_Ex matrices
 
 // Para abajo es implementado por el grupo J1.
 
-// --- 5. SERVOS (main.ino) --- //
+// --- 3. ESFERAS LOCALES --- //
+// Cuántas esferas tiene cada eslabón: las filas de esf_0 a esf_4.
+extern const int CANTIDAD_ESFERAS[5];
+
+// --- 4. PISO Y TOLERANCIA (cinematica.c) --- //
+extern const double PLANO_PISO_Z;
+extern const double TOL_COLISION;
+
+// --- 5. SERVOS (firmware.ino) --- //
 extern const int SERVO_MIN_US[5];
 extern const int SERVO_MAX_US[5];
+extern const int SERVO_HOME_US[5];
 
 // Un punto de una tabla de calibración: el pulso y los grados del servo.
 typedef struct {
@@ -88,10 +97,19 @@ extern const PuntoCalibracion LUT_POR_SERVO[5][7];
 extern const int SIGNO_MODELO[5];
 extern const double DESVIO_MODELO[5];
 
-// --- 6. FABRIK --- //
+// --- 6. FABRIK Y BÚSQUEDA --- //
 extern const double EPSILON;
 extern const double ETA;
 extern const int K_MAX;
+extern const double PASO_BUSQUEDA;
+extern const double MUNECA_NEUTRA;
+extern const double PINZA_NEUTRA;
+
+// --- 7. MOVIMIENTO --- //
+extern const double DT;
+extern const double VEL_MAX_ARTICULACION;
+extern const double VEL_MAX_PUNTO;
+extern const double T_RAMPA;
 
 // --- 8. PUNTA DE LA PINZA (medida en el brazo real) --- //
 extern const Vector3D SALTO_4_MEDIDO;

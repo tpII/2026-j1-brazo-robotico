@@ -1,4 +1,4 @@
-"""servos.py: pulso <-> grados del servo <-> grados del modelo, igual que main.ino."""
+"""servos.py: pulso <-> grados del servo <-> grados del modelo, igual que firmware.ino."""
 import unittest
 
 import numpy as np
@@ -43,7 +43,7 @@ class TestServos(unittest.TestCase):
             self.assertAlmostEqual(a, b, places=4)
 
     def test_pulsos_de_home(self):
-        """Los pulsos del home son los de main.ino."""
+        """Los pulsos del home son los de firmware.ino."""
         self.assertEqual(servos.pulsos_de(servos.home_modelo()), [400, 1400, 1200, 960, 400])
 
     def test_redondeo_hacia_arriba_en_el_medio(self):

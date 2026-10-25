@@ -144,6 +144,14 @@ Vector2D objetivo_en_plano(const Vector3D objetivo, double r_c, CadenaVirtual ca
 bool alcanzable(Vector2D T, CadenaVirtual cadena);
 
 /**
+ * La cadena estirada hacia el objetivo, sin límites: la silueta de «fuera de alcance».
+ * @param objetivo El punto (x, y, z) en cm.
+ * @param cadena La CadenaVirtual.
+ * @param angulos (Salida) (theta0, theta1, theta2) en grados del modelo.
+ */
+void cadena_estirada(const Vector3D objetivo, CadenaVirtual cadena, double angulos[3]);
+
+/**
  * Recorte angular.
  * El ángulo se lleva a [lo, lo + 360) y, si cae afuera, va al tope más cercano medido en ángulo.
  * @param a Ángulo en grados.

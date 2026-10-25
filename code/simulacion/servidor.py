@@ -1,7 +1,7 @@
 """Emulador del ESP32: los mismos endpoints y el mismo JSON que va a tener el firmware.
 
     GET  /         la página del gemelo digital (code/index.html)
-    GET  /web/...  el estilo y los módulos de JavaScript de la página (code/web/)
+    GET  /web/...  el estilo y los scripts de la página (code/web/)
     GET  /data     la telemetría
     POST /set      el objetivo, con los campos x, y y z
     POST /detener  frena el brazo
@@ -52,7 +52,8 @@ class _Manejador(BaseHTTPRequestHandler):
             codigo: código HTTP.
             cuerpo: bytes, o un objeto que se manda como JSON.
             tipo: el Content-Type.
-            cors: si agrega Access-Control-Allow-Origin: *, como /data en J5.
+            cors: si agrega Access-Control-Allow-Origin: *, como /data en J5. Lo llevan /data, /set y
+                /detener, así la página también funciona abierta desde otra dirección.
         """
         datos = cuerpo if isinstance(cuerpo, bytes) else json.dumps(cuerpo).encode("utf-8")
         self.send_response(codigo)
@@ -84,17 +85,17 @@ class _Manejador(BaseHTTPRequestHandler):
             try:
                 x, y, z = (float(campos[clave][0]) for clave in ("x", "y", "z"))
             except KeyError:
-                return self._responder(400, {"error": "Faltan los campos x, y o z."})
+                return self._responder(400, {"error": "Faltan los campos x, y o z."}, cors=True)
             except ValueError:
-                return self._responder(400, {"error": "Los valores de x, y y z tienen que ser números."})
+                return self._responder(400, {"error": "Los valores de x, y y z tienen que ser números."}, cors=True)
             try:
                 respuesta = self.server.centralizador.pedir_objetivo(x, y, z)
             except ValueError as e:
-                return self._responder(400, {"error": str(e)})
-            self._responder(200, respuesta)
+                return self._responder(400, {"error": str(e)}, cors=True)
+            self._responder(200, respuesta, cors=True)
         elif ruta == "/detener":
             self.server.centralizador.detener()
-            self._responder(200, {"estado": self.server.centralizador.estado})
+            self._responder(200, {"estado": self.server.centralizador.estado}, cors=True)
         else:
             self._responder(404, {"error": f"no existe {ruta}"})
 

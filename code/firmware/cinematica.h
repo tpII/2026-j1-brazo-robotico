@@ -101,12 +101,22 @@ bool validador_limites_fisico(double angulo, double min_angulo, double max_angul
 
 // Para abajo es implementado por el grupo J1.
 
+// Posición del brazo para unos ángulos dados.
+typedef struct {
+    Vector3D puntos[6];      // p0 a p5
+    Vector3D esferas[5][3];  // centros globales de las esferas (CANTIDAD_ESFERAS[i] en el eslabón i), si se calcularon
+    double marcos[5][3][4];  // rotación y origen de cada eslabón: las tres primeras filas de M
+} Geometria;
+
 /**
- * Puntos p0 a p5 del brazo para cinco ángulos del modelo, con las medidas del brazo real.
+ * Puntos, marcos y esferas del brazo para cinco ángulos del modelo, con las medidas del brazo real.
+ * Para cada eslabón i: M = M_acum * (Rfix_i * Rz(theta_i)) y después M_acum = M * T(SALTO_i).
  * @param angulos Los cinco ángulos del modelo, en grados.
- * @param puntos (Salida) p0 a p5.
+ * @param con_esferas Con false no calcula las esferas, para los usos que solo necesitan los puntos
+ *        (la cadena virtual y el control final de FABRIK).
+ * @param g (Salida) La Geometria de la pose.
  */
-void cinematica_directa(const double angulos[5], Vector3D puntos[6]);
+void cinematica_directa(const double angulos[5], bool con_esferas, Geometria *g);
 
 // Está en la parte de J5 de cinematica.c; se declara acá para usarla en plano.c.
 double np_linalg_norm(const double *a, const double *b);

@@ -48,7 +48,7 @@ ROTACIONES_FIJAS = (("z", 0.0), ("x", 90.0), ("z", 0.0), ("y", -90.0), ("y", 90.
 PLANO_PISO_Z = 0.0
 TOL_COLISION = 1e-9
 
-# --- 5. SERVOS (main.ino) --- #
+# --- 5. SERVOS (firmware.ino) --- #
 SERVO_MIN_US = (400, 400, 400, 400, 400)
 SERVO_MAX_US = (2600, 1800, 2600, 2000, 2600)
 SERVO_HOME_US = (400, 1400, 1200, 960, 400)
@@ -60,7 +60,7 @@ LUT2 = ((400, 180.0), (767, 150.0), (1134, 120.0), (1501, 90.0), (1868, 60.0), (
 LUT3 = ((400, 0.0), (500, 30.0), (600, 60.0), (900, 90.0), (1300, 120.0), (1700, 150.0), (2000, 180.0))
 LUT_POR_SERVO = (LUT_GENERICO, LUT1, LUT2, LUT3, LUT_GENERICO)  # como getAngleForServo
 
-# Grados del modelo: theta = signo * s + desvío (home() y loop() de main.ino).
+# Grados del modelo: theta = signo * s + desvío (home() y loop() de firmware.ino).
 SIGNO_MODELO = (-1, 1, -1, 1, 1)
 DESVIO_MODELO = (0.0, 0.0, 0.0, -90.0, 0.0)
 

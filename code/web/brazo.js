@@ -17,7 +17,6 @@
  * piezas son aproximadas; para los cálculos valen los puntos y las esferas.
  * Implementación J1.
  */
-import * as THREE from "three";
 
 /** Escala de las piezas respecto del brazo real. */
 const ESCALA = 1;
@@ -53,7 +52,7 @@ const COLORES = { pla: 0xc9cdd2, servo: 0x2d5fd6, servoBase: 0x2b2e34, horn: 0xf
  * @returns {{grupo: THREE.Group, actualizar: (dibujo: object | null) => void}} El grupo de la
  *   escena y la función que lo lleva a una pose de la telemetría (con null, lo oculta).
  */
-export function crearBrazo(escena, { conBase = true, color = null, opacidad = 1 } = {}) {
+function crearBrazo(escena, { conBase = true, color = null, opacidad = 1 } = {}) {
   const materiales = color === null ? materialesReales() : materialesTransparentes(color, opacidad);
   const grupo = new THREE.Group();
   grupo.visible = false;

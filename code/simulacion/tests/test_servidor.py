@@ -65,6 +65,13 @@ class TestServidor(unittest.TestCase):
         self.assertEqual(cabeceras["Access-Control-Allow-Origin"], "*")
         self.assertIn("angles", json.loads(cuerpo))
 
+    def test_cors_en_set_y_detener(self):
+        """POST /set y POST /detener también responden con CORS, como el firmware."""
+        for ruta, campos in (("/set", {"x": OBJ_OK[0], "y": OBJ_OK[1], "z": OBJ_OK[2]}), ("/set", {"x": 1}),
+                             ("/detener", {})):
+            _, cabeceras, _ = self._pedir(ruta, campos)
+            self.assertEqual(cabeceras.get("Access-Control-Allow-Origin"), "*", (ruta, campos))
+
     def test_pagina(self):
         """GET / devuelve la página."""
         estado, cabeceras, _ = self._pedir("/")
@@ -97,7 +104,7 @@ class TestServidor(unittest.TestCase):
         self.assertEqual(self._pedir("/nada")[0], 404)
 
     def test_pagina_del_gemelo(self):
-        """La página del gemelo digital, con su estilo y sus módulos."""
+        """La página del gemelo digital, con su estilo y sus scripts."""
         pagina = self._pedir("/")[2].decode("utf-8")
         for fragmento in ('type="importmap"', "three@0.160.0", 'id="mover"', 'id="detener"', 'id="esferas"',
                           'id="intento"', 'href="web/style.css"', 'src="web/principal.js"'):
@@ -107,12 +114,19 @@ class TestServidor(unittest.TestCase):
             self.assertIn(fragmento, conexion)
 
     def test_archivos_web(self):
-        """La página está en módulos dentro de code/web/."""
+        """La página está en archivos dentro de code/web/."""
         for ruta, tipo in (("/web/style.css", "text/css"), ("/web/principal.js", "text/javascript")):
             estado, cabeceras, cuerpo = self._pedir(ruta)
             self.assertEqual(estado, 200, ruta)
             self.assertIn(tipo, cabeceras["Content-Type"])
             self.assertTrue(cuerpo)
+
+    def test_pagina_sin_modulos_locales(self):
+        """La página se abre con doble clic: sus scripts no son módulos, que el navegador no carga desde un archivo."""
+        pagina = self._pedir("/")[2].decode("utf-8")
+        self.assertNotRegex(pagina, r'<script[^>]*type="module"[^>]*src=')
+        for archivo in sorted(servidor.CARPETA_WEB.glob("*.js")):
+            self.assertNotRegex(archivo.read_text(encoding="utf-8"), r"(?m)^(import|export)\b", archivo.name)
 
     def test_nada_fuera_de_la_carpeta_web(self):
         """No se sirve nada fuera de code/web/, aunque la ruta tenga «..»."""

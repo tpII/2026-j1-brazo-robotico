@@ -364,13 +364,107 @@ void home() {
   Serial.println("--- POSICIÓN HOME COMPLETADA ---\n");
 }
 
+// Para abajo es implementado por el grupo J1.
+
+#include "centralizador.h"
+
+// La búsqueda necesita más pila que los 8 KB que el core le da a loop().
+#ifdef SET_LOOP_TASK_STACK_SIZE
+SET_LOOP_TASK_STACK_SIZE(16 * 1024);
+#else
+#error "Hace falta el core del ESP32 2.0.0 o más nuevo, para darle 16 KB de pila a loop()"
+#endif
+
+// El estado del brazo: la pose, el movimiento y la última búsqueda.
+Centralizador centralizador;
+
+// La telemetría de /data, que se arma en cada pedido.
+char telemetria_json[16384];
+
+// Cuándo se dio el último paso del movimiento (ms).
+unsigned long ultimo_paso = 0;
+
+void responder_json(int codigo, const char *json) {
+  /* Manda un JSON con Access-Control-Allow-Origin, como /data en J5: la página se abre desde la
+     compu, que es otra dirección, y sin ese permiso el navegador no la deja leer la respuesta. */
+  server.sendHeader("Access-Control-Allow-Origin", "*");
+  server.send(codigo, "application/json", json);
+}
+
+void responder_error(const char *mensaje) {
+  /* Responde 400 con el motivo del rechazo. */
+  char json[160];
+  snprintf(json, sizeof(json), "{\"error\": \"%s\"}", mensaje);
+  responder_json(400, json);
+}
+
+bool leer_numero(const String &texto, double *valor) {
+  /* Lee un número de un campo del formulario; false si no es un número. */
+  const char *inicio = texto.c_str();
+  char *fin;
+  *valor = strtod(inicio, &fin);
+  while (*fin == ' ') {
+    fin++;
+  }
+  return fin != inicio && *fin == '\0';
+}
+
+void manejar_data() {
+  /* GET /data: la telemetría. */
+  if (telemetria(&centralizador, telemetria_json, sizeof(telemetria_json)) >= sizeof(telemetria_json)) {
+    responder_json(500, "{\"error\": \"La telemetría no entra en telemetria_json.\"}");
+    return;
+  }
+  responder_json(200, telemetria_json);
+}
+
+void manejar_set() {
+  /* POST /set con x, y y z (400 si faltan o no son válidos). */
+  if (!server.hasArg("x") || !server.hasArg("y") || !server.hasArg("z")) {
+    responder_error("Faltan los campos x, y o z.");
+    return;
+  }
+  double x, y, z;
+  if (!leer_numero(server.arg("x"), &x) || !leer_numero(server.arg("y"), &y) ||
+      !leer_numero(server.arg("z"), &z)) {
+    responder_error("Los valores de x, y y z tienen que ser números.");
+    return;
+  }
+  char respuesta[512];
+  const char *error = pedir_objetivo(&centralizador, x, y, z, respuesta, sizeof(respuesta));
+  if (error != NULL) {
+    responder_error(error);
+    return;
+  }
+  Serial.printf("Objetivo (%.2f, %.2f, %.2f): %s\n", x, y, z, respuesta);
+  responder_json(200, respuesta);
+}
+
+void manejar_detener() {
+  /* POST /detener: frena el brazo. */
+  detener(&centralizador);
+  char respuesta[64];
+  snprintf(respuesta, sizeof(respuesta), "{\"estado\": \"%s\"}", centralizador.estado);
+  responder_json(200, respuesta);
+}
+
+void mover_servos() {
+  /* Le manda a cada servo el pulso del centralizador, si cambió. */
+  for (int i = 0; i < SERVO_COUNT; i++) {
+    if (centralizador.pulsos[i] != currentPulse[i]) {
+      servos[i].writeMicroseconds(centralizador.pulsos[i]);
+      currentPulse[i] = centralizador.pulsos[i];
+    }
+  }
+}
+
 // ================== SETUP ==================
 
 void setup() {
   Serial.begin(115200);
   delay(400);
 
-  // --- NUEVO: Conexión Wi-Fi ---
+  // --- Conexión Wi-Fi (de J5) ---
   // if (!WiFi.config(localIP, gateway, subnet)) {
   //   Serial.println("Falló la configuración STA");
   // }
@@ -383,221 +477,44 @@ void setup() {
   Serial.print("IP del servidor: ");
   Serial.println(WiFi.localIP());
 
-  // --- NUEVO: Inicialización del Web Server ---
+  // --- Servidor web (/ como en J5) ---
+  // La página es code/index.html: como en 2025, se abre con doble clic y le pide los datos a esta
+  // placa, a la IP que tiene escrita en code/web/conexion.js.
   server.on("/", HTTP_GET, []() {
     server.send(200, "text/plain",
                 "ESP32 Robot Arm Server. Endpoint /data para JSON.");
   });
-  server.on("/data", HTTP_GET, handleDataRequest);
+  server.on("/data", HTTP_GET, manejar_data);
+  server.on("/set", HTTP_POST, manejar_set);
+  server.on("/detener", HTTP_POST, manejar_detener);
   server.begin();
   Serial.println("Servidor HTTP iniciado.");
 
-  // Inicialización del hardware y cinemática
-  analogReadResolution(12);
-  analogSetPinAttenuation(POT_PIN, ADC_11db);
-  pinMode(BTN_NEXT, INPUT_PULLUP);
-  pinMode(BTN_PREV, INPUT_PULLUP);
-  inicializar_matrices_offset();
-
-  // Inicialización de Servos y ángulos
+  // --- Servos y home (de J5) ---
   for (int i = 0; i < SERVO_COUNT; i++) {
     servos[i].setPeriodHertz(50);
     servos[i].attach(servoPins[i], servoMinUs[i], servoMaxUs[i]);
-    currentPulse[i] = servoMinUs[i];
-    angulos_grados[i] = getAngleForServo(i, currentPulse[i]);
   }
-
-  // Inicialización del ADC para el filtro
-  int raw = analogRead(POT_PIN);
-  filteredAdc = (float)raw;
-
-  Serial.println(
-      "--- Robot Modular: Control por Potenciómetro + Anticolisión ---");
-
-  // ---------------------------------------------------------------------------------
-  // --- LÓGICA DE INICIALIZACIÓN DE POSE BASE (Migrada de simulacion.py) ---
-  // ---------------------------------------------------------------------------------
-
-  // Definir N_eslabones (simula len(esferas_local))
-  const int N_eslabones = SERVO_COUNT;
-
-  Serial.println("--- FASE 0: Calculando e Inicializando el Gráfico Base ---");
-
-  // --> Pose de inicio (ángulos fijos).
-  double angulos_base[SERVO_COUNT] = {
-      ANGULO_FIJO_ESLABON_0, ANGULO_FIJO_ESLABON_1, ANGULO_FIJO_ESLABON_2,
-      ANGULO_FIJO_ESLABON_3, ANGULO_FIJO_ESLABON_4};
-
-  // --> Se lleva el brazo a la posición base, y se verifica si ya en la
-  // posicion base hay colisión.
-  EsferasGlobales esferas_base;
-  ColisionSet centros_colisionantes;
-
-  // Inicializar punteros a NULL antes de la llamada (CRÍTICO para evitar el
-  // error 'free')
-  centros_colisionantes.coords = NULL;
-  centros_colisionantes.count = 0;
-  for (int j = 0; j < N_eslabones; j++)
-    esferas_base[j] = NULL;
-
   home();
+  iniciar(&centralizador);
+  ultimo_paso = millis();
 
-  // =========================================================================
-  // ** MODIFICACIÓN CLAVE PARA SINCRONIZAR EL POTENCIÓMETRO **
-  // Después de home(), el pulso del servo activo está en
-  // currentPulse[activeServo]. Necesitamos que filteredAdc (y por lo tanto
-  // desiredPulse) esté cerca de ese valor.
-  // =========================================================================
-  int home_pulse_active =
-      currentPulse[activeServo]; // Obtener el pulso Home del servo 0 (activo
-                                 // inicial)
-  int min_us_active = servoMinUs[activeServo];
-  int max_us_active = servoMaxUs[activeServo];
-
-  // Mapeo inverso: Pulso (min_us -> max_us) -> ADC (0 -> 4095)
-  // Esto establece el filtro a un valor que corresponde al pulso actual del
-  // servo.
-  int adc_home = map(home_pulse_active, min_us_active, max_us_active, 0, 4095);
-  filteredAdc = (float)adc_home;
-  Serial.printf("Potenciómetro sincronizado con Home del Eslabón %d (GPIO%d): "
-                "ADC inicial = %d\n",
-                activeServo, servoPins[activeServo], adc_home);
-  // =========================================================================
-
-  Serial.println("Usa BTN_NEXT/PREV para cambiar de eslabón.");
-  Serial.printf("Servo activo inicial -> %d (GPIO%d)\n", activeServo,
-                servoPins[activeServo]);
+  Serial.print("Listo. En code/web/conexion.js, ESP32 = http://");
+  Serial.println(WiFi.localIP());
 }
 
 // ================== LOOP ==================
 
 void loop() {
-
-  // NUEVO: Manejar las peticiones HTTP (debe ser lo primero)
+  // Atiende un pedido de la web, si hay uno.
   server.handleClient();
 
-  // 1. Leer Botones (Navegación de servo activo con Antirrebote)
-  if (fallingEdgeDebounced(BTN_NEXT, lastRawNext, lastStableNext,
-                           lastDebounceNext)) {
-    activeServo = (activeServo + 1) % SERVO_COUNT;
-    Serial.printf("\n--- Servo activo -> Eslabón %d (GPIO%d) ---\n",
-                  activeServo, servoPins[activeServo]);
-  }
-  if (fallingEdgeDebounced(BTN_PREV, lastRawPrev, lastStablePrev,
-                           lastDebouncePrev)) {
-    activeServo = (activeServo - 1 + SERVO_COUNT) % SERVO_COUNT;
-    Serial.printf("\n--- Servo activo -> Eslabón %d (GPIO%d) ---\n",
-                  activeServo, servoPins[activeServo]);
-  }
-
-  // 2. Leer y Filtrar Potenciómetro
-  int raw = analogRead(POT_PIN);
-  filteredAdc = ALPHA * raw + (1.0f - ALPHA) * filteredAdc;
-
-  // 3. Mapear ADC -> µs (Ancho de pulso deseado para el servo ACTUAL)
-  int i = activeServo;
-  int min_us = servoMinUs[i];
-  int max_us = servoMaxUs[i];
-
-  int desiredPulse = map((int)filteredAdc, 0, 4095, min_us, max_us);
-
-  int check = abs(desiredPulse - currentPulse[i]);
-
-  // CHEQUEO DE SINCRONIZACIÓN BASADA EN PULSOS (µs)
-  // ----------------------------------------------------
-  // Compara el pulso deseado (lectura del POT) con el último pulso actual
-  // (servo)
-  if (check > SYNC_TOLERANCE_US) {
-
-    Serial.printf("Eslabón %d: DESINCRONIZADO! Mover POT a %dus\n", i,
-                  currentPulse[i]);
-
-    return;
-  }
-
-  // 4. Chequear Zona Muerta
-  if (check >= DEADZONE_US) {
-    // 5. Mapear Pulso -> Ángulo Propuesto
-    float angulo_propuesto = getAngleForServo(i, desiredPulse);
-
-    if (i == 3) {
-      angulo_propuesto -= 90.0f; // Aplica offset: 0..180 -> -90..90
-    }
-
-    if (i == 0 || i == 2) {
-      angulo_propuesto = -1 * angulo_propuesto;
-    }
-
-    Serial.print("Eslabón ");
-    Serial.print(i);
-    Serial.print(": F_ADC=");
-    Serial.print((int)filteredAdc);
-    Serial.print(" | us=");
-    Serial.print(desiredPulse);
-    Serial.print(" | Angulo_Prop=");
-    Serial.print(angulo_propuesto, 1);
-    Serial.print(" deg | ");
-
-    // 6. Crear Configuración Propuesta (Array de 5 ángulos)
-    double angulos_propuestos[SERVO_COUNT];
-    memcpy(angulos_propuestos, angulos_grados, sizeof(angulos_grados));
-    angulos_propuestos[i] = angulo_propuesto; // Aplica el cambio a la junta 'i'
-
-    // 7. Ejecutar Sistema de Colisión
-    EsferasGlobales esferas_globales_result;
-    ColisionSet centros_colisionantes;
-
-    // Inicializar punteros a NULL antes de la llamada (CRÍTICO)
-    centros_colisionantes.coords = NULL;
-    centros_colisionantes.count = 0;
-    for (int j = 0; j < SERVO_COUNT; j++)
-      esferas_globales_result[j] = NULL;
-
-    bool colision_detectada = calcular_configuracion_modular(
-        angulos_propuestos, esferas_local, RADIO_ESFERA,
-        esferas_globales_result, &centros_colisionantes);
-
-    // 8. ACTUALIZACIÓN DEL ESTADO SIEMPRE (SE ENVÍA AL FRONTEND)
-    angulos_grados[i] =
-        angulo_propuesto; // SIEMPRE actualizar, haya o no colisión
-
-    // 8. ACTUACIÓN (Si NO hay colisión, mover el servo)
-    if (!colision_detectada) {
-      // MOVER SERVO
-      servos[i].writeMicroseconds(desiredPulse);
-      currentPulse[i] = desiredPulse;
-      // Lógica OK
-      angulos_grados[i] = angulo_propuesto; // Actualiza el estado global
-      Serial.print("Eslabón ");
-      Serial.print(i);
-      Serial.print(": OK. Ang: ");
-      Serial.print(angulo_propuesto, 1);
-      Serial.println(" deg");
-
-    } else {
-      // COLISIÓN DETECTADA: NO mover el servo, advertir.
-      Serial.print("Eslabón ");
-      Serial.print(i);
-      Serial.print("!! COLISIÓN PREVENIDA: Angulo ");
-      Serial.print(angulo_propuesto, 1);
-      Serial.println("° resulta en choque.");
-    }
-
-    // 9. ACTUALIZACIÓN CRÍTICA DEL ESTADO:
-    // El desiredPulse pasó la deadzone, por lo tanto, es el nuevo pulso
-    // *actual* para el chequeo de la próxima Deadzone, sin importar si el servo
-    // se movió.
-    currentPulse[i] = desiredPulse; // <--- MOVER AQUÍ
-
-    // ... (Tu código de log y liberación de memoria) ...
-    Serial.print("TERMINE CHEQUEO");
-
-    // 9. Liberar memoria (Crítico en ESP32)
-    if (centros_colisionantes.coords != NULL)
-      free(centros_colisionantes.coords);
-    for (int j = 0; j < SERVO_COUNT; j++) {
-      if (esferas_globales_result[j] != NULL)
-        free((void *)esferas_globales_result[j]);
-    }
+  // Un paso del movimiento cada DT. Si se atrasa no recupera el tiempo: entre dos pasos siempre
+  // hay por lo menos DT, así el brazo nunca va más rápido que lo planificado.
+  unsigned long ahora = millis();
+  if (ahora - ultimo_paso >= DT * 1000) {
+    avanzar(&centralizador);
+    mover_servos();
+    ultimo_paso = ahora;
   }
 }

@@ -1,4 +1,4 @@
-"""configuracion.py tiene que ser una copia fiel del firmware (configuracion.c y main.ino).
+"""configuracion.py tiene que ser una copia fiel del firmware (configuracion.c y firmware.ino).
 
 Los archivos del firmware se leen sin mostrarlos: solo se extraen los arreglos que
 hacen falta, y los mensajes de error muestran valores, no líneas.
@@ -44,7 +44,7 @@ class TestConfiguracion(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.c = _leer("configuracion.c")
-        cls.ino = _leer("main.ino")
+        cls.ino = _leer("firmware.ino")
 
     def test_geometria_igual_a_configuracion_c(self):
         """Las esferas y la base son las de configuracion.c; los saltos se reemplazan por las medidas."""
@@ -63,7 +63,7 @@ class TestConfiguracion(unittest.TestCase):
         self.assertEqual(saltos_del_firmware(), j5)
 
     def test_pulsos_y_tablas_iguales_a_main_ino(self):
-        """Los pulsos y las tablas de calibración son los de main.ino."""
+        """Los pulsos y las tablas de calibración son los de firmware.ino."""
         ino = self.ino
         self.assertEqual(list(cfg.SERVO_MIN_US), _numeros(ino, "servoMinUs[SERVO_COUNT]"))
         self.assertEqual(list(cfg.SERVO_MAX_US), _numeros(ino, "servoMaxUs[SERVO_COUNT]"))
@@ -73,7 +73,7 @@ class TestConfiguracion(unittest.TestCase):
             self.assertEqual(tabla, _numeros(ino, nombre + "[]"), nombre)
 
     def test_tabla_y_conversion_por_servo(self):
-        """Cada servo usa la tabla y la conversión de signos de main.ino."""
+        """Cada servo usa la tabla y la conversión de signos de firmware.ino."""
         # getAngleForServo: servo 2 -> LUT2, 1 -> LUT1, 3 -> LUT3, el resto -> LUT_GENERICO
         t = _compacto(self.ino)
         for fragmento in ("if(servo_idx==2){local_lut=LUT2;", "elseif(servo_idx==1){local_lut=LUT1;",

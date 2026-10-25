@@ -3,24 +3,10 @@
  *
  * Se dibujan tres brazos: la pose actual con sus colores, la pose a la que va mientras se mueve
  * (azul transparente) y la silueta gris del mejor intento cuando no llega. Cada uno tiene sus
- * esferas de colisión.
+ * esferas de colisión. Usa las funciones de los otros scripts de web/ (y `$`, de panel.js), que
+ * index.html carga antes que este.
  * Implementación J1.
  */
-import { crearBrazo } from "./brazo.js";
-import { detener, mandarObjetivo, pedirDatosCada } from "./conexion.js";
-import { actualizarEsferas, crearEsferas } from "./esferas.js";
-import {
-  agregarControles,
-  agregarGrilla,
-  ajustarTamano,
-  crearEscena,
-  crearMarcaObjetivo,
-  dibujarSiempre,
-} from "./escena.js";
-import { avisar, mostrarConexion, mostrarDatos, OCUPADO, olvidarAviso } from "./panel.js";
-import { activarSeleccion } from "./seleccion.js";
-
-const $ = (id) => document.getElementById(id);
 
 const vista = crearEscena($("vista"));
 agregarGrilla(vista.escena);
@@ -41,7 +27,7 @@ const capas = {
   },
 };
 const mostrarObjetivo = crearMarcaObjetivo(vista.escena);
-let ultima = null;
+let dibujada = null; // la última telemetría
 
 /**
  * Dibuja una telemetría: los tres brazos con sus esferas, el objetivo y el panel.
@@ -49,7 +35,7 @@ let ultima = null;
  * @param {object} t - El JSON de /data.
  */
 function dibujar(t) {
-  ultima = t;
+  dibujada = t;
   const radio = t.sphere_radius ?? 1;
   const verEsferas = $("esferas").checked || !t.marcos; // el firmware de 2025 no manda los marcos
   const poses = {
@@ -106,7 +92,7 @@ $("detener").addEventListener("click", async () => {
 });
 
 $("esferas").addEventListener("change", () => {
-  if (ultima) dibujar(ultima);
+  if (dibujada) dibujar(dibujada);
 });
 
 activarSeleccion({
