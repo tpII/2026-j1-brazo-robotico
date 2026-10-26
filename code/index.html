@@ -8,7 +8,7 @@
       Como la página de J5, se abre con doble clic y le pide los datos al ESP32, cuya dirección está
       en web/conexion.js: GET data (telemetría), POST set (objetivo x, y, z) y POST detener.
     -->
-    <link rel="stylesheet" href="web/style.css" />
+    <link rel="stylesheet" href="web/style.css?v=3" />
     <script type="importmap">
       {
         "imports": {
@@ -28,13 +28,13 @@
       window.THREE = THREE;
       window.OrbitControls = OrbitControls;
     </script>
-    <script defer src="web/conexion.js"></script>
-    <script defer src="web/escena.js"></script>
-    <script defer src="web/esferas.js"></script>
-    <script defer src="web/brazo.js"></script>
-    <script defer src="web/seleccion.js"></script>
-    <script defer src="web/panel.js"></script>
-    <script defer src="web/principal.js"></script>
+    <script defer src="web/conexion.js?v=3"></script>
+    <script defer src="web/escena.js?v=3"></script>
+    <script defer src="web/esferas.js?v=3"></script>
+    <script defer src="web/brazo.js?v=3"></script>
+    <script defer src="web/seleccion.js?v=3"></script>
+    <script defer src="web/panel.js?v=3"></script>
+    <script defer src="web/principal.js?v=3"></script>
   </head>
   <body>
     <div id="vista"></div>
@@ -61,7 +61,10 @@
         <input id="esferas" type="checkbox" checked />
         Mostrar las esferas de colisión
       </label>
-      <button id="detener" type="button">Detener</button>
+      <div class="botones-accion">
+        <button id="home" type="button" title="Volver a la posición de reposo">🏠 Home</button>
+        <button id="detener" type="button" title="Frenar el movimiento">⏹ Detener</button>
+      </div>
 
       <div id="mensaje">Esperando datos…</div>
       <dl>

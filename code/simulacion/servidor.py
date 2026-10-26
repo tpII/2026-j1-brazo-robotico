@@ -96,6 +96,9 @@ class _Manejador(BaseHTTPRequestHandler):
         elif ruta == "/detener":
             self.server.centralizador.detener()
             self._responder(200, {"estado": self.server.centralizador.estado}, cors=True)
+        elif ruta == "/home":
+            respuesta = self.server.centralizador.pedir_home()
+            self._responder(200, respuesta, cors=True)
         else:
             self._responder(404, {"error": f"no existe {ruta}"})
 

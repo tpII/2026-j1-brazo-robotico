@@ -16,6 +16,7 @@
 #include "configuracion.h"
 #include "plano.h"
 #include "servos.h"
+#include "trayectoria.h"
 #include <math.h>
 #include <stdarg.h> // Para va_list
 #include <stdio.h>  // Para vsnprintf
@@ -258,6 +259,36 @@ void detener(Centralizador *c) {
     if (strcmp(c->estado, "moviendo") == 0) {
         c->estado = "detenido";
     }
+}
+
+const char *pedir_home(Centralizador *c, char *respuesta, size_t largo) {
+    /* Planifica y empieza el movimiento hacia la posición original (Home). */
+    Json j = {respuesta, largo, 0};
+    if (strcmp(c->estado, "moviendo") == 0) {
+        escribir(&j, "{\"resultado\": \"ocupado\"}");
+        return NULL;
+    }
+    double destino[5];
+    home_modelo(destino);
+    Trayectoria t = planificar(c->angulos, destino);
+    if (t.n_pasos == 0) {
+        return "No hay memoria para planificar la trayectoria a Home.";
+    }
+    if (c->hay_resultado) {
+        free(c->resultado.pasos);
+    }
+    memset(&c->resultado, 0, sizeof(c->resultado));
+    c->resultado.estado = "ok";
+    c->resultado.pasos = t.pasos;
+    c->resultado.n_pasos = t.n_pasos;
+    memcpy(c->resultado.angulos, destino, sizeof(destino));
+    c->resultado.error = 0.0;
+    c->hay_resultado = true;
+    c->hay_objetivo = false;
+    c->indice = 0;
+    c->estado = "moviendo";
+    escribir(&j, "{\"resultado\": \"ok\", \"estado\": \"moviendo\"}");
+    return NULL;
 }
 
 size_t telemetria(const Centralizador *c, char *json, size_t largo) {

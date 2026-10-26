@@ -4,10 +4,10 @@
 #include <WiFi.h>
 
 // --- CONFIGURACIÓN DE RED ---
-const char *ssid = "Personal-58C-2.4GHz";
-const char *password = "9114DFC58C";
-const IPAddress localIP(192, 168, 1, 184); // IP Fija sugerida para el ESP32
-const IPAddress gateway(192, 168, 1, 1);
+const char *ssid = "Guest@Home";
+const char *password = "anatipica";
+const IPAddress localIP(192, 168, 0, 184); // IP Fija sugerida para el ESP32
+const IPAddress gateway(192, 168, 0, 1);
 const IPAddress subnet(255, 255, 255, 0);
 
 // Objeto del Servidor en el puerto 80
@@ -372,7 +372,8 @@ void home() {
 #ifdef SET_LOOP_TASK_STACK_SIZE
 SET_LOOP_TASK_STACK_SIZE(16 * 1024);
 #else
-#error "Hace falta el core del ESP32 2.0.0 o más nuevo, para darle 16 KB de pila a loop()"
+#error                                                                         \
+    "Hace falta el core del ESP32 2.0.0 o más nuevo, para darle 16 KB de pila a loop()"
 #endif
 
 // El estado del brazo: la pose, el movimiento y la última búsqueda.
@@ -385,8 +386,9 @@ char telemetria_json[16384];
 unsigned long ultimo_paso = 0;
 
 void responder_json(int codigo, const char *json) {
-  /* Manda un JSON con Access-Control-Allow-Origin, como /data en J5: la página se abre desde la
-     compu, que es otra dirección, y sin ese permiso el navegador no la deja leer la respuesta. */
+  /* Manda un JSON con Access-Control-Allow-Origin, como /data en J5: la página
+     se abre desde la compu, que es otra dirección, y sin ese permiso el
+     navegador no la deja leer la respuesta. */
   server.sendHeader("Access-Control-Allow-Origin", "*");
   server.send(codigo, "application/json", json);
 }
@@ -411,8 +413,10 @@ bool leer_numero(const String &texto, double *valor) {
 
 void manejar_data() {
   /* GET /data: la telemetría. */
-  if (telemetria(&centralizador, telemetria_json, sizeof(telemetria_json)) >= sizeof(telemetria_json)) {
-    responder_json(500, "{\"error\": \"La telemetría no entra en telemetria_json.\"}");
+  if (telemetria(&centralizador, telemetria_json, sizeof(telemetria_json)) >=
+      sizeof(telemetria_json)) {
+    responder_json(
+        500, "{\"error\": \"La telemetría no entra en telemetria_json.\"}");
     return;
   }
   responder_json(200, telemetria_json);
@@ -431,7 +435,8 @@ void manejar_set() {
     return;
   }
   char respuesta[512];
-  const char *error = pedir_objetivo(&centralizador, x, y, z, respuesta, sizeof(respuesta));
+  const char *error =
+      pedir_objetivo(&centralizador, x, y, z, respuesta, sizeof(respuesta));
   if (error != NULL) {
     responder_error(error);
     return;
@@ -444,7 +449,20 @@ void manejar_detener() {
   /* POST /detener: frena el brazo. */
   detener(&centralizador);
   char respuesta[64];
-  snprintf(respuesta, sizeof(respuesta), "{\"estado\": \"%s\"}", centralizador.estado);
+  snprintf(respuesta, sizeof(respuesta), "{\"estado\": \"%s\"}",
+           centralizador.estado);
+  responder_json(200, respuesta);
+}
+
+void manejar_home() {
+  /* POST /home: vuelve a la pose Home suavemente con trayectoria planificada. */
+  char respuesta[128];
+  const char *error = pedir_home(&centralizador, respuesta, sizeof(respuesta));
+  if (error != NULL) {
+    responder_error(error);
+    return;
+  }
+  Serial.println("Comando Home recibido: planificando retorno a posición original.");
   responder_json(200, respuesta);
 }
 
@@ -478,8 +496,9 @@ void setup() {
   Serial.println(WiFi.localIP());
 
   // --- Servidor web (/ como en J5) ---
-  // La página es code/index.html: como en 2025, se abre con doble clic y le pide los datos a esta
-  // placa, a la IP que tiene escrita en code/web/conexion.js.
+  // La página es code/index.html: como en 2025, se abre con doble clic y le
+  // pide los datos a esta placa, a la IP que tiene escrita en
+  // code/web/conexion.js.
   server.on("/", HTTP_GET, []() {
     server.send(200, "text/plain",
                 "ESP32 Robot Arm Server. Endpoint /data para JSON.");
@@ -487,6 +506,7 @@ void setup() {
   server.on("/data", HTTP_GET, manejar_data);
   server.on("/set", HTTP_POST, manejar_set);
   server.on("/detener", HTTP_POST, manejar_detener);
+  server.on("/home", HTTP_POST, manejar_home);
   server.begin();
   Serial.println("Servidor HTTP iniciado.");
 
@@ -509,8 +529,9 @@ void loop() {
   // Atiende un pedido de la web, si hay uno.
   server.handleClient();
 
-  // Un paso del movimiento cada DT. Si se atrasa no recupera el tiempo: entre dos pasos siempre
-  // hay por lo menos DT, así el brazo nunca va más rápido que lo planificado.
+  // Un paso del movimiento cada DT. Si se atrasa no recupera el tiempo: entre
+  // dos pasos siempre hay por lo menos DT, así el brazo nunca va más rápido que
+  // lo planificado.
   unsigned long ahora = millis();
   if (ahora - ultimo_paso >= DT * 1000) {
     avanzar(&centralizador);

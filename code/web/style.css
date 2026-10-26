@@ -128,10 +128,28 @@ button {
   color: #fff;
 }
 
-#detener {
-  width: 100%;
+.botones-accion {
+  display: flex;
+  gap: 8px;
   margin-top: 12px;
+}
+
+.botones-accion button {
+  flex: 1;
   padding: 9px;
+  transition: opacity 0.15s ease;
+}
+
+.botones-accion button:hover {
+  opacity: 0.9;
+}
+
+#home {
+  background: #2563eb;
+}
+
+#detener {
+  margin-top: 0;
   background: var(--error);
 }
 

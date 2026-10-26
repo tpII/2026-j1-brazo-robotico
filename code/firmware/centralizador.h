@@ -59,6 +59,15 @@ void avanzar(Centralizador *c);
 void detener(Centralizador *c);
 
 /**
+ * Planifica y empieza el movimiento hacia la posición original (Home).
+ * @param c El Centralizador.
+ * @param respuesta (Salida) El JSON de /home.
+ * @param largo El tamaño de respuesta.
+ * @return NULL si se aceptó, o el mensaje de error.
+ */
+const char *pedir_home(Centralizador *c, char *respuesta, size_t largo);
+
+/**
  * El JSON de /data, con las claves de J5 y las nuevas.
  * @param c El Centralizador.
  * @param json (Salida) El texto del JSON.

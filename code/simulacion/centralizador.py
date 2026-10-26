@@ -144,6 +144,31 @@ class Centralizador:
         if self.estado == "moviendo":
             self.estado = "detenido"
 
+    def pedir_home(self):
+        """Planifica y empieza el movimiento hacia la posición original (Home)."""
+        if self.estado == "moviendo":
+            return {"resultado": "ocupado"}
+        import trayectoria
+        destino = servos.home_modelo()
+        t = trayectoria.planificar(self.angulos, destino)
+        self.resultado = busqueda.Resultado(
+            estado="ok",
+            angulos=tuple(destino),
+            error=0.0,
+            posiciones=0,
+            ejecuciones=0,
+            iteraciones=0,
+            iteraciones_totales=0,
+            tiempo_ms=0.0,
+            detalle_ejecuciones=[],
+            silueta=None,
+        )
+        self.objetivo = None
+        self._pasos = t.pasos
+        self._indice = 0
+        self.estado = "moviendo" if len(self._pasos) > 0 else "quieto"
+        return {"resultado": "ok", "estado": self.estado}
+
     def _error(self):
         """El error de la última búsqueda en cm, o None."""
         r = self.resultado

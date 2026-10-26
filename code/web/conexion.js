@@ -16,16 +16,22 @@
  */
 function pedirDatosCada(ms, alLlegar, alCambiarConexion) {
   let pidiendo = false;
+  let fallosConsecutivos = 0;
   async function pedirDatos() {
     if (pidiendo) return;
     pidiendo = true;
     try {
       const respuesta = await fetch(url("data"), { cache: "no-store" });
       if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
-      alLlegar(await respuesta.json());
+      const datos = await respuesta.json();
+      fallosConsecutivos = 0;
+      alLlegar(datos);
       alCambiarConexion(true);
     } catch {
-      alCambiarConexion(false);
+      fallosConsecutivos++;
+      if (fallosConsecutivos >= 3) {
+        alCambiarConexion(false);
+      }
     } finally {
       pidiendo = false;
     }
@@ -45,7 +51,7 @@ const ESP32 = "http://192.168.0.167";
  * emulador de code/simulacion, a ese servidor. `?servidor=http://IP` elige otra dirección.
  */
 const SERVIDOR =
-  new URLSearchParams(location.search).get("servidor") ?? (location.protocol === "file:" ? ESP32 : null);
+  new URLSearchParams(location.search).get("servidor") ?? ESP32;
 
 /**
  * La URL de un pedido.
@@ -80,4 +86,16 @@ async function mandarObjetivo(x, y, z) {
  */
 async function detener() {
   await fetch(url("detener"), { method: "POST" });
+}
+
+/**
+ * Vuelve el brazo a la posición original con POST /home.
+ *
+ * @returns {Promise<{ok: boolean, codigo: number, datos: object}>}
+ * @throws {TypeError} Si no hay conexión.
+ */
+async function irAHome() {
+  const respuesta = await fetch(url("home"), { method: "POST" });
+  const datos = await respuesta.json().catch(() => ({}));
+  return { ok: respuesta.ok, codigo: respuesta.status, datos };
 }
