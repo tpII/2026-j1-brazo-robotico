@@ -14,6 +14,8 @@ const IPAddress subnet(255, 255, 255, 0);
 WebServer server(80);
 
 #include <ESP32Servo.h>
+#include "soc/soc.h"
+#include "soc/rtc_cntl_reg.h"
 #include <cmath>
 #include <stdlib.h> // Necesario para 'free' en el setup
 #include <string.h>
@@ -479,8 +481,18 @@ void mover_servos() {
 // ================== SETUP ==================
 
 void setup() {
+  // Desactivar detector de caídas de tensión (brownout) para soportar
+  // los picos de corriente de los 5 servos metálicos MG90S
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
+
   Serial.begin(115200);
   delay(400);
+
+  // Habilitar todos los temporizadores PWM para los servos MG90S
+  ESP32PWM::allocateTimer(0);
+  ESP32PWM::allocateTimer(1);
+  ESP32PWM::allocateTimer(2);
+  ESP32PWM::allocateTimer(3);
 
   // --- Conexión Wi-Fi (de J5) ---
   // if (!WiFi.config(localIP, gateway, subnet)) {
