@@ -7,28 +7,41 @@
 // Brazo Robótico 5 DOF - Taller de Proyecto II (Grupo J1)
 // ==============================================================================
 // Permite mover cada servo a:
-// 1. Pulso HOME exacto del firmware (para montar los brazos mecánicos alineados).
-// 2. Pulso de CENTRO estándar (1500 us / 90°).
+// 1. Pulso de CENTRO (1500 us / 90°): con los cinco ahí se montan los horns con
+//    el brazo en L (ver poseCentro).
+// 2. Pulso HOME del firmware, para comprobar que el brazo llega al home.
 // 3. Pequeños movimientos de verificación (Wiggle) para confirmar qué servo es.
+// Los pulsos son los de configuracion.c del firmware: 1000 a 2000 us según el
+// datasheet del MG90S.
 // ==============================================================================
 
 const int SERVO_COUNT = 5;
 const int servoPins[SERVO_COUNT]    = {18,     19,       21,     22,       23};
 const char* servoNames[SERVO_COUNT] = {"Base", "Hombro", "Codo", "Muñeca", "Pinza"};
 
-// Pulsos exactos de Home definidos en el firmware del brazo
+// Pulsos de Home del firmware del brazo (SERVO_HOME_US de configuracion.c)
 const int servoHomeUs[SERVO_COUNT] = {
-    400,  // Servo 0: Base (0°)
-    1400, // Servo 1: Hombro (140° en modelo)
-    1200, // Servo 2: Codo (-114.6° en modelo)
-    960,  // Servo 3: Muñeca (+4.5° en modelo)
-    400   // Servo 4: Pinza (Cerrada)
+    1000, // Servo 0: Base (0°)
+    1778, // Servo 1: Hombro (140° en modelo)
+    1363, // Servo 2: Codo (-114.6° en modelo)
+    1525, // Servo 3: Muñeca (+4.5° en modelo)
+    1000  // Servo 4: Pinza (Cerrada)
 };
 
-const int servoMinUs[SERVO_COUNT] = {400,  400,  400,  400,  400};
-const int servoMaxUs[SERVO_COUNT] = {2600, 1800, 2600, 2000, 2600};
+const int servoMinUs[SERVO_COUNT] = {1000, 1000, 1000, 1000, 1000};
+const int servoMaxUs[SERVO_COUNT] = {2000, 2000, 2000, 2000, 2000};
 
-// Guía visual para el montaje mecánico de cada eslabón
+// Pose de cada eslabón con el servo a 1500 us, para montar el horn (brazo en L),
+// y hacia dónde tiene que moverse al ajustar el pulso
+const char* poseCentro[SERVO_COUNT] = {
+    "Brazo a 90° del frente; con '-' gira hacia el frente",
+    "Brazo principal vertical; con '+' se inclina hacia atrás",
+    "Antebrazo horizontal, en escuadra con el brazo; con '-' se dobla más",
+    "Muñeca en línea con el antebrazo",
+    "Pinza en línea con el antebrazo; con '-' se dobla hacia el home"
+};
+
+// Guía visual de la pose de home de cada eslabón
 const char* poseDescripcion[SERVO_COUNT] = {
     "Base centrada apuntando hacia el frente (0°)",
     "Brazo principal inclinado hacia atrás/arriba (140°)",
@@ -49,8 +62,8 @@ void imprimirMenu() {
   Serial.println("=============================================================");
   Serial.println("Comandos disponibles en el Monitor Serie (115200 baud):");
   Serial.println("  '0' a '4'   : Selecciona el servo (0:Base, 1:Hombro, 2:Codo, 3:Muñeca, 4:Pinza)");
-  Serial.println("  'h' / 'H'   : Mueve TODOS los servos a su posición HOME de montaje");
-  Serial.println("  'c' / 'C'   : Coloca el servo activo en CENTRO estándar (1500 us / 90°)");
+  Serial.println("  'h' / 'H'   : Mueve TODOS los servos a su posición HOME del firmware");
+  Serial.println("  'c' / 'C'   : Coloca el servo activo en CENTRO (1500 us / 90°), para montar el horn");
   Serial.println("  'w' / 'W'   : Movimiento suave (Wiggle) para identificar visualmente el servo");
   Serial.println("  '+' / '-'   : Ajuste fino manual del pulso (+/- 25 us)");
   Serial.println("  'm' / '?'   : Mostrar este menú");
@@ -64,7 +77,8 @@ void mostrarEstadoServo(int idx) {
   Serial.printf("   Pulso actual : %d us\n", currentPulse[idx]);
   Serial.printf("   Pulso Home   : %d us  [Rango seguro: %d .. %d us]\n", 
                 servoHomeUs[idx], servoMinUs[idx], servoMaxUs[idx]);
-  Serial.printf("   MONTAJE EN HOME : %s\n", poseDescripcion[idx]);
+  Serial.printf("   MONTAJE A 1500 us : %s\n", poseCentro[idx]);
+  Serial.printf("   EN HOME           : %s\n", poseDescripcion[idx]);
   Serial.println("-------------------------------------------------------------");
 }
 

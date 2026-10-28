@@ -110,19 +110,24 @@ const int CANTIDAD_ESFERAS[5] = {1, 2, 3, 1, 2};
 const double PLANO_PISO_Z = 0.0;
 const double TOL_COLISION = 1e-9;
 
-// --- 5. SERVOS (firmware.ino) --- //
-const int SERVO_MIN_US[5] = {400, 400, 400, 400, 400};
-const int SERVO_MAX_US[5] = {2600, 1800, 2600, 2000, 2600};
-const int SERVO_HOME_US[5] = {400, 1400, 1200, 960, 400};
+// --- 5. SERVOS MG90S --- //
+// Según el datasheet, el MG90S queda en el medio con 1.5 ms y llega a -90 y +90 grados con unos 1 y
+// 2 ms, así que 0 a 180 grados del servo van de 1000 a 2000 us. Los horns se montan con los servos a
+// 1500 us y el brazo en L: el brazo vertical; el antebrazo, la muñeca y la pinza horizontales y en
+// línea, y la base a 90 grados del frente. Los pulsos y las tablas de J5 en firmware.ino quedan con
+// los SG90, igual que en la simulación.
+const int SERVO_MIN_US[5] = {1000, 1000, 1000, 1000, 1000};
+const int SERVO_MAX_US[5] = {2000, 2000, 2000, 2000, 2000};
+// El mismo home que con los SG90: (0, 140, -114.6, 4.5, 0) grados del modelo.
+const int SERVO_HOME_US[5] = {1000, 1778, 1363, 1525, 1000};
 
-// Tablas de calibración (us, grados del servo), una por servo como en getAngleForServo. Son las LUT
-// de firmware.ino; van en un solo arreglo porque esos nombres ya existen allá.
+// Tablas de calibración (us, grados del servo), una por servo. La del codo va al revés, como LUT2 de J5.
 const PuntoCalibracion LUT_POR_SERVO[5][7] = {
-    {{400, 0.0}, {767, 30.0}, {1134, 60.0}, {1501, 90.0}, {1868, 120.0}, {2235, 150.0}, {2600, 180.0}}, // LUT_GENERICO
-    {{400, 0.0}, {800, 30.0}, {1000, 60.0}, {1100, 90.0}, {1200, 120.0}, {1500, 150.0}, {1800, 180.0}}, // LUT1
-    {{400, 180.0}, {767, 150.0}, {1134, 120.0}, {1501, 90.0}, {1868, 60.0}, {2235, 30.0}, {2600, 0.0}}, // LUT2
-    {{400, 0.0}, {500, 30.0}, {600, 60.0}, {900, 90.0}, {1300, 120.0}, {1700, 150.0}, {2000, 180.0}},   // LUT3
-    {{400, 0.0}, {767, 30.0}, {1134, 60.0}, {1501, 90.0}, {1868, 120.0}, {2235, 150.0}, {2600, 180.0}}  // LUT_GENERICO
+    {{1000, 0.0}, {1167, 30.0}, {1333, 60.0}, {1500, 90.0}, {1667, 120.0}, {1833, 150.0}, {2000, 180.0}}, // base
+    {{1000, 0.0}, {1167, 30.0}, {1333, 60.0}, {1500, 90.0}, {1667, 120.0}, {1833, 150.0}, {2000, 180.0}}, // hombro
+    {{1000, 180.0}, {1167, 150.0}, {1333, 120.0}, {1500, 90.0}, {1667, 60.0}, {1833, 30.0}, {2000, 0.0}}, // codo
+    {{1000, 0.0}, {1167, 30.0}, {1333, 60.0}, {1500, 90.0}, {1667, 120.0}, {1833, 150.0}, {2000, 180.0}}, // muñeca
+    {{1000, 0.0}, {1167, 30.0}, {1333, 60.0}, {1500, 90.0}, {1667, 120.0}, {1833, 150.0}, {2000, 180.0}}  // pinza
 };
 
 // Grados del modelo: theta = signo * s + desvío (home() y loop() de firmware.ino).

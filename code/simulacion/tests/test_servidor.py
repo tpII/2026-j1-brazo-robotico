@@ -107,7 +107,7 @@ class TestServidor(unittest.TestCase):
         """La página del gemelo digital, con su estilo y sus scripts."""
         pagina = self._pedir("/")[2].decode("utf-8")
         for fragmento in ('type="importmap"', "three@0.160.0", 'id="mover"', 'id="detener"', 'id="esferas"',
-                          'id="intento"', 'href="web/style.css"', 'src="web/principal.js"'):
+                          'id="intento"', 'href="web/style.css', 'src="web/principal.js'):
             self.assertIn(fragmento, pagina)
         conexion = self._pedir("/web/conexion.js")[2].decode("utf-8")
         for fragmento in ('url("data")', 'url("set")', 'url("detener")'):

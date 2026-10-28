@@ -20,7 +20,7 @@ Docente responsable: Julián Delekta.
 
 ### Componentes
 
-- **Dispositivo (manipulador):** brazo mecánico articulado de **5 grados de libertad** accionado por servomotores SG90 (Base, Hombro, Codo, Muñeca, Pinza), controlado por un microcontrolador ESP32.
+- **Dispositivo (manipulador):** brazo mecánico articulado de **5 grados de libertad** accionado por servomotores MG90S (Base, Hombro, Codo, Muñeca, Pinza), controlado por un microcontrolador ESP32. La simulación de Python y los informes usan los valores de los SG90 que tenía antes.
 - **Cinemática y Seguridad preventiva:** cálculo de cinemática inversa iterativa para resolver los ángulos requeridos a partir de una coordenada objetivo en el espacio. Antes de mover los servos, el algoritmo evalúa la posición espacial mediante un **modelo geométrico de esferas delimitadoras**, verificando una matriz de autocolisiones 5×5 y la interferencia contra el plano base.
 - **Suavizado de movimiento:** transición de articulaciones interpolada por incrementos angulares en cada ciclo de control para evitar movimientos bruscos.
 - **Comunicación y Telemetría:** servidor HTTP embebido en el ESP32 que expone endpoints REST (`/data` y `/set`) intercambiando objetos JSON con el estado articular, coordenadas de esferas y banderas de seguridad.
@@ -33,9 +33,10 @@ Docente responsable: Julián Delekta.
 
 Como en 2025, el ESP32 levanta el servidor web y la página se abre desde la computadora. No hace falta Python: `code/simulacion/` es solo para probar sin el brazo.
 
-1. Se abre `code/firmware/firmware.ino` en el Arduino IDE, con la placa *ESP32 Dev Module* y las librerías ESP32Servo y ArduinoJson instaladas. Se completan el nombre y la contraseña de la red WiFi y se sube a la placa.
-2. En el monitor serie, a 115200 baudios, la placa muestra su IP al arrancar.
-3. Esa IP se escribe en la constante `ESP32` de `code/web/conexion.js` y se abre `code/index.html` con doble clic. La computadora tiene que estar en la misma red WiFi que la placa y tener internet, porque la página baja three.js.
+1. Se montan los horns de los servos con `code/test_servo/centrar_servos/centrar_servos.ino`. Con la tecla `c`, cada servo va a 1500 µs, y su horn se monta con el brazo en L: el brazo vertical; el antebrazo, la muñeca y la pinza horizontales y en línea, y la base a 90° del frente. Después, la tecla `h` tiene que llevar el brazo al home.
+2. Se abre `code/firmware/firmware.ino` en el Arduino IDE, con la placa *ESP32 Dev Module* y las librerías ESP32Servo y ArduinoJson instaladas. Se completan el nombre y la contraseña de la red WiFi y se sube a la placa.
+3. En el monitor serie, a 115200 baudios, la placa muestra su IP al arrancar.
+4. Esa IP se escribe en la constante `ESP32` de `code/web/conexion.js` y se abre `code/index.html` con doble clic. La computadora tiene que estar en la misma red WiFi que la placa y tener internet, porque la página baja three.js.
 
 ---
 
@@ -46,6 +47,7 @@ Como en 2025, el ESP32 levanta el servidor web y la página se abre desde la com
 ├── README.md
 ├── code/
 │   ├── firmware/          
+│   ├── test_servo/        
 │   ├── simulacion/        
 │   │   ├── tests/         
 │   │   ├── experimentos/  

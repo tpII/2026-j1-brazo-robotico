@@ -18,14 +18,14 @@ void setup() {
   digitalWrite(LED_PIN, HIGH);
 
   Serial.println("\n==============================================");
-  Serial.println("--- TEST SEGURO SG90: MOVIMIENTO ULTRA SUAVE ---");
+  Serial.println("--- TEST SEGURO MG90S: MOVIMIENTO ULTRA SUAVE ---");
   Serial.println("==============================================");
 
   // Período 50 Hz estándar
   testServo.setPeriodHertz(50);
   
-  // Attach idéntico al firmware del brazo
-  testServo.attach(SERVO_PIN, 400, 2600);
+  // Attach idéntico al firmware del brazo (SERVO_MIN_US y SERVO_MAX_US de configuracion.c)
+  testServo.attach(SERVO_PIN, 1000, 2000);
 
   Serial.println("Colocando en posición central (1500 us)...");
   testServo.writeMicroseconds(1500);

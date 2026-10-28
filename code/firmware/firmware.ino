@@ -478,6 +478,16 @@ void mover_servos() {
   }
 }
 
+void ir_a_home() {
+  /* Lleva los servos a los pulsos del home de configuracion.c, de a uno, como home(). */
+  for (int i = 0; i < SERVO_COUNT; i++) {
+    servos[i].writeMicroseconds(SERVO_HOME_US[i]);
+    currentPulse[i] = SERVO_HOME_US[i];
+    Serial.printf("Servo %d -> %d us\n", i, SERVO_HOME_US[i]);
+    delay(300); // deja que ese servo llegue antes de pasar al siguiente (de J5)
+  }
+}
+
 // ================== SETUP ==================
 
 void setup() {
@@ -522,12 +532,14 @@ void setup() {
   server.begin();
   Serial.println("Servidor HTTP iniciado.");
 
-  // --- Servos y home (de J5) ---
+  // --- Servos y home ---
+  // Con los pulsos de los MG90S de configuracion.c; servoMinUs, servoMaxUs y
+  // servoHomePulse de arriba son los de los SG90 de J5.
   for (int i = 0; i < SERVO_COUNT; i++) {
     servos[i].setPeriodHertz(50);
-    servos[i].attach(servoPins[i], servoMinUs[i], servoMaxUs[i]);
+    servos[i].attach(servoPins[i], SERVO_MIN_US[i], SERVO_MAX_US[i]);
   }
-  home();
+  ir_a_home();
   iniciar(&centralizador);
   ultimo_paso = millis();
 

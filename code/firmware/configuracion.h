@@ -81,7 +81,7 @@ extern const int CANTIDAD_ESFERAS[5];
 extern const double PLANO_PISO_Z;
 extern const double TOL_COLISION;
 
-// --- 5. SERVOS (firmware.ino) --- //
+// --- 5. SERVOS MG90S --- //
 extern const int SERVO_MIN_US[5];
 extern const int SERVO_MAX_US[5];
 extern const int SERVO_HOME_US[5];

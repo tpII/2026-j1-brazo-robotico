@@ -1,5 +1,5 @@
 /*
- * Pulsos, grados del servo y grados del modelo, con las tablas de firmware.ino.
+ * Pulsos, grados del servo y grados del modelo, con las tablas de configuracion.c.
  * Implementación J1.
  */
 #ifndef SERVOS_H
@@ -44,7 +44,7 @@ double servo_a_modelo(int i, double s);
 double modelo_a_servo(int i, double theta);
 
 /**
- * Rango del servo i en grados del servo, con los pulsos que permite firmware.ino.
+ * Rango del servo i en grados del servo, con los pulsos que permite configuracion.c.
  * @param i Índice del servo (0 a 4).
  * @param rango (Salida) El mínimo y el máximo.
  */
@@ -58,14 +58,14 @@ void rango_servo(int i, double rango[2]);
 void rango_modelo(int i, double rango[2]);
 
 /**
- * La pose del home del firmware (home() de firmware.ino) en grados del modelo.
+ * La pose del home del firmware (ir_a_home() de firmware.ino) en grados del modelo.
  * @param pose (Salida) Los cinco ángulos.
  */
 void home_modelo(double pose[5]);
 
 /**
  * Los cinco pulsos enteros para una pose del modelo.
- * Redondea con los medios hacia arriba y recorta a los pulsos de firmware.ino.
+ * Redondea con los medios hacia arriba y recorta a los pulsos de configuracion.c.
  * @param pose Los cinco ángulos del modelo, en grados.
  * @param pulsos (Salida) Los cinco pulsos en us.
  */

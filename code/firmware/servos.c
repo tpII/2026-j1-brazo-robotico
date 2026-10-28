@@ -1,5 +1,5 @@
 /*
- * Pulsos, grados del servo y grados del modelo, con las tablas de firmware.ino.
+ * Pulsos, grados del servo y grados del modelo, con las tablas de configuracion.c.
  *
  * Equivale a getAngleForServo, home() y la conversión de signos de firmware.ino.
  * Implementación J1.
@@ -61,7 +61,7 @@ double modelo_a_servo(int i, double theta) {
 }
 
 void rango_servo(int i, double rango[2]) {
-  /* Rango del servo i en grados del servo, con los pulsos que permite firmware.ino.
+  /* Rango del servo i en grados del servo, con los pulsos que permite configuracion.c.
    */
   double a = pulso_a_servo(i, SERVO_MIN_US[i]);
   double b = pulso_a_servo(i, SERVO_MAX_US[i]);
@@ -80,7 +80,7 @@ void rango_modelo(int i, double rango[2]) {
 }
 
 void home_modelo(double pose[5]) {
-  /* La pose del home del firmware (home() de firmware.ino) en grados del modelo. */
+  /* La pose del home del firmware (ir_a_home() de firmware.ino) en grados del modelo. */
   for (int i = 0; i < 5; i++) {
     int us = SERVO_HOME_US[i];
     if (us < SERVO_MIN_US[i]) {
