@@ -1,6 +1,6 @@
 """Las fronteras de la regla del codo y el espejo módulo 360°.
 
-- La frontera de la pinza: con theta4 por debajo de unos 83.3° (la pinza inclinada hacia abajo),
+- La frontera de la pinza: con theta4 por debajo de 90° (la pinza inclinada hacia abajo),
   alpha < 0 y la segunda frontera de la regla (theta2 = -180° - alpha) entra en el rango del codo.
   Se busca el theta4 donde alpha = 0, con la muñeca neutra.
 - s = T_r*E_h - T_h*E_r vale l1*l2*sin(-(theta2 + alpha)) cuando el objetivo está en la punta.
@@ -20,7 +20,7 @@ THETA1 = 40.0
 
 
 def _frontera_pinza():
-    """theta4 donde alpha = 0 con la muñeca neutra, por bisección entre 0° (alpha < 0) y 90° (alpha > 0)."""
+    """theta4 donde alpha = 0 con la muñeca neutra, por bisección entre 0° (alpha < 0) y 90° (alpha >= 0)."""
     a, b = 0.0, 90.0
     for _ in range(60):
         m = (a + b) / 2
@@ -77,7 +77,7 @@ def calcular():
         s = P[0] * E[1] - P[1] * E[0]
         max_dif_s = max(max_dif_s, abs(s - c.l1 * c.l2 * math.sin(math.radians(-(theta2 + c.alfa)))))
     return {"frontera_pinza": _frontera_pinza(), "max_dif_s": max_dif_s,
-            "espejos": [_espejo(90.0, -2.0, 0), _espejo(60.0, -176.0, 1)]}
+            "espejos": [_espejo(100.0, -2.0, 0), _espejo(60.0, -176.0, 1)]}
 
 
 def main():

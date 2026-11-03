@@ -78,11 +78,49 @@ VEL_MAX_ARTICULACION = 60.0  # °/s
 VEL_MAX_PUNTO = 10.0         # cm/s, para p1 a p5 y los centros de las esferas
 T_RAMPA = 0.3                # s para arrancar y para frenar
 
-# --- 8. PUNTA DE LA PINZA (medida en el brazo real) --- #
-SALTO_ESLABONES[4] = np.array([0.0, -4.3, 0.0])
+# --- 8. PUNTA DE LA PINZA (de los STL) --- #
+# La mano es un ArmFront: del eje del servo 4 al final de la bandeja.
+SALTO_ESLABONES[4] = np.array([0.0, -4.33, 0.0])
 
-# --- 9. MEDIDAS DEL BRAZO REAL (los valores pueden tener cierto error) --- #
-SALTO_ESLABONES[0] = np.array([0.0, 0.0, 4.0])
-SALTO_ESLABONES[1] = np.array([6.9, 0.0, 0.0])
-SALTO_ESLABONES[2] = np.array([4.5, 0.5, 0.0])
-SALTO_ESLABONES[3] = np.array([0.0, 0.0, -3.2])
+# --- 9. MEDIDAS DEL BRAZO REAL (de los STL de las piezas y de la hoja de datos del MG90S) --- #
+# El fondo de la base giratoria queda a 3.29 cm de la mesa (caja del soporte, tapa del eje del
+# MG90S y horn) y el eje del hombro, 1.29 cm más arriba.
+SALTO_ESLABONES[0] = np.array([0.0, 0.0, 4.58])
+# Arm.stl mide 4.95 cm entre ejes; el brazo armado tiene el tramo del medio 1.3 cm más largo.
+SALTO_ESLABONES[1] = np.array([6.25, 0.0, 0.0])
+# Del codo al horn de la muñeca, con el servo contra la pared de atrás de la caja. El eje de la
+# muñeca queda 0.3 cm al costado (sobre el eje del codo) porque está cerca de una punta del servo.
+SALTO_ESLABONES[2] = np.array([5.89, 0.0, 0.3])
+# La base de la mano es otro Swing, con el eje del servo 4 a 1.29 cm de su fondo.
+SALTO_ESLABONES[3] = np.array([0.0, 0.0, -1.29])
+
+# --- 10. ESFERAS DE COLISIÓN (de las medidas del brazo) --- #
+# Una esfera en cada articulación y otra cada 1.5 cm como máximo, sobre el salto de cada eslabón.
+# En la pala la última queda a un radio de la punta, así la esfera no sobresale.
+RADIO_ESFERA = 1.5
+esferas_local = [
+    np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 1.145], [0.0, 0.0, 2.29], [0.0, 0.0, 3.435]]),
+    np.array([[0.0, 0.0, 0.0], [1.25, 0.0, 0.0], [2.5, 0.0, 0.0], [3.75, 0.0, 0.0], [5.0, 0.0, 0.0]]),
+    np.array([[0.0, 0.0, 0.0], [1.4725, 0.0, 0.075], [2.945, 0.0, 0.15], [4.4175, 0.0, 0.225]]),
+    np.array([[0.0, 0.0, 0.0]]),
+    np.array([[0.0, 0.0, 0.0], [0.0, -1.415, 0.0], [0.0, -2.83, 0.0]]),
+]
+
+# Los pares contiguos y el (2, 4) no se revisan: sus esferas se superponen en todas las poses (la
+# base de la mano mide 1.29 cm y deja la pala junto al antebrazo). El choque del brazo con el
+# antebrazo lo cubre el tope del codo.
+MATRIZ_COLISIONES = np.array([
+    [0, 0, 1, 1, 1],  # Eslabón 0
+    [0, 0, 0, 1, 1],  # Eslabón 1
+    [1, 0, 0, 0, 0],  # Eslabón 2
+    [1, 1, 0, 0, 0],  # Eslabón 3
+    [1, 1, 0, 0, 0],  # Eslabón 4
+])
+
+# Con el codo más cerrado que esto (grados del modelo), el antebrazo toca el brazo.
+TOPE_CODO = -139.0
+
+# Caja de la pala en su marco (cm): x es el grosor, y el largo y z el ancho del ArmFront de la mano.
+# Contra la mesa se revisan sus 8 esquinas.
+CAJA_PALA = ((-0.85, 0.75), (-4.38, 0.82), (-2.14, 1.56))
+ESQUINAS_PALA = np.array([[x, y, z] for x in CAJA_PALA[0] for y in CAJA_PALA[1] for z in CAJA_PALA[2]])

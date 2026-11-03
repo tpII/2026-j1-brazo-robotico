@@ -38,13 +38,14 @@ function dibujar(t) {
   dibujada = t;
   const radio = t.sphere_radius ?? 1;
   const verEsferas = $("esferas").checked || !t.marcos; // el firmware de 2025 no manda los marcos
+  const verBrazo = $("brazo").checked; // sin el brazo quedan solo las esferas
   const poses = {
     actual: t,
     final: t.estado === "moviendo" ? t.pose_final : null,
     silueta: t.silueta ?? null,
   };
   for (const [nombre, { brazo, esferas }] of Object.entries(capas)) {
-    brazo.actualizar(poses[nombre]);
+    brazo.actualizar(verBrazo ? poses[nombre] : null);
     actualizarEsferas(esferas, poses[nombre], radio, verEsferas);
   }
   mostrarObjetivo(t.objetivo);
@@ -96,6 +97,7 @@ $("home").addEventListener("click", async () => {
     const { ok, codigo, datos } = await irAHome();
     if (!ok) avisar(datos.error ?? `No se pudo volver a Home (HTTP ${codigo})`, "error");
     else if (datos.resultado === "ocupado") avisar(OCUPADO, "alerta");
+    else if (datos.resultado === "colision") olvidarAviso(); // el mensaje del estado dice que el camino choca
     else {
       avisar("Moviendo a posición original (Home)…", "ok");
     }
@@ -105,9 +107,11 @@ $("home").addEventListener("click", async () => {
   }
 });
 
-$("esferas").addEventListener("change", () => {
-  if (dibujada) dibujar(dibujada);
-});
+for (const casilla of ["esferas", "brazo"]) {
+  $(casilla).addEventListener("change", () => {
+    if (dibujada) dibujar(dibujada);
+  });
+}
 
 activarSeleccion({
   escena: vista.escena,

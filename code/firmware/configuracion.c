@@ -148,14 +148,14 @@ const double VEL_MAX_ARTICULACION = 60.0;  // °/s
 const double VEL_MAX_PUNTO = 10.0;         // cm/s, para p1 a p5 y los centros de las esferas
 const double T_RAMPA = 0.3;                // s para arrancar y para frenar
 
-// --- 8. PUNTA DE LA PINZA (medida en el brazo real) --- //
-const Vector3D SALTO_4_MEDIDO = {0.0, -4.3, 0.0};
+// --- 8. PUNTA DE LA PINZA (de los STL) --- //
+const Vector3D SALTO_4_MEDIDO = {0.0, -4.33, 0.0}; // la mano es un ArmFront: del eje del servo 4 al final de la bandeja
 
-// --- 9. MEDIDAS DEL BRAZO REAL (los valores pueden tener cierto error) --- //
-const Vector3D SALTO_0_MEDIDO = {0.0, 0.0, 4.0};
-const Vector3D SALTO_1_MEDIDO = {6.9, 0.0, 0.0};
-const Vector3D SALTO_2_MEDIDO = {4.5, 0.5, 0.0};
-const Vector3D SALTO_3_MEDIDO = {0.0, 0.0, -3.2};
+// --- 9. MEDIDAS DEL BRAZO REAL (de los STL de las piezas y de la hoja de datos del MG90S) --- //
+const Vector3D SALTO_0_MEDIDO = {0.0, 0.0, 4.58};  // la base giratoria a 3.29 cm de la mesa y el hombro 1.29 cm más arriba
+const Vector3D SALTO_1_MEDIDO = {6.25, 0.0, 0.0};  // Arm.stl con el tramo del medio 1.3 cm más largo, como el armado
+const Vector3D SALTO_2_MEDIDO = {5.89, 0.0, 0.3};  // hasta el horn de la muñeca, cuyo eje queda 0.3 cm al costado
+const Vector3D SALTO_3_MEDIDO = {0.0, 0.0, -1.29}; // la base de la mano es un Swing: su fondo y el eje del servo 4
 
 // Los saltos que usa la cinemática de J1 en lugar de SALTO_ESLABONES.
 const Vector3D *SALTO_ESLABONES_MEDIDOS[5] = {&SALTO_0_MEDIDO, &SALTO_1_MEDIDO, &SALTO_2_MEDIDO,

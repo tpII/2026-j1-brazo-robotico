@@ -78,6 +78,21 @@ class TestServidor(unittest.TestCase):
         self.assertEqual(estado, 200)
         self.assertIn("text/html", cabeceras["Content-Type"])
 
+    def test_pagina_con_el_emulador(self):
+        """GET / sin ?servidor= lleva a la página con ?servidor= del emulador, así no le pide al ESP32."""
+        conexion = http.client.HTTPConnection("127.0.0.1", self.srv.server_address[1], timeout=10)
+        try:
+            conexion.request("GET", "/")
+            respuesta = conexion.getresponse()
+            respuesta.read()
+            self.assertEqual(respuesta.status, 303)
+            self.assertEqual(respuesta.getheader("Location"), "/?servidor=" + self.base)
+        finally:
+            conexion.close()
+        estado, cabeceras, _ = self._pedir("/?servidor=" + self.base)
+        self.assertEqual(estado, 200)
+        self.assertIn("text/html", cabeceras["Content-Type"])
+
     def test_set_y_movimiento(self):
         """POST /set mueve el brazo, responde «ocupado» mientras se mueve y el brazo termina quieto."""
         self.assertEqual(self._post("/set", x=OBJ_OK[0], y=OBJ_OK[1], z=OBJ_OK[2])["resultado"], "ok")
@@ -107,7 +122,7 @@ class TestServidor(unittest.TestCase):
         """La página del gemelo digital, con su estilo y sus scripts."""
         pagina = self._pedir("/")[2].decode("utf-8")
         for fragmento in ('type="importmap"', "three@0.160.0", 'id="mover"', 'id="detener"', 'id="esferas"',
-                          'id="intento"', 'href="web/style.css', 'src="web/principal.js'):
+                          'id="brazo"', 'id="intento"', 'href="web/style.css', 'src="web/principal.js'):
             self.assertIn(fragmento, pagina)
         conexion = self._pedir("/web/conexion.js")[2].decode("utf-8")
         for fragmento in ('url("data")', 'url("set")', 'url("detener")'):

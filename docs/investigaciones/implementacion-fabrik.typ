@@ -323,10 +323,11 @@
     node((0, 8), align(center)[¿Error $<= epsilon$, sin cambio \ o $k = k_max$?], name: <corte>, ..rombo),
     node((0, 9), align(center)[*Paso 3.* Ángulos con atan2], name: <ang>, ..caja(azul)),
     node((0, 10), align(center)[¿Error $<= epsilon$ y \ ángulos en rango?], name: <val>, ..rombo),
-    node((0, 11), align(center)[¿Colisión? \ (esferas)], name: <col>, ..rombo),
+    node((0, 11), align(center)[Camino hasta la pose: \ un paso cada 20 ms], name: <cam>, ..caja(azul)),
+    node((0, 12), align(center)[¿Choca la pose o \ algún paso del camino?], name: <col>, ..rombo),
     node(
-      (0, 12),
-      align(center)[Mover el brazo \ (suavizado, H2.3)],
+      (0, 13),
+      align(center)[Mover el brazo, revisando \ cada paso (suavizado, H2.3)],
       name: <mov>,
       shape: fletcher.shapes.pill,
       ..caja(azul),
@@ -349,8 +350,9 @@
     edge(<corte>, <ang>, "-|>", [sí], label-side: left),
     edge(<ang>, <val>, "-|>"),
     edge(<val>, (-3, 10), (-3, 3), <qplano>, "-|>", [no: el otro \ plano], label-pos: (1, 50%), label-side: left),
-    edge(<val>, <col>, "-|>", [sí], label-side: left),
-    edge(<col>, (-3, 11), (-3, 3), <qplano>, "-|>", [sí], label-pos: 0.1, label-side: right),
+    edge(<val>, <cam>, "-|>", [sí], label-side: left),
+    edge(<cam>, <col>, "-|>"),
+    edge(<col>, (-3, 12), (-3, 3), <qplano>, "-|>", [sí], label-pos: 0.1, label-side: right),
     edge(<col>, <mov>, "-|>", [no], label-side: left),
   )
 }
@@ -985,9 +987,9 @@ Se usan los tres criterios del paper, en este orden:
 
 Al terminar la iteración se hace el control final que plantea la investigación: todos los ángulos deben estar en rango y el error debe ser $<= epsilon$. Con las restricciones aplicadas en cada paso este control normalmente se cumple, pero se mantiene como protección. Si no se cumple, se prueba el otro plano candidato y, si tampoco llega, la siguiente posición de la pinza o de la muñeca (@sec-incognitas).
 
-Si la pose es válida, se evalúa el modelo de esferas heredado del grupo J5, que detecta autocolisiones entre eslabones y contacto con el piso. Si hay colisión, la pose se descarta igual que una que no llega: se prueba el otro plano y, después, la siguiente posición de la pinza o de la muñeca. Solo una pose válida y sin colisiones pasa al movimiento suavizado.
+Si la pose es válida, se arma el camino desde la pose actual, con un paso cada 20 ms, y en cada paso se evalúa el modelo de esferas, que detecta autocolisiones entre eslabones y contacto con el piso. El último paso es la pose final, así que también se revisa. Si la pose o algún paso del camino choca, la pose se descarta igual que una que no llega: se prueba el otro plano y, después, la siguiente posición de la pinza o de la muñeca. Solo una pose válida con un camino sin choques pasa al movimiento suavizado. Mientras el brazo se mueve, cada paso se vuelve a revisar antes de mandarlo a los servos.
 
-Si ninguna posición llega sin chocar, el brazo no se mueve, y la simulación dibuja en gris el mejor intento con uno de tres mensajes. El mensaje «colisión» aparece cuando alguna posición llega, pero todas las que llegan chocan, y se dibuja la primera de ellas con las esferas que chocan en rojo. «Fuera de alcance» indica que el Paso 0 falló con todas las posiciones probadas. En ese caso se dibuja la cadena estirada hacia el objetivo con la muñeca y la pinza neutras, como en el Algoritmo 1 del paper, y puede no respetar los límites de los servos.
+Si ninguna posición llega sin chocar, el brazo no se mueve, y la simulación dibuja en gris el mejor intento con uno de tres mensajes. El mensaje «colisión» aparece cuando alguna posición llega, pero todas las que llegan chocan o tienen un camino que choca. Se dibuja la primera de ellas, o el primer paso de su camino que choca, con las esferas que chocan en rojo. «Fuera de alcance» indica que el Paso 0 falló con todas las posiciones probadas. En ese caso se dibuja la cadena estirada hacia el objetivo con la muñeca y la pinza neutras, como en el Algoritmo 1 del paper, y puede no respetar los límites de los servos.
 
 El tercer mensaje, «bloqueado por límites», aparece cuando con alguna posición la distancia alcanza, pero los límites impiden llegar. En ese caso se dibuja el intento más cercano, que respeta todos los límites. Para elegir ese intento se toma la pose de menor error de todas las iteraciones, porque una ejecución que termina por $k_max$ puede quedar más lejos del objetivo que en una iteración anterior. La @fig-flujo resume el recorrido completo.
 

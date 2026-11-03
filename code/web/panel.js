@@ -135,6 +135,8 @@ function mensajeDe(t) {
         "alerta",
       ];
     case "colision":
+      // Home no tiene objetivo: lo que choca es el camino hasta la pose del home
+      if (!t.objetivo) return ["Colisión: el camino a Home choca. En rojo, las esferas que chocan", "error"];
       return ["Colisión: todas las poses que llegan chocan. En rojo, las esferas que chocan", "error"];
     default:
       return [String(t.resultado), ""];

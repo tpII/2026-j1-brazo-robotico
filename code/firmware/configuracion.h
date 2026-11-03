@@ -111,10 +111,10 @@ extern const double VEL_MAX_ARTICULACION;
 extern const double VEL_MAX_PUNTO;
 extern const double T_RAMPA;
 
-// --- 8. PUNTA DE LA PINZA (medida en el brazo real) --- //
+// --- 8. PUNTA DE LA PINZA (de los STL) --- //
 extern const Vector3D SALTO_4_MEDIDO;
 
-// --- 9. MEDIDAS DEL BRAZO REAL (los valores pueden tener cierto error) --- //
+// --- 9. MEDIDAS DEL BRAZO REAL (de los STL de las piezas y de la hoja de datos del MG90S) --- //
 extern const Vector3D SALTO_0_MEDIDO;
 extern const Vector3D SALTO_1_MEDIDO;
 extern const Vector3D SALTO_2_MEDIDO;

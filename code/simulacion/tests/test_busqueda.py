@@ -4,7 +4,6 @@ import unittest
 import numpy as np
 
 import busqueda
-import cinematica
 import colisiones
 import experimentos
 import servos
@@ -14,14 +13,14 @@ HOME = servos.home_modelo()
 ESTADOS = {"ok", "fuera_de_alcance", "bloqueado_por_limites", "colision"}
 OBJETIVOS = experimentos.objetivos_medicion()
 # Índices de OBJETIVOS hallados recorriéndolos en orden con la búsqueda.
-INDICE_RESCATADO = 9   # el primero cuya primera solución choca, pero otra pose válida no
+INDICE_RESCATADO = 7   # el primero cuya primera solución choca, pero otra pose válida no
 INDICE_COLISION = 2    # el primero en que todas sus poses válidas chocan
 # Extremos libres y camino que choca (tests/test_trayectoria.py).
 PAR_QUE_CHOCA = ((-90.0, 40.0, -100.0, -90.0, 0.0), (-90.0, 40.0, -100.0, -90.0, 180.0))
 
 
 def _choca(pose):
-    return colisiones.detectar_colisiones(cinematica.cinematica_directa(pose).esferas).hay_choque
+    return colisiones.detectar_colisiones(pose).hay_choque
 
 
 class TestBusquedaSinChoques(unittest.TestCase):
@@ -39,22 +38,22 @@ class TestBusquedaSinChoques(unittest.TestCase):
         """Del lado +y la base no apunta al objetivo: llega con la muñeca girada y la pinza inclinada."""
         r = busqueda.buscar(np.array([6.0, 1.0, 6.0]), HOME, revisar_colisiones=False)
         self.assertEqual(r.estado, "ok")
-        self.assertEqual(r.angulos[3:], (20.0, 140.0))
+        self.assertEqual(r.angulos[3:], (20.0, 160.0))
         self.assertLessEqual(r.error, 0.5)
 
     def test_ejemplo_3_3_0(self):
-        """(3, -3, 0) está sobre el piso, cerca de la base; se resuelve con la pinza en 30°, a 0.41 cm."""
+        """(3, -3, 0) está sobre el piso, cerca de la base; se resuelve con la pinza en 110°, a 0.47 cm."""
         r = busqueda.buscar(np.array([3.0, -3.0, 0.0]), HOME, revisar_colisiones=False)
-        self.assertEqual((r.estado, r.posiciones, r.iteraciones), ("ok", 13, 19))
-        np.testing.assert_allclose(r.angulos, [-45.0, 72.0, -132.58, 0.0, 30.0], atol=0.005)
-        self.assertAlmostEqual(r.error, 0.41, delta=0.005)
+        self.assertEqual((r.estado, r.posiciones, r.iteraciones), ("ok", 4, 20))
+        np.testing.assert_allclose(r.angulos, [-40.95, 95.14, -168.72, 0.0, 110.0], atol=0.005)
+        self.assertAlmostEqual(r.error, 0.47, delta=0.005)
 
     def test_bloqueado_5_5_7(self):
         """La silueta es la iteración de menor error de todas."""
         r = busqueda.buscar(np.array([5.0, 5.0, 7.0]), HOME, revisar_colisiones=False)
         self.assertEqual(r.estado, "bloqueado_por_limites")
-        self.assertAlmostEqual(r.silueta.error, 4.452, delta=0.0005)
-        np.testing.assert_allclose(r.silueta.angulos, [-97.55, 180.0, -116.93, 90.0, 180.0], atol=0.005)
+        self.assertAlmostEqual(r.silueta.error, 4.596, delta=0.0005)
+        np.testing.assert_allclose(r.silueta.angulos, [-175.90, 180.0, -110.52, 90.0, 0.0], atol=0.005)
 
     def test_fuera_de_alcance(self):
         """La silueta es la cadena estirada con la muñeca y la pinza neutras."""

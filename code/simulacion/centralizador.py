@@ -4,8 +4,7 @@ Guarda el estado del brazo, atiende los pedidos de objetivo, avanza un paso del 
 vez que se lo llama (cada 20 ms) y arma la telemetría que lee la página del gemelo digital.
 - Un pedido mientras el brazo se mueve se rechaza con «ocupado»; «Detener» frena el brazo
   en el paso en que está.
-- Un objetivo con valores que no son números finitos, o debajo del piso, se rechaza sin buscar:
-  p5 no tiene esfera, así que las esferas no lo detectarían.
+- Un objetivo con valores que no son números finitos, o debajo del piso, se rechaza sin buscar.
 En C será centralizador.c y la parte del loop() de firmware.ino que mueve los servos.
 Implementación J1.
 """
@@ -127,7 +126,7 @@ class Centralizador:
         if self.estado != "moviendo":
             return
         paso = self._pasos[self._indice]
-        choque = colisiones.detectar_colisiones(cinematica.cinematica_directa(paso).esferas)
+        choque = colisiones.detectar_colisiones(paso)
         if choque.hay_choque:   # no debería pasar: la búsqueda ya validó el camino
             self.estado = "detenido"
             self.resultado = dataclasses.replace(self.resultado, estado="colision",
@@ -145,12 +144,24 @@ class Centralizador:
             self.estado = "detenido"
 
     def pedir_home(self):
-        """Planifica y empieza el movimiento hacia la posición original (Home)."""
+        """Planifica el movimiento hacia la posición original (Home) y lo empieza si ningún paso choca.
+
+        Returns:
+            La respuesta de /home: resultado ("ok", "colision" u "ocupado") y estado.
+        """
         if self.estado == "moviendo":
             return {"resultado": "ocupado"}
         import trayectoria
         destino = servos.home_modelo()
         t = trayectoria.planificar(self.angulos, destino)
+        i = trayectoria.primer_choque(t.pasos)
+        if i is not None:   # el brazo no se mueve y se dibuja el paso que choca
+            silueta = busqueda.Silueta(t.pasos[i], None, colisiones.detectar_colisiones(t.pasos[i]))
+            self.resultado = busqueda.Resultado("colision", None, None, silueta, 0, 0, 0, 0, 0.0)
+            self.objetivo = None
+            self._pasos, self._indice = [], 0
+            self.estado = "quieto"
+            return {"resultado": "colision", "estado": self.estado}
         self.resultado = busqueda.Resultado(
             estado="ok",
             angulos=tuple(destino),
@@ -189,7 +200,7 @@ class Centralizador:
             Un diccionario listo para json.dumps.
         """
         g = cinematica.cinematica_directa(self.angulos)
-        choque = colisiones.detectar_colisiones(g.esferas)
+        choque = colisiones.detectar_colisiones(self.angulos)
         r = self.resultado
         silueta = None
         if r is not None and r.silueta is not None:

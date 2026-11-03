@@ -37,6 +37,9 @@ const int POT_PIN = 34;
 const int SERVO_COUNT = 5;
 const int servoPins[SERVO_COUNT] = {18, 19, 21, 22, 23};
 
+// J1: estos pulsos y las tablas LUT de abajo son los de los SG90 y ya no se usan. Los de
+// los MG90S están en configuracion.c (SERVO_MIN_US, SERVO_MAX_US, SERVO_HOME_US y
+// LUT_POR_SERVO); cambiarlos acá no mueve el brazo.
 // CON ESTO SE PUEDE CONTROLAR LOS VALORES FISICOS
 const int servoMinUs[SERVO_COUNT] = {400, 400, 400, 400, 400};
 const int servoMaxUs[SERVO_COUNT] = {2600, 1800, 2600, 2000, 2600};
@@ -57,6 +60,7 @@ const int DEBOUNCE_MS = 50;
 const int STEP_SIZE_US = 20;
 
 // ---- Tabla de calibración (us -> grados) ----
+// J1: no se usan; las tablas de los MG90S son LUT_POR_SERVO de configuracion.c.
 struct CalibPoint {
   int us;
   float deg;

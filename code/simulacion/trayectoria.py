@@ -31,13 +31,13 @@ class Trayectoria:
 
 
 def puntos_vigilados(pose):
-    """Los puntos del brazo cuya velocidad se limita: p1 a p5 y los 9 centros de las esferas.
+    """Los puntos del brazo cuya velocidad se limita: p1 a p5 y los 17 centros de las esferas.
 
     Args:
         pose: los cinco ángulos del modelo, en grados.
 
     Returns:
-        Un arreglo (14, 3).
+        Un arreglo (22, 3).
     """
     g = cinematica.cinematica_directa(pose)
     return np.vstack([g.puntos[1:], *g.esferas])
@@ -127,6 +127,6 @@ def primer_choque(pasos):
         El índice del primer paso que choca, o None si el camino está libre.
     """
     for i, paso in enumerate(pasos):
-        if colisiones.detectar_colisiones(cinematica.cinematica_directa(paso).esferas).hay_choque:
+        if colisiones.detectar_colisiones(paso).hay_choque:
             return i
     return None

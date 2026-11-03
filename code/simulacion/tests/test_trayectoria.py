@@ -3,19 +3,18 @@ import unittest
 
 import numpy as np
 
-import cinematica
 import colisiones
 import servos
 import trayectoria
 
 HOME = tuple(servos.home_modelo())
 POSE_B = (-30.0, 90.0, -90.0, 0.0, 90.0)
-# Extremos libres y camino que choca: la segunda esfera de la pinza toca el piso desde theta4 = 31°.
+# Extremos libres y camino que choca: la caja de la pala toca la mesa desde theta4 = 15°.
 PAR_QUE_CHOCA = ((-90.0, 40.0, -100.0, -90.0, 0.0), (-90.0, 40.0, -100.0, -90.0, 180.0))
 
 
 def _choca(pose):
-    return colisiones.detectar_colisiones(cinematica.cinematica_directa(pose).esferas).hay_choque
+    return colisiones.detectar_colisiones(pose).hay_choque
 
 
 def _pares_al_azar(n, semilla):

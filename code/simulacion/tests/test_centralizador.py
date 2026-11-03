@@ -1,12 +1,18 @@
 """centralizador.py: el módulo central de lógica."""
 import json
 import unittest
+from unittest import mock
 
 import numpy as np
 
 import centralizador
+import colisiones
+import servos
+import trayectoria
 
 OBJ_OK = (5.0, -5.0, 7.0)   # llega con los choques activados
+# Extremos libres y camino que choca (tests/test_trayectoria.py).
+PAR_QUE_CHOCA = ((-90.0, 40.0, -100.0, -90.0, 0.0), (-90.0, 40.0, -100.0, -90.0, 180.0))
 
 
 def _nuevo():
@@ -88,7 +94,7 @@ class TestCentralizador(unittest.TestCase):
         t = c.telemetria()
         self.assertEqual((t["estado"], t["angles"]), ("quieto", antes))
         self.assertIsNotNone(t["silueta"])
-        self.assertAlmostEqual(t["silueta"]["error_cm"], 4.452, delta=0.0005)   # «mejor intento a 4.452 cm»
+        self.assertAlmostEqual(t["silueta"]["error_cm"], 4.596, delta=0.0005)   # «mejor intento a 4.596 cm»
         self.assertEqual(np.shape(t["silueta"]["marcos"]), (5, 3, 4))
 
     def test_bloqueado_marca_el_servo_en_el_tope(self):
@@ -104,9 +110,9 @@ class TestCentralizador(unittest.TestCase):
         self.assertEqual(c.telemetria()["silueta"]["servos_fuera_de_rango"], [True, True, False, False, False])
 
     def test_fuera_de_alcance_en_el_tope_no_se_marca(self):
-        """Hacia (25, 0, 4), a la altura del hombro, la base y el hombro quedan en 0°, dentro de su rango."""
+        """Hacia (25, -0.3, 4.58), a la altura del hombro y en el plano de p5, la base y el hombro quedan en 0°."""
         c = _nuevo()
-        self.assertEqual(c.pedir_objetivo(25.0, 0.0, 4.0)["resultado"], "fuera_de_alcance")
+        self.assertEqual(c.pedir_objetivo(25.0, -0.3, 4.58)["resultado"], "fuera_de_alcance")
         self.assertEqual(c.telemetria()["silueta"]["servos_fuera_de_rango"], [False] * 5)
 
     def test_colision_no_marca_servos(self):
@@ -122,7 +128,8 @@ class TestCentralizador(unittest.TestCase):
         json.dumps(t)
         for clave in ("angles", "collision_detected", "colliding_centers", "sphere_radius", "spheres"):   # las de J5
             self.assertIn(clave, t)
-        self.assertEqual([len(e) for e in t["spheres"]], [1, 2, 3, 1, 2])
+        self.assertEqual([len(e) for e in t["spheres"]], [4, 5, 4, 1, 3])
+        self.assertEqual(t["sphere_radius"], 1.5)
         self.assertEqual(len(t["puntos"]), 6)
         self.assertEqual(np.shape(t["marcos"]), (5, 3, 4))   # para dibujar el brazo 3D
         self.assertIsNotNone(t["pose_final"])
@@ -140,6 +147,33 @@ class TestCentralizador(unittest.TestCase):
             ahora = c.telemetria()["angles"]
             self.assertLessEqual(max(abs(a - b) for a, b in zip(ahora, antes)), 1.2 + 1e-9)
             antes = ahora
+
+    def test_home_vuelve(self):
+        """Desde una pose libre, Home lleva el brazo hasta la pose del home."""
+        c = _nuevo()
+        c.pedir_objetivo(*OBJ_OK)
+        _hasta_quieto(c)
+        self.assertEqual(c.pedir_home(), {"resultado": "ok", "estado": "moviendo"})
+        _hasta_quieto(c)
+        self.assertEqual(c.angulos, servos.home_modelo())
+
+    def test_home_con_un_camino_que_choca_no_se_mueve(self):
+        """Si un paso del camino a home choca, el brazo no se mueve y la silueta es ese paso.
+
+        Con las medidas de hoy ningún camino a home choca, así que el home se cambia por una pose
+        libre a la que se llega por un camino que choca.
+        """
+        a, b = PAR_QUE_CHOCA
+        pasos = trayectoria.planificar(a, b).pasos
+        paso = pasos[trayectoria.primer_choque(pasos)]
+        c = _nuevo()
+        c.angulos = a
+        with mock.patch.object(servos, "home_modelo", return_value=b):
+            self.assertEqual(c.pedir_home(), {"resultado": "colision", "estado": "quieto"})
+        t = c.telemetria()
+        self.assertEqual((t["estado"], t["resultado"], t["angles"]), ("quieto", "colision", list(a)))
+        self.assertEqual(t["silueta"]["angles"], list(paso))
+        self.assertEqual(t["silueta"]["esferas_en_choque"], [list(i) for i in colisiones.detectar_colisiones(paso).esferas])
 
 
 if __name__ == "__main__":

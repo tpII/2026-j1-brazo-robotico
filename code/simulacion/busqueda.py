@@ -20,7 +20,6 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-import cinematica
 import colisiones
 import configuracion as cfg
 import fabrik
@@ -126,13 +125,13 @@ def _revisar(pose, actual):
         pasos son la trayectoria; si no, la silueta es la pose o el paso que choca y los pasos
         son None.
     """
-    choque = colisiones.detectar_colisiones(cinematica.cinematica_directa(pose).esferas)
+    choque = colisiones.detectar_colisiones(pose)
     if choque.hay_choque:
         return Silueta(tuple(pose), None, choque), None
     pasos = trayectoria.planificar(actual, pose).pasos
     i = trayectoria.primer_choque(pasos)
     if i is not None:
-        return Silueta(pasos[i], None, colisiones.detectar_colisiones(cinematica.cinematica_directa(pasos[i]).esferas)), None
+        return Silueta(pasos[i], None, colisiones.detectar_colisiones(pasos[i])), None
     return None, pasos
 
 

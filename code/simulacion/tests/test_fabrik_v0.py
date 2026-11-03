@@ -13,11 +13,11 @@ class TestFabrikV0(unittest.TestCase):
         """FABRIK 3D llega, pero deforma la cadena como un látigo."""
         r = experimentos.v0_latigo.calcular()
         self.assertEqual(r["iteraciones"], 1)
-        self.assertLess(r["error"], 0.01)
-        self.assertAlmostEqual(r["inclinacion_columna"], 7.4, delta=0.05)
-        np.testing.assert_allclose(r["hombro"], [-0.51, -0.01, 3.97], atol=0.005)
-        self.assertAlmostEqual(r["angulo_p3"], 111.4, delta=0.05)
-        self.assertAlmostEqual(r["angulo_p3_modelo"], 6.3, delta=0.05)
+        self.assertLess(r["error"], 0.02)
+        self.assertAlmostEqual(r["inclinacion_columna"], 15.5, delta=0.05)
+        np.testing.assert_allclose(r["hombro"], [-1.20, -0.23, 4.41], atol=0.005)
+        self.assertAlmostEqual(r["angulo_p3"], 106.0, delta=0.05)
+        self.assertAlmostEqual(r["angulo_p3_modelo"], 2.9, delta=0.05)
 
     def test_inalcanzable_cadena_estirada(self):
         """Algoritmo 1 del paper: la cadena en línea recta."""

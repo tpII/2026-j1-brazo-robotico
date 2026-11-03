@@ -1,10 +1,11 @@
 """Emulador del ESP32: los mismos endpoints y el mismo JSON que va a tener el firmware.
 
-    GET  /         la página del gemelo digital (code/index.html)
+    GET  /         la página del gemelo digital (code/index.html), con ?servidor= de este emulador
     GET  /web/...  el estilo y los scripts de la página (code/web/)
     GET  /data     la telemetría
     POST /set      el objetivo, con los campos x, y y z
     POST /detener  frena el brazo
+    POST /home     vuelve al home
 
 El bucle es el mismo que va a tener loop() en el ESP32: atiende una petición si hay una y, si
 pasaron 20 ms desde el último paso, avanza uno. Si se atrasa no recupera el tiempo: entre dos
@@ -66,8 +67,15 @@ class _Manejador(BaseHTTPRequestHandler):
 
     def do_GET(self):
         """GET /, /web/..., /data; cualquier otra ruta da 404."""
-        ruta = self.path.split("?")[0]
-        if ruta == "/":
+        ruta, _, consulta = self.path.partition("?")
+        if ruta == "/" and "servidor" not in parse_qs(consulta):
+            # Sin ?servidor= la página le pide al ESP32 de conexion.js; así le pide a este emulador.
+            host = self.headers.get("Host", f"localhost:{self.server.server_address[1]}")
+            self.send_response(303)
+            self.send_header("Location", f"/?servidor=http://{host}")
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+        elif ruta == "/":
             self._responder(200, PAGINA.read_bytes(), "text/html; charset=utf-8")   # se lee en cada pedido
         elif ruta == "/data":
             self._responder(200, self.server.centralizador.telemetria(), cors=True)
@@ -77,7 +85,7 @@ class _Manejador(BaseHTTPRequestHandler):
             self._responder(404, {"error": f"no existe {ruta}"})
 
     def do_POST(self):
-        """POST /set con x, y y z (400 si faltan o no son válidos) y POST /detener."""
+        """POST /set con x, y y z (400 si faltan o no son válidos), POST /detener y POST /home."""
         largo = int(self.headers.get("Content-Length", 0))
         campos = parse_qs(self.rfile.read(largo).decode("utf-8"))
         ruta = self.path.split("?")[0]
@@ -154,7 +162,8 @@ def main(argv=None):
     argumentos = parser.parse_args(argv)
     centralizador = Centralizador()
     servidor = crear_servidor(centralizador, argumentos.puerto)
-    print(f"Gemelo digital en http://localhost:{servidor.server_address[1]}", flush=True)
+    puerto = servidor.server_address[1]
+    print(f"Gemelo digital en http://localhost:{puerto}", flush=True)
     try:
         correr(servidor, centralizador)
     except KeyboardInterrupt:

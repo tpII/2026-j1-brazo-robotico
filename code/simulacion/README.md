@@ -12,7 +12,7 @@ Se ejecuta desde (`code/simulacion/`). Se necesita la libreria numpy.
    .venv/bin/python servidor.py
    ```
 
-   y se entra a `http://localhost:8000`.
+   y se entra a `http://localhost:8000`. El emulador abre la página con `?servidor=http://localhost:8000`, así le pide los datos a él y no al ESP32; no hace falta el brazo.
 
 2. Correr los tests:
 
@@ -33,7 +33,7 @@ Se ejecuta desde (`code/simulacion/`). Se necesita la libreria numpy.
 **Cómo se elige un objetivo.** Se escribe «x, y, z» en el cuadro y se aprieta «Mover», o se hacen dos clics sobre la vista: el primero, sobre el piso, fija x e y y levanta una línea vertical; el segundo, sobre esa línea, fija la altura. Escape cancela y «Detener» frena el brazo donde está.
 
 **Qué se ve.**
-- El brazo en 3D, a tamaño real, con las piezas del brazo armado. Sigue a la cinemática directa, porque cada pieza se ubica con los marcos que manda la telemetría.
+- El brazo en 3D, a tamaño real, con las piezas impresas sacadas de sus STL (`web/piezas.js`) y los servos MG90S. Sigue a la cinemática directa, porque cada pieza se ubica con los marcos que manda la telemetría.
 - Las esferas de colisión, transparentes. Se ocultan con «Mostrar las esferas de colisión», salvo las que chocan, que siempre se ven en rojo.
 - Mientras se mueve, en azul transparente, la pose a la que va.
 - Si no llega, en gris, el mejor intento (la silueta) con el motivo: «fuera de alcance», «bloqueado por límites» o «colisión».

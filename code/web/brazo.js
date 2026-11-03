@@ -1,43 +1,65 @@
 /**
- * @file El brazo 3D, armado con las piezas del brazo real en el marco de cada eslabón.
+ * @file El brazo 3D, armado con las piezas impresas en el marco de cada eslabón.
+ *
+ * Las piezas salen de los STL (web/piezas.js): el soporte en X (Foot), la base redonda con la cuna
+ * de un servo (Swing), el brazo (Arm) y la horquilla con la caja de un servo (ArmFront). La base
+ * redonda está dos veces, como base giratoria y como base de la mano, y ArmFront también, como
+ * antebrazo y como mano en forma de pala. Los servos MG90S no están en los STL y se dibujan con
+ * cajas y cilindros.
  *
  * La telemetría manda en `marcos` la rotación y el origen de cada eslabón, los mismos que usa la
- * cinemática directa (M_i). Cada pieza se arma en el marco que la mueve, así el dibujo sigue
- * a la simulación:
- * - lo que gira con la articulación i (las placas, el disco de la muñeca o la mano) va en M_i;
- * - el cuerpo del servo i va en M_i * Rz(-theta_i), el marco de la articulación antes de girar,
- *   que queda fijo al eslabón anterior, como el servo atornillado en el brazo real.
- *
- * Los largos también salen de la telemetría, así que el dibujo se adapta si cambian las medidas
- * del modelo. Las piezas son el soporte en X con la caja del servo de la base, que es negro; la
- * base redonda que gira, con el servo del hombro acostado encima; el brazo, de dos placas caladas
- * que llegan hasta el final del servo del codo, y el antebrazo, con una ranura y la caja del servo
- * de la muñeca. La muñeca gira la base de la pinza, que lleva el servo 4, y ese servo inclina una
- * mano en U con dos puntas cortas que terminan en p5, la punta de la pinza. Las medidas de las
- * piezas son aproximadas; para los cálculos valen los puntos y las esferas.
+ * cinemática directa (M_i). Cada pieza va en el marco que la mueve, así el dibujo sigue a la
+ * simulación: la pieza que gira con la articulación i, con su horn, va en M_i, y el cuerpo de cada
+ * servo va con la pieza que lo sostiene. Los largos también salen de la telemetría: el brazo y la
+ * pala se estiran por el medio hasta los largos del modelo, y el servo de la muñeca se corre sobre
+ * su eje hasta que el horn toca la base de la mano.
  * Implementación J1.
  */
 
-/** Escala de las piezas respecto del brazo real. */
-const ESCALA = 1;
+/** Las piezas están en mm y la escena, en cm. */
+const MM = 0.1;
 
-/** Servo SG90 (cm): largo del cuerpo, ancho, alto a lo largo del eje y distancia del eje a la punta. */
-const SG90 = { largo: 2.3 * ESCALA, ancho: 1.2 * ESCALA, alto: 2.3 * ESCALA, eje: 0.6 * ESCALA };
+/**
+ * Servo MG90S (mm), con las cotas de su hoja de datos: el cuerpo (B y D), las orejas (E), la tapa
+ * redonda del eje hasta C y el eje hasta A. El alto del cuerpo es aproximado. La altura de las
+ * orejas y la distancia del eje a la punta del cuerpo son las que usan las cunas de los STL.
+ */
+const MG90S = {
+  largo: 22.8, ancho: 12.4, alto: 22.7, ejeDesdePunta: 5.9,
+  orejas: { largo: 32.1, desdeFondo: 16.2, espesor: 2.5 },
+  tapa: 28.4, eje: 32.5,
+};
 
-/** Espesor de las placas impresas en 3D (cm). */
-const PLACA = 0.25 * ESCALA;
+/** Espesor de un horn (mm). */
+const HORN = 1.5;
 
-/** Altura del eje de salida del servo sobre su cara (cm). */
-const SALIDA = 0.3 * ESCALA;
+/** Medidas de las piezas, tomadas de los STL (mm, en el marco de cada STL). */
+const FOOT = { tapaCaja: 19.2 };
+const SWING = { ejeServo: 12.9, paredCuna: -11.5 };
+const ARM = { codo: 49.5, altoEje: 8, estirarDesde: 27, placaHorn: 17.5 };
+const ARMFRONT = { punta: 43.3, estirarDesde: 26.25 };
 
-/** Espesor de un horn (cm). */
-const HORN = 0.1;
+/** Colores del brazo real: PLA blanco y servos MG90S de carcasa oscura, etiqueta magenta y horns negros. */
+const COLORES = { pla: 0xe4e6e9, servo: 0x3b3734, etiqueta: 0xd0328c, horn: 0x1f1f1f };
 
-/** Espesor de la base redonda que gira con el servo de la base (cm). */
-const ALTO_BASE_GIRATORIA = 0.5;
+/**
+ * Del marco de cada STL al marco de su eslabón: las tres primeras filas de la matriz, con los mm
+ * pasados a cm. En las horquillas el eje de la articulación es y del STL y la pieza crece sobre x.
+ */
+const A_ESLABON = {
+  // Brazo y antebrazo: la pieza sobre x del eslabón y la y del STL contra el eje de giro (z).
+  brazo: [MM, 0, 0, 0, 0, 0, MM, -ARM.altoEje * MM, 0, -MM, 0, 0],
+  // Base de la mano: el disco mira hacia adelante (-z del eslabón) y el eje del servo 4 queda sobre x.
+  baseMano: [0, -MM, 0, 0, -MM, 0, 0, 0, 0, 0, -MM, 0],
+  // La pala: crece hacia -y del eslabón, que es hacia p5, con la y del STL contra el eje del servo 4.
+  pala: [0, 0, MM, -ARM.altoEje * MM, -MM, 0, 0, 0, 0, -MM, 0, 0],
+};
 
-/** Colores del brazo real: PLA gris, servos azules, el de la base negro y horns blancos. */
-const COLORES = { pla: 0xc9cdd2, servo: 0x2d5fd6, servoBase: 0x2b2e34, horn: 0xf2f2f2 };
+/** Un horn en la cara de afuera de la placa de una horquilla, sobre el eje (mm del STL). */
+const HORN_EN_PLACA = [1, 0, 0, 0, 0, 0, 1, ARM.placaHorn, 0, -1, 0, ARM.altoEje];
+
+/** Un horn debajo del disco de una base redonda (mm del STL). */
+const HORN_BAJO_DISCO = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -HORN];
 
 /**
  * Crea un brazo 3D vacío; las piezas se arman con la primera pose que llega.
@@ -57,8 +79,9 @@ function crearBrazo(escena, { conBase = true, color = null, opacidad = 1 } = {})
   const grupo = new THREE.Group();
   grupo.visible = false;
   escena.add(grupo);
+  const fijo = new THREE.Group();
+  grupo.add(fijo);
   const eslabones = Array.from({ length: 5 }, () => marcoMovil(grupo));
-  const carcasas = Array.from({ length: 5 }, () => marcoMovil(grupo));
   let saltos = null;
 
   function actualizar(dibujo) {
@@ -67,13 +90,9 @@ function crearBrazo(escena, { conBase = true, color = null, opacidad = 1 } = {})
     const nuevos = saltosDe(dibujo);
     if (!saltos || !parecidos(saltos, nuevos)) {
       saltos = nuevos;
-      armar({ eslabones, carcasas }, materiales, saltos, conBase);
+      armar(fijo, eslabones, materiales, saltos, conBase);
     }
-    dibujo.marcos.forEach((filas, i) => {
-      const marco = matrizDe(filas);
-      colocar(eslabones[i], marco);
-      colocar(carcasas[i], marco.clone().multiply(giroZ(-dibujo.angles[i])));
-    });
+    dibujo.marcos.forEach((filas, i) => colocar(eslabones[i], matrizDe(filas)));
   }
 
   return { grupo, actualizar };
@@ -82,230 +101,146 @@ function crearBrazo(escena, { conBase = true, color = null, opacidad = 1 } = {})
 /**
  * Arma todas las piezas a partir de los saltos (el vector de cada eslabón en su propio marco).
  *
- * @param {{eslabones: THREE.Group[], carcasas: THREE.Group[]}} marcos
+ * @param {THREE.Group} fijo - Lo que no se mueve: el soporte y el servo de la base.
+ * @param {THREE.Group[]} eslabones - El marco de cada eslabón.
  * @param {Record<string, THREE.Material>} m - Materiales.
  * @param {number[][]} saltos - Los cinco SALTO_ESLABONES de configuracion.py, en cm.
  * @param {boolean} conBase
  */
-function armar({ eslabones, carcasas }, m, saltos, conBase) {
-  [...eslabones, ...carcasas].forEach(vaciar);
-  // El servo del hombro va acostado sobre la base giratoria, así que su eje queda a medio ancho de ella.
-  const techoBase = Math.hypot(...saltos[0]) - SG90.ancho / 2;
-  // De p3 a la cara de atrás del servo 4, que está a SG90.largo - SG90.eje detrás de su eje (p4).
-  const hastaServoPinza = Math.hypot(...saltos[3]) - (SG90.largo - SG90.eje);
-  if (conBase) armarBase(carcasas[0], m, techoBase - ALTO_BASE_GIRATORIA);
-  armarBaseGiratoria(eslabones[0], m, techoBase);
-  armarServoHombro(carcasas[1], m);
-  armarBrazo(eslabones[1], m, saltos[1]);
-  armarAntebrazo(eslabones[2], m, saltos[2], hastaServoPinza - PLACA - HORN - SALIDA);
-  armarServoMuneca(carcasas[3], m, hastaServoPinza);
-  armarBasePinza(eslabones[3], m, hastaServoPinza, Math.hypot(...saltos[3]));
-  armarServoPinza(carcasas[4], m);
-  armarMano(eslabones[4], m, saltos[4]);
+function armar(fijo, eslabones, m, saltos, conBase) {
+  [fijo, ...eslabones].forEach(vaciar);
+  const largoMuneca = Math.hypot(...saltos[3]);
+  if (conBase) armarSoporte(fijo, m);
+  armarBaseGiratoria(eslabones[0], m, saltos[0][2]);
+  armarBrazo(eslabones[1], m, Math.hypot(...saltos[1]));
+  armarAntebrazo(eslabones[2], m, saltos[2], largoMuneca);
+  armarBaseMano(eslabones[3], m, largoMuneca);
+  armarPala(eslabones[4], m, Math.hypot(...saltos[4]));
+}
+
+/** El soporte en X y el servo de la base, parado en la caja con las orejas sobre la tapa. */
+function armarSoporte(grupo, m) {
+  grupo.add(pieza("Foot", m.pla, [MM, 0, 0, 0, 0, MM, 0, 0, 0, 0, MM, 0]));
+  const fondo = FOOT.tapaCaja - MG90S.orejas.desdeFondo;
+  grupo.add(servo(m, [0, MM, 0, 0, -MM, 0, 0, 0, 0, 0, MM, fondo * MM])); // el cuerpo hacia -x desde el eje
 }
 
 /**
- * El soporte en X, con un agujero en cada punta, y la caja con el servo de la base, que no giran.
- * El servo es negro y su cara de arriba llega a `techo`, debajo de la base giratoria.
+ * La base giratoria (Swing), con su horn debajo y el servo del hombro acostado en la cuna. El eje
+ * de ese servo queda a la altura del hombro, `alturaHombro` cm.
  */
-function armarBase(grupo, m, techo) {
-  const forma = contorno([-5.3, 0], 0.7, [5.3, 0], 0.7);
-  for (const x of [-5.3, 5.3]) {
-    const agujero = new THREE.Path();
-    agujero.absarc(x, 0, 0.3, 0, 2 * Math.PI, false);
-    forma.holes.push(agujero);
-  }
-  [Math.PI / 4, -Math.PI / 4].forEach((angulo, i) => {
-    const barra = placaPerfilada(m.pla, forma, 0.4, 0.2 + 0.01 * i); // la segunda, apenas más arriba
-    barra.rotation.z = angulo;
-    grupo.add(barra);
+function armarBaseGiratoria(grupo, m, alturaHombro) {
+  const aBase = [MM, 0, 0, 0, 0, MM, 0, 0, 0, 0, MM, alturaHombro - SWING.ejeServo * MM];
+  grupo.add(pieza("Swing", m.pla, aBase));
+  grupo.add(horn(m, componer(aBase, HORN_BAJO_DISCO)));
+  grupo.add(servo(m, componer(aBase, servoEnCuna())));
+}
+
+/** El brazo (Arm), estirado hasta `largo` cm, con el horn del hombro y el servo del codo en su caja. */
+function armarBrazo(grupo, m, largo) {
+  const estirar = largo / MM - ARM.codo;
+  grupo.add(pieza("Arm", m.pla, A_ESLABON.brazo, ARM.estirarDesde, estirar));
+  grupo.add(horn(m, componer(A_ESLABON.brazo, HORN_EN_PLACA)));
+  grupo.add(servo(m, componer(A_ESLABON.brazo, servoEnCuna(ARM.codo + estirar, ARM.altoEje))));
+}
+
+/**
+ * El antebrazo (ArmFront), con el horn del codo y el servo de la muñeca en su caja. El eje de ese
+ * servo va sobre el eje de giro del modelo, que pasa por p3.
+ *
+ * @param {THREE.Group} grupo
+ * @param {Record<string, THREE.Material>} m
+ * @param {number[]} salto - De p2 a p3 en el marco del antebrazo (cm).
+ * @param {number} largoMuneca - De p3 a p4 (cm).
+ */
+function armarAntebrazo(grupo, m, salto, largoMuneca) {
+  grupo.add(pieza("ArmFront", m.pla, A_ESLABON.brazo));
+  grupo.add(horn(m, componer(A_ESLABON.brazo, HORN_EN_PLACA)));
+  // Donde apoya la base de la mano, que tiene el eje del servo 4 (p4) a SWING.ejeServo de su fondo.
+  const cara = (salto[0] + largoMuneca) / MM - SWING.ejeServo;
+  const fondo = cara - HORN - MG90S.tapa;
+  const lateral = -salto[2] / MM;
+  const altura = salto[1] / MM + ARM.altoEje;
+  // El cuerpo va hacia el medio de la caja, porque el eje está cerca de una punta.
+  const ubicacion = lateral < 0.5
+    ? [0, 0, 1, fondo, 0, -1, 0, lateral, 1, 0, 0, altura]
+    : [0, 0, 1, fondo, 0, 1, 0, lateral, -1, 0, 0, altura];
+  grupo.add(servo(m, componer(A_ESLABON.brazo, ubicacion)));
+}
+
+/** La base de la mano (otro Swing), con el horn de la muñeca debajo y el servo 4, cuyo eje pasa por p4. */
+function armarBaseMano(grupo, m, largoMuneca) {
+  const aBase = A_ESLABON.baseMano.slice();
+  aBase[11] = SWING.ejeServo * MM - largoMuneca;
+  grupo.add(pieza("Swing", m.pla, aBase));
+  grupo.add(horn(m, componer(aBase, HORN_BAJO_DISCO)));
+  grupo.add(servo(m, componer(aBase, servoEnCuna())));
+}
+
+/** La pala (otro ArmFront), estirada hasta `largo` cm de p4 a p5, con el horn del servo 4. */
+function armarPala(grupo, m, largo) {
+  grupo.add(pieza("ArmFront", m.pla, A_ESLABON.pala, ARMFRONT.estirarDesde, largo / MM - ARMFRONT.punta));
+  grupo.add(horn(m, componer(A_ESLABON.pala, HORN_EN_PLACA)));
+}
+
+/**
+ * Dónde va un servo acostado en la cuna de un Swing o en la caja del Arm (mm del STL): el eje
+ * sobre +y en (x, z) y el cuerpo hacia -x, con el fondo contra la pared de atrás.
+ */
+function servoEnCuna(x = 0, z = SWING.ejeServo) {
+  return [0, 1, 0, x, 0, 0, 1, SWING.paredCuna, 1, 0, 0, z];
+}
+
+/**
+ * Una pieza de piezas.js con su transformación. Si `estirar` no es cero, lo que está después de
+ * x = `desde` (mm) se corre `estirar` mm sobre x, así la pieza llega al largo del modelo.
+ *
+ * @param {string} nombre - La pieza en PIEZAS.
+ * @param {THREE.Material} material
+ * @param {number[]} filas - Las tres primeras filas de la matriz del STL al marco del eslabón.
+ * @param {number} [desde=0]
+ * @param {number} [estirar=0]
+ * @returns {THREE.Mesh}
+ */
+function pieza(nombre, material, filas, desde = 0, estirar = 0) {
+  const { posiciones, indices } = PIEZAS[nombre];
+  const vertices = new Float32Array(indices.length * 3);
+  indices.forEach((indice, k) => {
+    const x = posiciones[3 * indice];
+    vertices[3 * k] = x > desde ? x + estirar : x;
+    vertices[3 * k + 1] = posiciones[3 * indice + 1];
+    vertices[3 * k + 2] = posiciones[3 * indice + 2];
   });
-  const servoBase = servo(m, m.servoBase);
-  servoBase.position.z = techo - SG90.alto / 2;
-  grupo.add(servoBase);
-  // La caja va centrada en el eje, como la base giratoria y el hombro, y encierra el servo, que
-  // queda corrido hacia -y porque su eje no está en el medio del cuerpo.
-  const altoCaja = techo - 0.75; // hasta las orejas: la parte de arriba del servo queda a la vista
-  const largoCaja = 2 * (SG90.largo - SG90.eje) + 0.6;
-  grupo.add(caja(m.pla, [SG90.ancho + 0.6, largoCaja, altoCaja], [0, 0, altoCaja / 2]));
-}
-
-/** La base redonda que gira con el servo de la base, con la cara de arriba en `techo`. */
-function armarBaseGiratoria(grupo, m, techo) {
-  grupo.add(disco(m.pla, 1.9, ALTO_BASE_GIRATORIA, [0, 0, techo - ALTO_BASE_GIRATORIA / 2]));
-}
-
-/** El servo del hombro, acostado sobre la base giratoria y con el cuerpo hacia atrás del eje. */
-function armarServoHombro(grupo, m) {
-  const hombro = servo(m);
-  hombro.rotation.z = -Math.PI / 2; // el cuerpo hacia -x y el ancho, vertical
-  grupo.add(hombro);
+  const geometria = new THREE.BufferGeometry();
+  geometria.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+  geometria.applyMatrix4(matrizDe(filas));
+  geometria.computeVertexNormals(); // los vértices no se comparten: cada cara queda plana
+  return new THREE.Mesh(geometria, material);
 }
 
 /**
- * El brazo: dos placas caladas a los costados de los servos del hombro y del codo, con los dos
- * horns. Llegan hasta 1 cm después del eje del codo, donde termina su servo, y se angostan hacia
- * el hombro para pasar sobre la base giratoria.
+ * Un servo MG90S con su transformación. En su marco (mm) el eje de salida va sobre +z y pasa por el
+ * origen, el fondo del cuerpo está en z = 0 y el cuerpo se extiende hacia -y desde el eje.
  */
-function armarBrazo(grupo, m, salto) {
-  const largo = Math.hypot(salto[0], salto[1]);
-  const piezas = new THREE.Group();
-  piezas.rotation.z = Math.atan2(salto[1], salto[0]);
-  const z = SG90.alto / 2 + SALIDA + PLACA / 2 + 0.05; // por fuera del eje de salida
-  const forma = contorno([0, 0], SG90.ancho / 2 - 0.05, [largo, 0], 1);
-  forma.holes.push(contorno([0.3 * largo, 0], 0.35, [0.6 * largo, 0], 0.35));
-  for (const lado of [z, -z]) piezas.add(placaPerfilada(m.pla, forma, PLACA, lado));
-  for (const x of [0, largo]) piezas.add(disco(m.horn, 0.5 * ESCALA, 0.1, [x, 0, z - PLACA / 2 - 0.05]));
-  grupo.add(piezas);
-}
-
-/**
- * El antebrazo: el servo del codo hacia atrás, dos placas con una ranura que se ensanchan hacia la
- * muñeca y la caja del servo de la muñeca, abierta a los costados. La cara del eje de ese servo
- * queda `frenteMuneca` cm delante de p3.
- */
-function armarAntebrazo(grupo, m, salto, frenteMuneca) {
-  const codo = servo(m);
-  codo.rotation.z = -Math.PI / 2; // el cuerpo hacia atrás del codo
-  grupo.add(codo);
-  const z = SG90.alto / 2 + 0.05 + PLACA / 2;
-  // El servo de la muñeca en este marco: de su cara de atrás a la del eje, y de abajo hacia arriba.
-  const delante = salto[0] + frenteMuneca;
-  const atras = delante - SG90.alto;
-  const abajo = salto[1] - (SG90.largo - SG90.eje);
-  const arriba = salto[1] + SG90.eje;
-  const medio = (abajo + arriba) / 2;
-  // Las placas van de una punta redondeada detrás del codo hasta la pared de atrás de la caja.
-  const forma = new THREE.Shape();
-  forma.absarc(-(SG90.largo - SG90.eje) + 0.6, 0, 0.75, Math.PI / 2, (3 * Math.PI) / 2, false);
-  forma.lineTo(atras, abajo - PLACA);
-  forma.lineTo(atras, arriba + PLACA);
-  forma.closePath();
-  forma.holes.push(contorno([0.45 * salto[0], -0.4], 0.15, [0.45 * salto[0], 0.45], 0.15));
-  for (const lado of [z, -z]) grupo.add(placaPerfilada(m.pla, forma, PLACA, lado));
-  // La caja de la muñeca: una pared atrás, de placa a placa, y dos travesaños hasta las orejas.
-  grupo.add(caja(m.pla, [PLACA, arriba - abajo + 2 * PLACA, 2 * z + PLACA], [atras - PLACA / 2, medio, 0]));
-  const largoCaja = delante - 0.6 * ESCALA - 0.125 * ESCALA - (atras - PLACA);
-  for (const y of [abajo - PLACA / 2, arriba + PLACA / 2]) {
-    grupo.add(caja(m.pla, [largoCaja, PLACA, SG90.ancho + 2 * PLACA], [atras - PLACA + largoCaja / 2, y, 0]));
-  }
-}
-
-/**
- * El servo de la muñeca, dentro del antebrazo, con el eje hacia adelante (-z). Se corre sobre su eje
- * hasta que el horn toca la base de la pinza.
- */
-function armarServoMuneca(grupo, m, hastaServoPinza) {
-  const muneca = servo(m);
-  muneca.rotation.y = Math.PI; // el eje mira hacia adelante; el cuerpo queda hacia el codo
-  muneca.position.z = SG90.alto / 2 + SALIDA + HORN - (hastaServoPinza - PLACA);
-  grupo.add(muneca);
-}
-
-/**
- * La base de la pinza, impresa en 3D, que gira con la muñeca: el horn del servo de la muñeca
- * atornillado a una placa de atrás, y dos placas, arriba y abajo, que sostienen el servo 4.
- * Adelante es -z, y el eje del servo 4 va sobre x y pasa por p4, en (0, 0, -largo).
- *
- * @param {THREE.Group} grupo
- * @param {Record<string, THREE.Material>} m
- * @param {number} hastaServoPinza - De p3 a la cara de atrás del servo 4 (cm).
- * @param {number} largo - De p3 a p4 (cm).
- */
-function armarBasePinza(grupo, m, hastaServoPinza, largo) {
-  const atras = hastaServoPinza - PLACA; // donde apoya el horn de la muñeca
-  const adelante = largo + SG90.eje; // la cara de adelante del servo 4
-  grupo.add(disco(m.horn, 0.5 * ESCALA, HORN, [0, 0, -(atras - HORN / 2)]));
-  grupo.add(caja(m.pla, [SG90.alto, SG90.ancho + 2 * PLACA, PLACA], [0, 0, -(atras + PLACA / 2)]));
-  for (const y of [SG90.ancho / 2 + PLACA / 2, -(SG90.ancho / 2 + PLACA / 2)]) {
-    grupo.add(caja(m.pla, [SG90.alto, PLACA, adelante - atras], [0, y, -(atras + adelante) / 2]));
-  }
-}
-
-/** El servo 4, dentro de la base de la pinza: el eje sobre p4 y el cuerpo hacia la muñeca (-x). */
-function armarServoPinza(grupo, m) {
-  const pinza = servo(m);
-  pinza.rotation.z = -Math.PI / 2;
-  grupo.add(pinza);
-}
-
-/**
- * La mano: una U que gira sobre el eje del servo 4, con una placa a cada lado del servo (una
- * atornillada al horn), un travesaño y dos puntas cortas que terminan en p5.
- *
- * @param {THREE.Group} grupo
- * @param {Record<string, THREE.Material>} m
- * @param {number[]} salto - De p4 a p5 en el marco de la pinza: la punta de la pinza.
- */
-function armarMano(grupo, m, salto) {
-  const largo = Math.hypot(salto[0], salto[1]);
-  const piezas = new THREE.Group();
-  piezas.rotation.z = Math.atan2(salto[1], salto[0]); // las puntas sobre +x
-  const lado = SG90.alto / 2 + SALIDA + HORN + PLACA / 2; // por fuera del horn
-  const travesano = largo - 0.85; // las puntas miden 0.8 cm y terminan en p5
-  for (const z of [lado, -lado]) piezas.add(placa(m, travesano, 0.9 * ESCALA, z));
-  piezas.add(disco(m.horn, 0.5 * ESCALA, HORN, [0, 0, lado - PLACA / 2 - HORN / 2]));
-  piezas.add(caja(m.pla, [PLACA * 1.5, 0.9 * ESCALA, 2 * lado], [travesano, 0, 0]));
-  for (const z of [lado / 2, -lado / 2]) {
-    piezas.add(caja(m.pla, [0.8, 0.8 * ESCALA, 0.6 * ESCALA], [travesano + 0.45, 0, z]));
-  }
-  grupo.add(piezas);
-}
-
-/**
- * Un servo SG90 con el eje de salida en el origen, a lo largo de +z. El cuerpo queda centrado en
- * z y se extiende hacia -y desde el eje, con las orejas de montaje y el eje sobre la cara +z.
- *
- * @param {Record<string, THREE.Material>} m
- * @param {THREE.Material} [material=m.servo] - El del cuerpo; el servo de la base es negro.
- * @returns {THREE.Group}
- */
-function servo(m, material = m.servo) {
+function servo(m, filas) {
   const grupo = new THREE.Group();
-  const centroY = -(SG90.largo / 2 - SG90.eje);
-  grupo.add(caja(material, [SG90.ancho, SG90.largo, SG90.alto], [0, centroY, 0]));
-  grupo.add(
-    caja(material, [SG90.ancho, SG90.largo + 0.9 * ESCALA, 0.25 * ESCALA], [0, centroY, SG90.alto / 2 - 0.6 * ESCALA]),
-  );
-  grupo.add(disco(m.horn, 0.25 * ESCALA, SALIDA, [0, 0, SG90.alto / 2 + SALIDA / 2]));
+  const centroY = MG90S.ejeDesdePunta - MG90S.largo / 2;
+  const { orejas } = MG90S;
+  grupo.add(caja(m.servo, [MG90S.ancho, MG90S.largo, MG90S.alto], [0, centroY, MG90S.alto / 2]));
+  grupo.add(caja(m.servo, [MG90S.ancho, orejas.largo, orejas.espesor], [0, centroY, orejas.desdeFondo + orejas.espesor / 2]));
+  grupo.add(caja(m.etiqueta, [0.3, MG90S.largo - 4, 9], [MG90S.ancho / 2 + 0.15, centroY, 8]));
+  const tapa = MG90S.tapa - MG90S.alto;
+  grupo.add(disco(m.servo, MG90S.ancho / 2, tapa, [0, 0, MG90S.alto + tapa / 2]));
+  grupo.add(disco(m.horn, 2.4, MG90S.eje - MG90S.tapa, [0, 0, (MG90S.tapa + MG90S.eje) / 2]));
+  grupo.matrixAutoUpdate = false;
+  grupo.matrix.copy(matrizDe(filas));
   return grupo;
 }
 
-/** Una placa sobre el eje x, de 0 a `largo`, con las puntas redondeadas, centrada en `z`. */
-function placa(m, largo, ancho, z) {
-  const grupo = new THREE.Group();
-  grupo.add(caja(m.pla, [largo, ancho, PLACA], [largo / 2, 0, z]));
-  grupo.add(disco(m.pla, ancho / 2, PLACA, [0, 0, z]), disco(m.pla, ancho / 2, PLACA, [largo, 0, z]));
-  return grupo;
-}
-
-/**
- * El contorno de dos círculos unidos por sus tangentes de afuera: una placa de puntas redondeadas
- * que puede ser más ancha en una punta que en la otra. También sirve de agujero.
- *
- * @param {number[]} centro1 - [x, y] de una punta.
- * @param {number} radio1
- * @param {number[]} centro2 - [x, y] de la otra punta.
- * @param {number} radio2
- * @returns {THREE.Shape}
- */
-function contorno([x1, y1], radio1, [x2, y2], radio2) {
-  const rumbo = Math.atan2(y2 - y1, x2 - x1);
-  // Ángulo entre el rumbo y la normal de cada tangente, sobre los dos círculos.
-  const abertura = Math.acos((radio1 - radio2) / Math.hypot(x2 - x1, y2 - y1));
-  const forma = new THREE.Shape();
-  forma.absarc(x1, y1, radio1, rumbo + abertura, rumbo + 2 * Math.PI - abertura, false);
-  forma.absarc(x2, y2, radio2, rumbo - abertura, rumbo + abertura, false);
-  forma.closePath();
-  return forma;
-}
-
-/** Una placa con el contorno de `forma` en el plano xy y de espesor `espesor`, centrada en `z`. */
-function placaPerfilada(material, forma, espesor, z) {
-  const geometria = new THREE.ExtrudeGeometry(forma, { depth: espesor, bevelEnabled: false, curveSegments: 24 });
-  geometria.translate(0, 0, -espesor / 2);
-  const malla = new THREE.Mesh(geometria, material);
-  malla.position.z = z;
+/** Un horn redondo con su transformación: un disco sobre +z con la cara de abajo en el origen (mm). */
+function horn(m, filas) {
+  const malla = disco(m.horn, 3.5, HORN, [0, 0, HORN / 2]);
+  malla.applyMatrix4(matrizDe(filas));
   return malla;
 }
 
@@ -330,14 +265,14 @@ function materialesReales() {
   return {
     pla: material(COLORES.pla, 0.8),
     servo: material(COLORES.servo, 0.35),
-    servoBase: material(COLORES.servoBase, 0.3),
+    etiqueta: material(COLORES.etiqueta, 0.5),
     horn: material(COLORES.horn, 0.6),
   };
 }
 
 function materialesTransparentes(color, opacidad) {
   const material = new THREE.MeshStandardMaterial({ color, roughness: 0.6, transparent: true, opacity: opacidad, depthWrite: false });
-  return { pla: material, servo: material, servoBase: material, horn: material };
+  return { pla: material, servo: material, etiqueta: material, horn: material };
 }
 
 /** Un grupo cuya matriz se escribe a mano con `colocar`. */
@@ -358,14 +293,16 @@ function vaciar(grupo) {
   grupo.clear();
 }
 
-/** La matriz 4x4 de un marco de la telemetría (tres filas de cuatro números). */
-function matrizDe([a, b, c]) {
+/** La matriz 4x4 de tres filas de cuatro números: un marco de la telemetría o una transformación de 12 números. */
+function matrizDe(filas) {
+  const [a, b, c] = filas.length === 12 ? [filas.slice(0, 4), filas.slice(4, 8), filas.slice(8)] : filas;
   return new THREE.Matrix4().set(...a, ...b, ...c, 0, 0, 0, 1);
 }
 
-/** Giro de un ángulo en grados alrededor de z, como matriz_rotacion_z de algebra_lineal. */
-function giroZ(grados) {
-  return new THREE.Matrix4().makeRotationZ((grados * Math.PI) / 180);
+/** La transformación que aplica primero `b` y después `a`, las dos con sus tres primeras filas. */
+function componer(a, b) {
+  const e = matrizDe(a).multiply(matrizDe(b)).elements; // por columnas
+  return [e[0], e[4], e[8], e[12], e[1], e[5], e[9], e[13], e[2], e[6], e[10], e[14]];
 }
 
 /**
