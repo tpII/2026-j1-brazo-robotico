@@ -41,7 +41,7 @@ def main():
     lineas.append(f"  pulsos: {list(cfg.SERVO_HOME_US)} µs")
     lineas.append(f"  ángulos del modelo: {[round(a, 4) for a in r['home']]}")
     lineas.append("")
-    lineas.append("Tabla 9: pulsos de main.ino, rango del servo y rango del modelo (grados)")
+    lineas.append("Tabla 9: pulsos de configuracion.c, rango del servo y rango del modelo (grados)")
     for nombre, s in zip(NOMBRES, r["servos"]):
         lineas.append(f"  {nombre:7s} {s['pulsos'][0]} a {s['pulsos'][1]} µs | servo {s['rango_servo']} | "
                       f"modelo {s['rango_modelo']}")

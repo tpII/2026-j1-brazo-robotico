@@ -59,9 +59,9 @@ void avanzar(Centralizador *c);
 void detener(Centralizador *c);
 
 /**
- * Planifica y empieza el movimiento hacia la posición original (Home).
+ * Planifica el movimiento hacia la posición original (Home) y lo empieza si ningún paso choca.
  * @param c El Centralizador.
- * @param respuesta (Salida) El JSON de /home.
+ * @param respuesta (Salida) El JSON de /home: resultado ("ok", "colision" u "ocupado") y estado.
  * @param largo El tamaño de respuesta.
  * @return NULL si se aceptó, o el mensaje de error.
  */

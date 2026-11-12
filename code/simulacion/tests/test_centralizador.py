@@ -31,7 +31,7 @@ class TestCentralizador(unittest.TestCase):
     def test_iniciar(self):
         """Arranca quieto, con los pulsos del home y sin resultado."""
         t = _nuevo().telemetria()
-        self.assertEqual((t["estado"], t["pulsos_us"], t["resultado"]), ("quieto", [400, 1400, 1200, 960, 400], None))
+        self.assertEqual((t["estado"], t["pulsos_us"], t["resultado"]), ("quieto", [550, 2006, 1199, 1550, 500], None))
 
     def test_pedir_y_llegar(self):
         """Un objetivo alcanzable mueve el brazo paso a paso hasta que queda quieto."""

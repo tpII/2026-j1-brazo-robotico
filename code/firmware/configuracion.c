@@ -103,31 +103,28 @@ void inicializar_matrices_offset() {
 
 // Para abajo es implementado por el grupo J1.
 
-// --- 3. ESFERAS LOCALES --- //
-const int CANTIDAD_ESFERAS[5] = {1, 2, 3, 1, 2};
-
 // --- 4. PISO Y TOLERANCIA (cinematica.c: plano_z = 0.0 y tol = 1e-9) --- //
 const double PLANO_PISO_Z = 0.0;
 const double TOL_COLISION = 1e-9;
 
 // --- 5. SERVOS MG90S --- //
-// Según el datasheet, el MG90S queda en el medio con 1.5 ms y llega a -90 y +90 grados con unos 1 y
-// 2 ms, así que 0 a 180 grados del servo van de 1000 a 2000 us. Los horns se montan con los servos a
-// 1500 us y el brazo en L: el brazo vertical; el antebrazo, la muñeca y la pinza horizontales y en
-// línea, y la base a 90 grados del frente. Los pulsos y las tablas de J5 en firmware.ino quedan con
-// los SG90, igual que en la simulación.
-const int SERVO_MIN_US[5] = {1000, 1000, 1000, 1000, 1000};
-const int SERVO_MAX_US[5] = {2000, 2000, 2000, 2000, 2000};
+// Los horns se montan con los servos a 1500 us y el brazo en L: el brazo vertical; el antebrazo, la
+// muñeca y la pinza horizontales y en línea, y la base a 90 grados del frente. Los pulsos y las
+// tablas de J5 en firmware.ino quedan con los SG90.
+const int SERVO_MIN_US[5] = {550, 550, 550, 550, 500};
+const int SERVO_MAX_US[5] = {2450, 2450, 2500, 2450, 2400};
 // El mismo home que con los SG90: (0, 140, -114.6, 4.5, 0) grados del modelo.
-const int SERVO_HOME_US[5] = {1000, 1778, 1363, 1525, 1000};
+const int SERVO_HOME_US[5] = {550, 2006, 1199, 1550, 500};
 
-// Tablas de calibración (us, grados del servo), una por servo. La del codo va al revés, como LUT2 de J5.
-const PuntoCalibracion LUT_POR_SERVO[5][7] = {
-    {{1000, 0.0}, {1167, 30.0}, {1333, 60.0}, {1500, 90.0}, {1667, 120.0}, {1833, 150.0}, {2000, 180.0}}, // base
-    {{1000, 0.0}, {1167, 30.0}, {1333, 60.0}, {1500, 90.0}, {1667, 120.0}, {1833, 150.0}, {2000, 180.0}}, // hombro
-    {{1000, 180.0}, {1167, 150.0}, {1333, 120.0}, {1500, 90.0}, {1667, 60.0}, {1833, 30.0}, {2000, 0.0}}, // codo
-    {{1000, 0.0}, {1167, 30.0}, {1333, 60.0}, {1500, 90.0}, {1667, 120.0}, {1833, 150.0}, {2000, 180.0}}, // muñeca
-    {{1000, 0.0}, {1167, 30.0}, {1333, 60.0}, {1500, 90.0}, {1667, 120.0}, {1833, 150.0}, {2000, 180.0}}  // pinza
+// Tablas de calibración (us, grados del servo) medidas en el brazo, de 45 en 45 grados a partir de la L,
+// que son 90 grados del servo. La del codo va al revés, como LUT2 de J5. En la pinza los 0 grados se
+// midieron con 450 us, pero ESP32Servo no manda pulsos de menos de 500 us y ese punto queda en 500.
+const PuntoCalibracion LUT_POR_SERVO[5][5] = {
+    {{550, 0.0}, {1000, 45.0}, {1500, 90.0}, {2050, 135.0}, {2450, 180.0}}, // base
+    {{550, 0.0}, {1000, 45.0}, {1500, 90.0}, {1950, 135.0}, {2450, 180.0}}, // hombro
+    {{550, 180.0}, {950, 135.0}, {1500, 90.0}, {2050, 45.0}, {2500, 0.0}},  // codo
+    {{550, 0.0}, {1050, 45.0}, {1500, 90.0}, {2000, 135.0}, {2450, 180.0}}, // muñeca
+    {{500, 0.0}, {900, 45.0}, {1500, 90.0}, {2000, 135.0}, {2400, 180.0}}   // pinza
 };
 
 // Grados del modelo: theta = signo * s + desvío (home() y loop() de firmware.ino).
@@ -160,3 +157,34 @@ const Vector3D SALTO_3_MEDIDO = {0.0, 0.0, -1.29}; // la base de la mano es un S
 // Los saltos que usa la cinemática de J1 en lugar de SALTO_ESLABONES.
 const Vector3D *SALTO_ESLABONES_MEDIDOS[5] = {&SALTO_0_MEDIDO, &SALTO_1_MEDIDO, &SALTO_2_MEDIDO,
                                               &SALTO_3_MEDIDO, &SALTO_4_MEDIDO};
+
+// --- 10. ESFERAS DE COLISIÓN (de las medidas del brazo) --- //
+// Una esfera en cada articulación y otra cada 1.5 cm como máximo, sobre el salto de cada eslabón.
+// En la pala la última queda a un radio de la punta, así la esfera no sobresale.
+const double RADIO_ESFERA_MEDIDO = 1.5;
+const int CANTIDAD_ESFERAS[5] = {4, 5, 4, 1, 3};
+const Vector3D ESFERAS_MEDIDAS[5][5] = {
+    {{0.0, 0.0, 0.0}, {0.0, 0.0, 1.145}, {0.0, 0.0, 2.29}, {0.0, 0.0, 3.435}},
+    {{0.0, 0.0, 0.0}, {1.25, 0.0, 0.0}, {2.5, 0.0, 0.0}, {3.75, 0.0, 0.0}, {5.0, 0.0, 0.0}},
+    {{0.0, 0.0, 0.0}, {1.4725, 0.0, 0.075}, {2.945, 0.0, 0.15}, {4.4175, 0.0, 0.225}},
+    {{0.0, 0.0, 0.0}},
+    {{0.0, 0.0, 0.0}, {0.0, -1.415, 0.0}, {0.0, -2.83, 0.0}}
+};
+
+// Los pares contiguos y el (2, 4) no se revisan: sus esferas se superponen en todas las poses (la
+// base de la mano mide 1.29 cm y deja la pala junto al antebrazo). El choque del brazo con el
+// antebrazo lo cubre el tope del codo.
+const int MATRIZ_COLISIONES_MEDIDA[5][5] = {
+    { 0, 0, 1, 1, 1}, // Eslabón 0
+    { 0, 0, 0, 1, 1}, // Eslabón 1
+    { 1, 0, 0, 0, 0}, // Eslabón 2
+    { 1, 1, 0, 0, 0}, // Eslabón 3
+    { 1, 1, 0, 0, 0}  // Eslabón 4
+};
+
+// Con el codo más cerrado que esto (grados del modelo), el antebrazo toca el brazo.
+const double TOPE_CODO = -139.0;
+
+// Caja de la pala en su marco (cm): x es el grosor, y el largo y z el ancho del ArmFront de la mano.
+// Contra la mesa se revisan sus 8 esquinas.
+const double CAJA_PALA[3][2] = {{-0.85, 0.75}, {-4.38, 0.82}, {-2.14, 1.56}};

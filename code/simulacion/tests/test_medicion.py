@@ -54,20 +54,20 @@ class TestMedicion(unittest.TestCase):
     def test_busqueda_y_k_max(self):
         """La búsqueda sobre los 2000 objetivos y los cortes por k_max."""
         r = experimentos.medicion_busqueda.calcular()
-        self.assertEqual((r["neutra"], r["resueltos"], r["con_muneca"]), (1675, 1996, 116))   # 83.75 % y 99.8 %
-        self.assertAlmostEqual(r["posiciones_promedio"], 7.388, delta=0.0005)  # «7.4 posiciones»
+        self.assertEqual((r["neutra"], r["resueltos"], r["con_muneca"]), (1675, 1996, 117))   # 83.75 % y 99.8 %
+        self.assertAlmostEqual(r["posiciones_promedio"], 7.397, delta=0.0005)  # «7.4 posiciones»
         self.assertEqual((r["posiciones_mediana"], r["posiciones_maximo"]), (1.0, 325))
-        self.assertAlmostEqual(r["iteraciones_promedio"], 24.041, delta=0.0005)  # «24.0 iteraciones»
+        self.assertAlmostEqual(r["iteraciones_promedio"], 24.1385, delta=0.0005)  # «24.1 iteraciones»
         self.assertEqual(r["iteraciones_mediana"], 2.0)
-        self.assertEqual((r["no_llegan"], r["por_kmax"], r["por_eta"]), (11559, 890, 10669))
-        self.assertEqual((r["kmax_con_recortes"], r["kmax_tope_codo"]), (568, 373))
+        self.assertEqual((r["no_llegan"], r["por_kmax"], r["por_eta"]), (11578, 897, 10681))
+        self.assertEqual((r["kmax_con_recortes"], r["kmax_tope_codo"]), (576, 379))
         # Cuatro del lado +y, cerca de la base, que no llegan inclinándose hacia atrás.
         self.assertEqual([(f["indice"], f["estado"]) for f in r["fallas"]],
                          [(145, "bloqueado_por_limites"), (696, "bloqueado_por_limites"), (846, "bloqueado_por_limites"),
                           (847, "bloqueado_por_limites")])
         e = r["ejemplo"]
         self.assertFalse(e["valida_neutra"])
-        self.assertAlmostEqual(e["error_neutra"], 0.53, delta=0.005)
+        self.assertAlmostEqual(e["error_neutra"], 0.52, delta=0.005)
         self.assertEqual((e["estado"], e["muneca"], e["pinza"], e["posiciones"]), ("ok", 0.0, 110.0, 4))
         self.assertAlmostEqual(e["error"], 0.47, delta=0.005)
 

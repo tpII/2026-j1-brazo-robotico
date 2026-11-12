@@ -63,7 +63,7 @@ Lo que se pasó a C, en `code/firmware/`:
 
 | Archivo | Para qué sirve | En C |
 |---|---|---|
-| `configuracion.py` | Medidas del brazo, esferas, pulsos de los servos y parámetros de FABRIK y del movimiento | `configuracion.c` y los arreglos de `firmware.ino` |
+| `configuracion.py` | Medidas del brazo, esferas, pulsos de los servos y parámetros de FABRIK y del movimiento | `configuracion.c` |
 | `algebra_lineal.py` | Rotaciones y traslaciones con matrices 4x4 | `algebra_lineal.c` |
 | `servos.py` | Pasar de pulso a grados del servo y a grados del modelo, rangos y home | `servos.c` |
 | `cinematica.py` | Cinemática directa: dónde queda cada articulación y cada esfera | `cinematica.c` |

@@ -73,10 +73,6 @@ void inicializar_matrices_offset(); // Necesaria para inicializar T_Ex matrices
 
 // Para abajo es implementado por el grupo J1.
 
-// --- 3. ESFERAS LOCALES --- //
-// Cuántas esferas tiene cada eslabón: las filas de esf_0 a esf_4.
-extern const int CANTIDAD_ESFERAS[5];
-
 // --- 4. PISO Y TOLERANCIA (cinematica.c) --- //
 extern const double PLANO_PISO_Z;
 extern const double TOL_COLISION;
@@ -92,7 +88,7 @@ typedef struct {
     double grados;
 } PuntoCalibracion;
 
-extern const PuntoCalibracion LUT_POR_SERVO[5][7];
+extern const PuntoCalibracion LUT_POR_SERVO[5][5];
 
 extern const int SIGNO_MODELO[5];
 extern const double DESVIO_MODELO[5];
@@ -121,6 +117,15 @@ extern const Vector3D SALTO_2_MEDIDO;
 extern const Vector3D SALTO_3_MEDIDO;
 
 extern const Vector3D *SALTO_ESLABONES_MEDIDOS[5];
+
+// --- 10. ESFERAS DE COLISIÓN (de las medidas del brazo) --- //
+// Las que usa J1 en lugar de RADIO_ESFERA, esferas_local y MATRIZ_COLISIONES.
+extern const double RADIO_ESFERA_MEDIDO;
+extern const int CANTIDAD_ESFERAS[5];           // cuántas esferas tiene cada eslabón
+extern const Vector3D ESFERAS_MEDIDAS[5][5];    // los centros locales, CANTIDAD_ESFERAS[i] en el eslabón i
+extern const int MATRIZ_COLISIONES_MEDIDA[5][5];
+extern const double TOPE_CODO;
+extern const double CAJA_PALA[3][2];
 
 #ifdef __cplusplus
 }

@@ -48,17 +48,24 @@ ROTACIONES_FIJAS = (("z", 0.0), ("x", 90.0), ("z", 0.0), ("y", -90.0), ("y", 90.
 PLANO_PISO_Z = 0.0
 TOL_COLISION = 1e-9
 
-# --- 5. SERVOS (firmware.ino) --- #
-SERVO_MIN_US = (400, 400, 400, 400, 400)
-SERVO_MAX_US = (2600, 1800, 2600, 2000, 2600)
-SERVO_HOME_US = (400, 1400, 1200, 960, 400)
+# --- 5. SERVOS MG90S (configuracion.c) --- #
+# Los horns se montan con los servos a 1500 us y el brazo en L: el brazo vertical; el antebrazo, la
+# muñeca y la pinza horizontales y en línea, y la base a 90 grados del frente.
+SERVO_MIN_US = (550, 550, 550, 550, 500)
+SERVO_MAX_US = (2450, 2450, 2500, 2450, 2400)
+# El mismo home que con los SG90: (0, 140, -114.6, 4.5, 0) grados del modelo.
+SERVO_HOME_US = (550, 2006, 1199, 1550, 500)
 
-# Tablas de calibración (us, grados del servo).
-LUT_GENERICO = ((400, 0.0), (767, 30.0), (1134, 60.0), (1501, 90.0), (1868, 120.0), (2235, 150.0), (2600, 180.0))
-LUT1 = ((400, 0.0), (800, 30.0), (1000, 60.0), (1100, 90.0), (1200, 120.0), (1500, 150.0), (1800, 180.0))
-LUT2 = ((400, 180.0), (767, 150.0), (1134, 120.0), (1501, 90.0), (1868, 60.0), (2235, 30.0), (2600, 0.0))
-LUT3 = ((400, 0.0), (500, 30.0), (600, 60.0), (900, 90.0), (1300, 120.0), (1700, 150.0), (2000, 180.0))
-LUT_POR_SERVO = (LUT_GENERICO, LUT1, LUT2, LUT3, LUT_GENERICO)  # como getAngleForServo
+# Tablas de calibración (us, grados del servo) medidas en el brazo, de 45 en 45 grados a partir de la L,
+# que son 90 grados del servo. La del codo va al revés, como LUT2 de J5. En la pinza los 0 grados se
+# midieron con 450 us, pero ESP32Servo no manda pulsos de menos de 500 us y ese punto queda en 500.
+LUT_POR_SERVO = (
+    ((550, 0.0), (1000, 45.0), (1500, 90.0), (2050, 135.0), (2450, 180.0)),  # base
+    ((550, 0.0), (1000, 45.0), (1500, 90.0), (1950, 135.0), (2450, 180.0)),  # hombro
+    ((550, 180.0), (950, 135.0), (1500, 90.0), (2050, 45.0), (2500, 0.0)),   # codo
+    ((550, 0.0), (1050, 45.0), (1500, 90.0), (2000, 135.0), (2450, 180.0)),  # muñeca
+    ((500, 0.0), (900, 45.0), (1500, 90.0), (2000, 135.0), (2400, 180.0)),   # pinza
+)
 
 # Grados del modelo: theta = signo * s + desvío (home() y loop() de firmware.ino).
 SIGNO_MODELO = (-1, 1, -1, 1, 1)

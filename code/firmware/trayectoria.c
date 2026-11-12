@@ -18,8 +18,8 @@
 #include <stdlib.h> // Para malloc y free
 #include <string.h> // Para memcpy
 
-void puntos_vigilados(const double pose[5], Vector3D puntos[14]) {
-    /* Los puntos del brazo cuya velocidad se limita: p1 a p5 y los 9 centros de las esferas. */
+void puntos_vigilados(const double pose[5], Vector3D puntos[22]) {
+    /* Los puntos del brazo cuya velocidad se limita: p1 a p5 y los 17 centros de las esferas. */
     Geometria g;
     cinematica_directa(pose, true, &g);
     int n = 0;
@@ -69,7 +69,7 @@ static bool respeta_limites(const double a[5], Pose *pasos, int n_pasos) {
     double max_angulo = VEL_MAX_ARTICULACION * DT + 1e-9;
     double max_punto = VEL_MAX_PUNTO * DT + 1e-9;
     double anterior[5];
-    Vector3D puntos_anteriores[14], puntos[14];
+    Vector3D puntos_anteriores[22], puntos[22];
     memcpy(anterior, a, sizeof(anterior));
     puntos_vigilados(a, puntos_anteriores);
     for (int k = 0; k < n_pasos; k++) {
@@ -79,7 +79,7 @@ static bool respeta_limites(const double a[5], Pose *pasos, int n_pasos) {
                 return false;
             }
         }
-        for (int p = 0; p < 14; p++) {
+        for (int p = 0; p < 22; p++) {
             if (np_linalg_norm(puntos[p], puntos_anteriores[p]) > max_punto) {
                 return false;
             }
@@ -112,7 +112,7 @@ Trayectoria planificar(const double a[5], const double b[5]) {
         muestras = 10;
     }
     double recorrido = 0.0;
-    Vector3D anteriores[14], puntos[14];
+    Vector3D anteriores[22], puntos[22];
     puntos_vigilados(a, anteriores);
     for (int j = 1; j <= muestras; j++) {
         double pose[5];
@@ -121,7 +121,7 @@ Trayectoria planificar(const double a[5], const double b[5]) {
         }
         puntos_vigilados(pose, puntos);
         double mayor = 0.0;
-        for (int p = 0; p < 14; p++) {
+        for (int p = 0; p < 22; p++) {
             mayor = fmax(mayor, np_linalg_norm(puntos[p], anteriores[p]));
         }
         recorrido = fmax(recorrido, mayor * muestras);
@@ -151,9 +151,7 @@ Trayectoria planificar(const double a[5], const double b[5]) {
 int primer_choque(Pose *pasos, int n_pasos) {
     /* El primer paso que choca. */
     for (int i = 0; i < n_pasos; i++) {
-        Geometria g;
-        cinematica_directa(pasos[i], true, &g);
-        if (detectar_colisiones(&g).hay_choque) {
+        if (detectar_colisiones(pasos[i]).hay_choque) {
             return i;
         }
     }

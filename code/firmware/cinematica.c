@@ -290,9 +290,8 @@ void cinematica_directa(const double angulos[5], bool con_esferas, Geometria *g)
             g->puntos[i][j] = M[j][3];
         }
         if (con_esferas) {
-            const Vector3D *esferas_locales_i = (const Vector3D *)esferas_local[i];
             for (int e = 0; e < CANTIDAD_ESFERAS[i]; e++) {
-                aplicar_transformada(g->esferas[i][e], M, esferas_locales_i[e]);
+                aplicar_transformada(g->esferas[i][e], M, ESFERAS_MEDIDAS[i][e]);
             }
         }
         const double *salto = *SALTO_ESLABONES_MEDIDOS[i];

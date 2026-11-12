@@ -22,11 +22,11 @@ typedef struct {
 } Trayectoria;
 
 /**
- * Los puntos del brazo cuya velocidad se limita: p1 a p5 y los 9 centros de las esferas.
+ * Los puntos del brazo cuya velocidad se limita: p1 a p5 y los 17 centros de las esferas.
  * @param pose Los cinco ángulos del modelo, en grados.
- * @param puntos (Salida) Los 14 puntos.
+ * @param puntos (Salida) Los 22 puntos.
  */
-void puntos_vigilados(const double pose[5], Vector3D puntos[14]);
+void puntos_vigilados(const double pose[5], Vector3D puntos[22]);
 
 /**
  * Pasos de 20 ms de la pose a a la pose b, dentro de los límites de velocidad y con rampas.

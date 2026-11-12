@@ -234,9 +234,7 @@ void avanzar(Centralizador *c) {
         return;
     }
     const double *paso = c->resultado.pasos[c->indice];
-    Geometria g;
-    cinematica_directa(paso, true, &g);
-    Colision choque = detectar_colisiones(&g);
+    Colision choque = detectar_colisiones(paso);
     if (choque.hay_choque) {  // no debería pasar: la búsqueda ya validó el camino
         c->estado = "detenido";
         c->resultado.estado = "colision";
@@ -262,7 +260,7 @@ void detener(Centralizador *c) {
 }
 
 const char *pedir_home(Centralizador *c, char *respuesta, size_t largo) {
-    /* Planifica y empieza el movimiento hacia la posición original (Home). */
+    /* Planifica el movimiento hacia la posición original (Home) y lo empieza si ningún paso choca. */
     Json j = {respuesta, largo, 0};
     if (strcmp(c->estado, "moviendo") == 0) {
         escribir(&j, "{\"resultado\": \"ocupado\"}");
@@ -274,18 +272,34 @@ const char *pedir_home(Centralizador *c, char *respuesta, size_t largo) {
     if (t.n_pasos == 0) {
         return "No hay memoria para planificar la trayectoria a Home.";
     }
+    int i = primer_choque(t.pasos, t.n_pasos);
     if (c->hay_resultado) {
         free(c->resultado.pasos);
     }
     memset(&c->resultado, 0, sizeof(c->resultado));
+    c->hay_resultado = true;
+    c->hay_objetivo = false;
+    c->indice = 0;
+    if (i >= 0) {  // el brazo no se mueve y se dibuja el paso que choca
+        c->resultado.estado = "colision";
+        for (int k = 0; k < 5; k++) {
+            c->resultado.angulos[k] = NAN;
+        }
+        c->resultado.error = NAN;
+        c->resultado.hay_silueta = true;
+        memcpy(c->resultado.silueta.angulos, t.pasos[i], sizeof(c->resultado.silueta.angulos));
+        c->resultado.silueta.error = NAN;
+        c->resultado.silueta.colision = detectar_colisiones(t.pasos[i]);
+        free(t.pasos);
+        c->estado = "quieto";
+        escribir(&j, "{\"resultado\": \"colision\", \"estado\": \"quieto\"}");
+        return NULL;
+    }
     c->resultado.estado = "ok";
     c->resultado.pasos = t.pasos;
     c->resultado.n_pasos = t.n_pasos;
     memcpy(c->resultado.angulos, destino, sizeof(destino));
     c->resultado.error = 0.0;
-    c->hay_resultado = true;
-    c->hay_objetivo = false;
-    c->indice = 0;
     c->estado = "moviendo";
     escribir(&j, "{\"resultado\": \"ok\", \"estado\": \"moviendo\"}");
     return NULL;
@@ -296,7 +310,7 @@ size_t telemetria(const Centralizador *c, char *json, size_t largo) {
     Json j = {json, largo, 0};
     Geometria g;
     cinematica_directa(c->angulos, true, &g);
-    Colision choque = detectar_colisiones(&g);
+    Colision choque = detectar_colisiones(c->angulos);
     const Resultado *r = c->hay_resultado ? &c->resultado : NULL;
 
     escribir(&j, "{\"angles\": ");
@@ -304,7 +318,7 @@ size_t telemetria(const Centralizador *c, char *json, size_t largo) {
     escribir(&j, ", \"collision_detected\": %s, \"colliding_centers\": ", choque.hay_choque ? "true" : "false");
     centros(&j, &g, &choque);
     escribir(&j, ", \"sphere_radius\": ");
-    numero(&j, RADIO_ESFERA);
+    numero(&j, RADIO_ESFERA_MEDIDO);
     escribir(&j, ", \"spheres\": ");
     lista_esferas(&j, &g);
     escribir(&j, ", \"puntos\": ");

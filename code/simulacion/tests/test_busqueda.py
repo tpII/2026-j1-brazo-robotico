@@ -45,7 +45,7 @@ class TestBusquedaSinChoques(unittest.TestCase):
         """(3, -3, 0) está sobre el piso, cerca de la base; se resuelve con la pinza en 110°, a 0.47 cm."""
         r = busqueda.buscar(np.array([3.0, -3.0, 0.0]), HOME, revisar_colisiones=False)
         self.assertEqual((r.estado, r.posiciones, r.iteraciones), ("ok", 4, 20))
-        np.testing.assert_allclose(r.angulos, [-40.95, 95.14, -168.72, 0.0, 110.0], atol=0.005)
+        np.testing.assert_allclose(r.angulos, [-40.95, 95.05, -168.68, 0.0, 110.0], atol=0.005)
         self.assertAlmostEqual(r.error, 0.47, delta=0.005)
 
     def test_bloqueado_5_5_7(self):

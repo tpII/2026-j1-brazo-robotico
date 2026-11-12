@@ -1,7 +1,7 @@
-"""Pulsos, grados del servo y grados del modelo, con las tablas de firmware.ino.
+"""Pulsos, grados del servo y grados del modelo, con las tablas de configuracion.c.
 
-Equivale a getAngleForServo, home() y la conversión de signos de firmware.ino. En C va a
-servos.c que sería un archivo nuevo. Implementación J1.
+Equivale a getAngleForServo, home() y la conversión de signos de firmware.ino. En C es servos.c.
+Implementación J1.
 """
 import math
 
@@ -80,7 +80,7 @@ def modelo_a_servo(i, theta):
 
 
 def rango_servo(i):
-    """Rango del servo i en grados del servo, con los pulsos que permite firmware.ino.
+    """Rango del servo i en grados del servo, con los pulsos que permite configuracion.c.
 
     Args:
         i: índice del servo (0 a 4).
@@ -107,7 +107,7 @@ def rango_modelo(i):
 
 
 def home_modelo():
-    """La pose del home del firmware (home() de firmware.ino) en grados del modelo.
+    """La pose del home del firmware (SERVO_HOME_US) en grados del modelo.
 
     Returns:
         Los cinco ángulos, como tupla.
@@ -122,7 +122,7 @@ def home_modelo():
 def pulsos_de(pose):
     """Los cinco pulsos enteros para una pose del modelo.
 
-    Redondea con los medios hacia arriba y recorta a los pulsos de firmware.ino.
+    Redondea con los medios hacia arriba y recorta a los pulsos de configuracion.c.
 
     Args:
         pose: los cinco ángulos del modelo, en grados.

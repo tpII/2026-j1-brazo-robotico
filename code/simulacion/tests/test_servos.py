@@ -1,4 +1,4 @@
-"""servos.py: pulso <-> grados del servo <-> grados del modelo, igual que firmware.ino."""
+"""servos.py: pulso <-> grados del servo <-> grados del modelo, igual que servos.c."""
 import unittest
 
 import numpy as np
@@ -11,12 +11,12 @@ class TestServos(unittest.TestCase):
     """Pulsos, grados del servo y grados del modelo."""
     def test_pulso_a_servo_como_get_angle_for_servo(self):
         """pulso_a_servo da lo mismo que getAngleForServo, con recorte en los extremos."""
-        self.assertAlmostEqual(servos.pulso_a_servo(1, 1400), 140.0, places=9)
-        self.assertAlmostEqual(servos.pulso_a_servo(2, 1200), 114.6049, places=4)
-        self.assertAlmostEqual(servos.pulso_a_servo(3, 960), 94.5, places=9)
+        self.assertAlmostEqual(servos.pulso_a_servo(1, 2006), 140.04, places=9)
+        self.assertAlmostEqual(servos.pulso_a_servo(2, 1199), 114.6273, places=4)
+        self.assertAlmostEqual(servos.pulso_a_servo(3, 1550), 94.5, places=9)
         self.assertEqual(servos.pulso_a_servo(1, 300), 0.0)      # recorte abajo
-        self.assertEqual(servos.pulso_a_servo(1, 1900), 180.0)   # recorte arriba
-        self.assertEqual(servos.pulso_a_servo(2, 2600), 0.0)     # LUT2 invertida
+        self.assertEqual(servos.pulso_a_servo(1, 2600), 180.0)   # recorte arriba
+        self.assertEqual(servos.pulso_a_servo(2, 2600), 0.0)     # la tabla del codo va al revés
 
     def test_ida_y_vuelta(self):
         """servo_a_pulso es la inversa de pulso_a_servo."""
@@ -38,25 +38,25 @@ class TestServos(unittest.TestCase):
 
     def test_home(self):
         """El home en grados del modelo."""
-        esperado = (0.0, 140.0, -114.6049, 4.5, 0.0)
+        esperado = (0.0, 140.04, -114.6273, 4.5, 0.0)
         for a, b in zip(servos.home_modelo(), esperado):
             self.assertAlmostEqual(a, b, places=4)
 
     def test_pulsos_de_home(self):
-        """Los pulsos del home son los de los SG90."""
-        self.assertEqual(servos.pulsos_de(servos.home_modelo()), [400, 1400, 1200, 960, 400])
+        """Los pulsos del home son los de configuracion.c."""
+        self.assertEqual(servos.pulsos_de(servos.home_modelo()), [550, 2006, 1199, 1550, 500])
 
     def test_redondeo_hacia_arriba_en_el_medio(self):
         """Un pulso con medio us se redondea hacia arriba, como lround."""
-        s = servos.pulso_a_servo(4, 400.5)
-        self.assertEqual(servos.pulsos_de((0.0, 90.0, -90.0, 0.0, s))[4], 401)
+        s = servos.pulso_a_servo(4, 500.5)
+        self.assertEqual(servos.pulsos_de((0.0, 90.0, -90.0, 0.0, s))[4], 501)
 
     def test_experimento_pose_cero_y_home(self):
         """El home y los rangos de cada servo."""
         r = experimentos.pose_cero_y_home.calcular()
-        np.testing.assert_allclose(r["home"], (0.0, 140.0, -114.6, 4.5, 0.0), atol=0.005)
+        np.testing.assert_allclose(r["home"], (0.0, 140.04, -114.627, 4.5, 0.0), atol=0.005)
         self.assertEqual([s["pulsos"] for s in r["servos"]],
-                         [(400, 2600), (400, 1800), (400, 2600), (400, 2000), (400, 2600)])
+                         [(550, 2450), (550, 2450), (550, 2500), (550, 2450), (500, 2400)])
         self.assertEqual([s["rango_servo"] for s in r["servos"]], [(0.0, 180.0)] * 5)
         self.assertEqual([s["rango_modelo"] for s in r["servos"]],
                          [(-180.0, 0.0), (0.0, 180.0), (-180.0, 0.0), (-90.0, 90.0), (0.0, 180.0)])

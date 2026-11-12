@@ -11,8 +11,8 @@
 //    el brazo en L (ver poseCentro).
 // 2. Pulso HOME del firmware, para comprobar que el brazo llega al home.
 // 3. Pequeños movimientos de verificación (Wiggle) para confirmar qué servo es.
-// Los pulsos son los de configuracion.c del firmware: 1000 a 2000 us según el
-// datasheet del MG90S.
+// Los pulsos son los de configuracion.c del firmware, con las tablas medidas en
+// el brazo.
 // ==============================================================================
 
 const int SERVO_COUNT = 5;
@@ -21,15 +21,15 @@ const char* servoNames[SERVO_COUNT] = {"Base", "Hombro", "Codo", "Muñeca", "Pin
 
 // Pulsos de Home del firmware del brazo (SERVO_HOME_US de configuracion.c)
 const int servoHomeUs[SERVO_COUNT] = {
-    1000, // Servo 0: Base (0°)
-    1778, // Servo 1: Hombro (140° en modelo)
-    1363, // Servo 2: Codo (-114.6° en modelo)
-    1525, // Servo 3: Muñeca (+4.5° en modelo)
-    1000  // Servo 4: Pinza (Cerrada)
+    550,  // Servo 0: Base (0°)
+    2006, // Servo 1: Hombro (140° en modelo)
+    1199, // Servo 2: Codo (-114.6° en modelo)
+    1550, // Servo 3: Muñeca (+4.5° en modelo)
+    500   // Servo 4: Pinza (Cerrada)
 };
 
-const int servoMinUs[SERVO_COUNT] = {1000, 1000, 1000, 1000, 1000};
-const int servoMaxUs[SERVO_COUNT] = {2000, 2000, 2000, 2000, 2000};
+const int servoMinUs[SERVO_COUNT] = {550, 550, 550, 550, 500};
+const int servoMaxUs[SERVO_COUNT] = {2450, 2450, 2500, 2450, 2400};
 
 // Pose de cada eslabón con el servo a 1500 us, para montar el horn (brazo en L),
 // y hacia dónde tiene que moverse al ajustar el pulso

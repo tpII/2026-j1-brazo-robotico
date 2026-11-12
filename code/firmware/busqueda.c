@@ -77,16 +77,9 @@ static bool misma_cadena(CadenaVirtual a, CadenaVirtual b) {
     return fabs(a.l2 - b.l2) < 1e-9 && fabs(a.alfa - b.alfa) < 1e-9 && fabs(a.d - b.d) < 1e-9;
 }
 
-static Colision colision_de(const double pose[5]) {
-    /* Los choques de una pose. */
-    Geometria g;
-    cinematica_directa(pose, true, &g);
-    return detectar_colisiones(&g);
-}
-
 static bool revisar(const double pose[5], const double actual[5], Silueta *silueta, Trayectoria *trayectoria) {
     /* Revisa los choques de una pose y del camino hasta ella; devuelve true si ninguno choca. */
-    Colision choque = colision_de(pose);
+    Colision choque = detectar_colisiones(pose);
     if (choque.hay_choque) {
         memcpy(silueta->angulos, pose, sizeof(silueta->angulos));
         silueta->error = NAN;
@@ -101,7 +94,7 @@ static bool revisar(const double pose[5], const double actual[5], Silueta *silue
     // La silueta es el paso que choca, o la pose si no hubo memoria para los pasos.
     memcpy(silueta->angulos, i < 0 ? pose : trayectoria->pasos[i], sizeof(silueta->angulos));
     silueta->error = NAN;
-    silueta->colision = colision_de(silueta->angulos);
+    silueta->colision = detectar_colisiones(silueta->angulos);
     free(trayectoria->pasos);
     return false;
 }

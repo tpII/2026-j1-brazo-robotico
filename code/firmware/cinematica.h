@@ -104,7 +104,7 @@ bool validador_limites_fisico(double angulo, double min_angulo, double max_angul
 // Posición del brazo para unos ángulos dados.
 typedef struct {
     Vector3D puntos[6];      // p0 a p5
-    Vector3D esferas[5][3];  // centros globales de las esferas (CANTIDAD_ESFERAS[i] en el eslabón i), si se calcularon
+    Vector3D esferas[5][5];  // centros globales de las esferas (CANTIDAD_ESFERAS[i] en el eslabón i), si se calcularon
     double marcos[5][3][4];  // rotación y origen de cada eslabón: las tres primeras filas de M
 } Geometria;
 
