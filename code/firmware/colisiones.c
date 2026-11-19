@@ -1,13 +1,14 @@
 /*
  * Choques entre eslabones y contra la mesa, con las esferas de configuracion.c.
  *
- * - Se revisan los pares i < j con MATRIZ_COLISIONES_MEDIDA[i][j] = 1: hay choque si la distancia
- *   entre dos centros es <= 2r + TOL_COLISION.
+ * - Se revisan los pares i < j con MATRIZ_COLISIONES[i][j] = 1: hay choque si la distancia entre
+ *   dos centros es <= 2r + TOL_COLISION.
  * - El codo más cerrado que TOPE_CODO cuenta como choque del par (1, 2).
  * - La mesa se revisa con las esferas de los eslabones 1 a 3, que la tocan si z <= r + PLANO_PISO_Z,
  *   y con las 8 esquinas de la caja de la pala, que la tocan si z <= PLANO_PISO_Z. La pala es una
  *   bandeja plana: con sus esferas no podría acostarse cerca de la mesa.
- * Implementación J1.
+ *
+ * En la simulación es colisiones.py. Implementación J1.
  */
 #include "colisiones.h"
 #include "cinematica.h"
@@ -52,11 +53,11 @@ Colision detectar_colisiones(const double pose[5]) {
     Geometria g;
     cinematica_directa(pose, true, &g);
     Colision choque = {.hay_choque = false, .n_pares = 0, .n_esferas = 0, .n_piso = 0};
-    double limite = 2 * RADIO_ESFERA_MEDIDO + TOL_COLISION;
+    double limite = 2 * RADIO_ESFERA + TOL_COLISION;
 
     for (int i = 0; i < 5; i++) {
         for (int j = i + 1; j < 5; j++) {
-            if (MATRIZ_COLISIONES_MEDIDA[i][j] == 0) {
+            if (MATRIZ_COLISIONES[i][j] == 0) {
                 continue;
             }
             bool choca_el_par = false;
@@ -83,7 +84,7 @@ Colision detectar_colisiones(const double pose[5]) {
 
     for (int i = 1; i < 4; i++) {
         for (int a = 0; a < CANTIDAD_ESFERAS[i]; a++) {
-            if (g.esferas[i][a][2] <= RADIO_ESFERA_MEDIDO + PLANO_PISO_Z) {
+            if (g.esferas[i][a][2] <= RADIO_ESFERA + PLANO_PISO_Z) {
                 tocar_la_mesa(&choque, i, a);
             }
         }

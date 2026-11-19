@@ -4,7 +4,7 @@ Esta carpeta tiene el firmware del ESP32 escrito en Python, para programar y pro
 
 ## Primeros pasos
 
-Se ejecuta desde (`code/simulacion/`). Se necesita la libreria numpy.
+Todo se ejecuta desde `code/simulacion/` y necesita numpy.
 
 1. Abrir el gemelo digital. Se levanta el emulador del ESP32:
 
@@ -12,7 +12,7 @@ Se ejecuta desde (`code/simulacion/`). Se necesita la libreria numpy.
    .venv/bin/python servidor.py
    ```
 
-   y se entra a `http://localhost:8000`. El emulador abre la página con `?servidor=http://localhost:8000`, así le pide los datos a él y no al ESP32; no hace falta el brazo.
+   y se entra a `http://localhost:8000`. El emulador abre la página con `?servidor=http://localhost:8000`, así la página le pide los datos a él y no al ESP32, y no hace falta el brazo.
 
 2. Correr los tests:
 
@@ -26,26 +26,32 @@ Se ejecuta desde (`code/simulacion/`). Se necesita la libreria numpy.
    .venv/bin/python -m experimentos.todos
    ```
 
-   Para correr uno solo: `.venv/bin/python -m experimentos.<nombre>`.
+   Para correr uno solo: `.venv/bin/python -m experimentos.<nombre>`. Esos `.txt` son los datos de los informes, así que conviene regenerarlos solo cuando se actualizan.
 
 ## La página del gemelo digital
 
-**Cómo se elige un objetivo.** Se escribe «x, y, z» en el cuadro y se aprieta «Mover», o se hacen dos clics sobre la vista: el primero, sobre el piso, fija x e y y levanta una línea vertical; el segundo, sobre esa línea, fija la altura. Escape cancela y «Detener» frena el brazo donde está.
+### Cómo se elige un objetivo
 
-**Qué se ve.**
+Se escribe «x, y, z» en el cuadro y se aprieta «Mover», o se hacen dos clics sobre la vista: el primero, sobre el piso, fija x e y y levanta una línea vertical; el segundo, sobre esa línea, fija la altura. Escape cancela, «Detener» frena el brazo donde está y «Home» lo lleva a la posición original, si el camino no choca.
+
+### Qué se ve
+
 - El brazo en 3D, a tamaño real, con las piezas impresas sacadas de sus STL (`web/piezas.js`) y los servos MG90S. Sigue a la cinemática directa, porque cada pieza se ubica con los marcos que manda la telemetría.
 - Las esferas de colisión, transparentes. Se ocultan con «Mostrar las esferas de colisión», salvo las que chocan, que siempre se ven en rojo.
 - Mientras se mueve, en azul transparente, la pose a la que va.
 - Si no llega, en gris, el mejor intento (la silueta) con el motivo: «fuera de alcance», «bloqueado por límites» o «colisión».
 - El objetivo, con una línea punteada hasta el piso.
 
-**Qué dice el panel.**
+### Qué dice el panel
+
 - *Error:* cuánto le falta a la punta de la pinza para llegar al objetivo. Se acepta hasta 0.5 cm.
 - *Iteraciones:* las de FABRIK en la pose elegida (20 como máximo) y, entre paréntesis, las de todo lo que probó la búsqueda.
 - *Posiciones:* cuántas combinaciones de muñeca y pinza probó la búsqueda, de 361 posibles.
 - *Cálculo:* cuánto tardó la búsqueda.
 
-El emulador atiende los pedidos del firmware (`/data`, `/set` y `/detener`) y además sirve la página:
+## El emulador
+
+Atiende los mismos pedidos que el firmware (`/data`, `/set`, `/detener` y `/home`) y además sirve la página:
 
 | Pedido | Qué hace |
 |---|---|
@@ -54,6 +60,7 @@ El emulador atiende los pedidos del firmware (`/data`, `/set` y `/detener`) y ad
 | `GET /data` | La telemetría en JSON |
 | `POST /set` | Manda un objetivo con los campos `x`, `y` y `z` |
 | `POST /detener` | Frena el brazo |
+| `POST /home` | Lleva el brazo a la posición original, si el camino no choca |
 
 Con el brazo no se usa nada de esta carpeta: el README del repositorio explica cómo se usa.
 
@@ -72,5 +79,7 @@ Lo que se pasó a C, en `code/firmware/`:
 | `fabrik.py` | FABRIK v3, la versión elegida | `fabrik.c` |
 | `busqueda.py` | Elige la muñeca y la pinza y arma el resultado | `busqueda.c` |
 | `trayectoria.py` | Mueve el brazo sin pasarse de velocidad y revisa que el camino no choque | `trayectoria.c` |
-| `centralizador.py` | Estado del brazo, objetivo, Detener y telemetría | `centralizador.c` y el `loop()` de `firmware.ino` |
+| `centralizador.py` | Estado del brazo, objetivo, Detener, Home y telemetría | `centralizador.c` y el `loop()` de `firmware.ino` |
 | `servidor.py` | El emulador del ESP32 | El servidor web de `firmware.ino` |
+
+Quedan solo en Python `fabrik_v0.py`, `fabrik_v1.py` y `fabrik_v2.py`, las versiones anteriores de FABRIK que compara el informe, y las carpetas `tests/`, `experimentos/` y `resultados/`.

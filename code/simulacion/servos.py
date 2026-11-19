@@ -1,6 +1,6 @@
 """Pulsos, grados del servo y grados del modelo, con las tablas de configuracion.c.
 
-Equivale a getAngleForServo, home() y la conversión de signos de firmware.ino. En C es servos.c.
+En C es servos.c.
 Implementación J1.
 """
 import math
@@ -9,7 +9,7 @@ import configuracion as cfg
 
 
 def pulso_a_servo(i, us):
-    """Grados del servo i para un pulso, como getAngleForServo de firmware.ino.
+    """Grados del servo i para un pulso.
 
     Interpola en la tabla de calibración del servo y recorta en los extremos de la tabla.
 

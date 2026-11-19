@@ -1,15 +1,14 @@
 /*
  * Pulsos, grados del servo y grados del modelo, con las tablas de configuracion.c.
  *
- * Equivale a getAngleForServo, home() y la conversión de signos de firmware.ino.
- * Implementación J1.
+ * En la simulación es servos.py. Implementación J1.
  */
 #include "servos.h"
 #include "configuracion.h"
 #include <math.h>
 
 double pulso_a_servo(int i, int us) {
-  /* Grados del servo i para un pulso, como getAngleForServo de firmware.ino. */
+  /* Grados del servo i para un pulso. */
   const PuntoCalibracion *lut = LUT_POR_SERVO[i];
   int n = sizeof(LUT_POR_SERVO[i]) / sizeof(LUT_POR_SERVO[i][0]);
   if (us <= lut[0].us) {
@@ -26,7 +25,7 @@ double pulso_a_servo(int i, int us) {
       return y0 + t * (y1 - y0);
     }
   }
-  return NAN; // inalcanzable con una tabla ordenada, como en getAngleForServo
+  return NAN; // inalcanzable con una tabla ordenada
 }
 
 double servo_a_pulso(int i, double s) {
@@ -61,8 +60,7 @@ double modelo_a_servo(int i, double theta) {
 }
 
 void rango_servo(int i, double rango[2]) {
-  /* Rango del servo i en grados del servo, con los pulsos que permite configuracion.c.
-   */
+  /* Rango del servo i en grados del servo, con los pulsos que permite configuracion.c. */
   double a = pulso_a_servo(i, SERVO_MIN_US[i]);
   double b = pulso_a_servo(i, SERVO_MAX_US[i]);
   rango[0] = fmin(a, b);

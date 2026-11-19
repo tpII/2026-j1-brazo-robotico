@@ -33,11 +33,11 @@ class TestFabrik(unittest.TestCase):
         """La traza de las iteraciones del ejemplo."""
         r = self._ejecucion_ejemplo()
         filas = [   # codo después del forward, codo espejado, codo y punta después del backward, error
-            (None, None, [6.25, 0.00], [17.76, 0.00], 10.97),
-            ([3.39, -8.49], [-2.52, 8.79], [-1.73, 6.01], [8.93, 1.66], 2.02),
-            ([-3.59, 6.77], None, [-2.93, 5.52], [8.06, 2.11], 1.05),
-            ([-3.93, 5.83], None, [-3.49, 5.18], [7.64, 2.27], 0.60),
-            ([-4.07, 5.33], None, [-3.79, 4.97], [7.41, 2.34], 0.36),
+            (None, None, [6.25, 0.00], [17.76, 0.00], 10.98),
+            ([3.43, -8.50], [-2.52, 8.82], [-1.71, 6.01], [8.94, 1.65], 2.04),
+            ([-3.60, 6.78], None, [-2.93, 5.52], [8.06, 2.11], 1.06),
+            ([-3.94, 5.83], None, [-3.50, 5.18], [7.64, 2.27], 0.60),
+            ([-4.08, 5.33], None, [-3.80, 4.96], [7.41, 2.34], 0.36),
         ]
         self.assertEqual(len(r.traza), len(filas))
         for paso, (forward, espejado, codo, punta, error) in zip(r.traza, filas):
@@ -55,8 +55,8 @@ class TestFabrik(unittest.TestCase):
         """Los ángulos y la punta del ejemplo."""
         s = fabrik.resolver(OBJ, 0.0, 90.0, 0.0, 0.0)
         self.assertTrue(s.valida)
-        np.testing.assert_allclose(s.angulos[:3], [-42.57, 127.34, -140.56], atol=0.005)
-        np.testing.assert_allclose(cinematica.cinematica_directa(s.angulos).puntos[5], [5.26, -5.24, 6.92], atol=0.005)
+        np.testing.assert_allclose(s.angulos[:3], [-40.95, 127.43, -140.62], atol=0.005)
+        np.testing.assert_allclose(cinematica.cinematica_directa(s.angulos).puntos[5], [5.27, -5.23, 6.92], atol=0.005)
         self.assertAlmostEqual(s.error, 0.36, delta=0.005)
 
     def test_fk_de_ik_y_rangos(self):
@@ -74,21 +74,21 @@ class TestFabrik(unittest.TestCase):
         self.assertGreaterEqual(validas, 48)
 
     def test_fuera_de_alcance(self):
-        """El plano existe, pero ||T|| = 19.81 > l1 + l2."""
+        """El plano existe, pero ||T|| = 19.80 > l1 + l2."""
         s = fabrik.resolver(np.array([14.0, -14.0, 4.0]), 0.0, 90.0, 0.0, 0.0)
         self.assertFalse(s.valida)
         self.assertTrue(s.planos)
         self.assertTrue(all(not p.alcanzable for p in s.planos))
 
     def test_mejor_intento_5_5_7(self):
-        """El plano de -137.43° no llega por los límites y guarda la iteración de menor error."""
+        """El plano de -139.05° no llega por los límites y guarda la iteración de menor error."""
         s = fabrik.resolver(np.array([5.0, 5.0, 7.0]), 0.0, 90.0, HOME[1], HOME[2])
         c = s.planos[0].ejecucion
         self.assertFalse(s.valida)
-        self.assertAlmostEqual(s.planos[0].theta0, -137.43, delta=0.005)
-        self.assertAlmostEqual(c.mejor_error, 8.9565, delta=0.0005)
+        self.assertAlmostEqual(s.planos[0].theta0, -139.05, delta=0.005)
+        self.assertAlmostEqual(c.mejor_error, 8.9601, delta=0.0005)
         self.assertAlmostEqual(c.mejor_theta1, 180.0, delta=0.005)
-        self.assertAlmostEqual(c.mejor_theta2, -71.39, delta=0.005)
+        self.assertAlmostEqual(c.mejor_theta2, -71.64, delta=0.005)
         self.assertEqual((c.motivo, c.iteraciones), ("eta", 2))
 
     def test_regla_del_codo(self):

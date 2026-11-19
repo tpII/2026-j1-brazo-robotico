@@ -4,7 +4,8 @@
  * Implementación de la cadena virtual, el Paso 0, el Paso 1 (planos candidatos), el recorte
  * angular, la cadena estirada, el control final y la resolución de los planos en orden. Cada
  * versión pone su propio paso de iteración.
- * Implementación J1.
+ *
+ * En la simulación es plano.py. Implementación J1.
  */
 #include "plano.h"
 #include "cinematica.h"

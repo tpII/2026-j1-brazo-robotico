@@ -15,21 +15,21 @@ T_EJEMPLO = plano.objetivo_en_plano(OBJ, RC_EJEMPLO, CADENA_NEUTRA)
 class TestFabrikV2(unittest.TestCase):
     """FABRIK v2, con límites y sin regla del codo."""
     def test_v2_en_el_ejemplo(self):
-        """El primer recorte lleva el hombro de -68.22° a 0°; queda recto, a 10.97 cm, y corta por eta."""
+        """El primer recorte lleva el hombro de -68.05° a 0°; queda recto, a 10.98 cm, y corta por eta."""
         r = fabrik_v2.iterar(T_EJEMPLO, CADENA_NEUTRA, 0.0, 0.0)
         self.assertAlmostEqual(r.theta1, 0.0, delta=0.005)
         self.assertAlmostEqual(r.theta2, 0.0, delta=0.005)
-        self.assertAlmostEqual(r.error, 10.97, delta=0.005)
+        self.assertAlmostEqual(r.error, 10.98, delta=0.005)
         self.assertEqual((r.iteraciones, r.motivo), (1, "eta"))
 
     def test_v2_trabado(self):
-        """Con (5, -5, 8) pasa lo mismo: el hombro va a 0°, queda recto, a 11.23 cm, y corta por eta."""
+        """Con (5, -5, 8) pasa lo mismo: el hombro va a 0°, queda recto, a 11.24 cm, y corta por eta."""
         objetivo = np.array([5.0, -5.0, 8.0])
         (_, rc), = plano.planos_candidatos(objetivo, CADENA_NEUTRA.d)
         r = fabrik_v2.iterar(plano.objetivo_en_plano(objetivo, rc, CADENA_NEUTRA), CADENA_NEUTRA, 0.0, 0.0)
         self.assertAlmostEqual(r.theta1, 0.0, delta=0.005)
         self.assertAlmostEqual(r.theta2, 0.0, delta=0.005)
-        self.assertAlmostEqual(r.error, 11.23, delta=0.005)
+        self.assertAlmostEqual(r.error, 11.24, delta=0.005)
         self.assertEqual((r.iteraciones, r.motivo), (1, "eta"))
 
 

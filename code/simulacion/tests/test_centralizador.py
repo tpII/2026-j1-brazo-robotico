@@ -31,7 +31,7 @@ class TestCentralizador(unittest.TestCase):
     def test_iniciar(self):
         """Arranca quieto, con los pulsos del home y sin resultado."""
         t = _nuevo().telemetria()
-        self.assertEqual((t["estado"], t["pulsos_us"], t["resultado"]), ("quieto", [550, 2006, 1199, 1550, 500], None))
+        self.assertEqual((t["estado"], t["pulsos_us"], t["resultado"]), ("quieto", [550, 2006, 1199, 1550, 450], None))
 
     def test_pedir_y_llegar(self):
         """Un objetivo alcanzable mueve el brazo paso a paso hasta que queda quieto."""
@@ -94,7 +94,7 @@ class TestCentralizador(unittest.TestCase):
         t = c.telemetria()
         self.assertEqual((t["estado"], t["angles"]), ("quieto", antes))
         self.assertIsNotNone(t["silueta"])
-        self.assertAlmostEqual(t["silueta"]["error_cm"], 4.596, delta=0.0005)   # «mejor intento a 4.596 cm»
+        self.assertAlmostEqual(t["silueta"]["error_cm"], 4.528, delta=0.0005)   # «mejor intento a 4.528 cm»
         self.assertEqual(np.shape(t["silueta"]["marcos"]), (5, 3, 4))
 
     def test_bloqueado_marca_el_servo_en_el_tope(self):
@@ -104,15 +104,15 @@ class TestCentralizador(unittest.TestCase):
         self.assertEqual(c.telemetria()["silueta"]["servos_fuera_de_rango"], [False, True, False, False, False])
 
     def test_fuera_de_alcance_marca_los_angulos_fuera_de_rango(self):
-        """La cadena estirada hacia (19, 6, 1) no respeta los límites: la base apunta a 18° y el hombro baja de 0°."""
+        """La cadena estirada hacia (19, 6, 1) no respeta los límites: la base apunta a 19° y el hombro baja de 0°."""
         c = _nuevo()
         self.assertEqual(c.pedir_objetivo(19.0, 6.0, 1.0)["resultado"], "fuera_de_alcance")
         self.assertEqual(c.telemetria()["silueta"]["servos_fuera_de_rango"], [True, True, False, False, False])
 
     def test_fuera_de_alcance_en_el_tope_no_se_marca(self):
-        """Hacia (25, -0.3, 4.58), a la altura del hombro y en el plano de p5, la base y el hombro quedan en 0°."""
+        """Hacia (25, -0.5, 4.58), a la altura del hombro y en el plano de p5, la base y el hombro quedan en 0°."""
         c = _nuevo()
-        self.assertEqual(c.pedir_objetivo(25.0, -0.3, 4.58)["resultado"], "fuera_de_alcance")
+        self.assertEqual(c.pedir_objetivo(25.0, -0.5, 4.58)["resultado"], "fuera_de_alcance")
         self.assertEqual(c.telemetria()["silueta"]["servos_fuera_de_rango"], [False] * 5)
 
     def test_colision_no_marca_servos(self):

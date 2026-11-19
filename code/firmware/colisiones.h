@@ -1,6 +1,7 @@
 /*
  * Choques entre eslabones y contra la mesa, con las esferas de configuracion.c.
- * Implementación J1.
+ *
+ * En la simulación es colisiones.py. Implementación J1.
  */
 #ifndef COLISIONES_H
 #define COLISIONES_H
@@ -30,8 +31,12 @@ typedef struct {
 
 /**
  * Revisa los choques de una pose.
- * @param pose Los cinco ángulos del modelo, en grados.
- * @return La Colision de la pose.
+ *
+ * Args:
+ *     pose: los cinco ángulos del modelo, en grados.
+ *
+ * Returns:
+ *     La Colision de la pose.
  */
 Colision detectar_colisiones(const double pose[5]);
 

@@ -1,7 +1,7 @@
-"""Cinemática directa: la misma cadena que calcular_configuracion_modular (cinematica.c).
+"""Cinemática directa: la misma cadena que cinematica_directa (cinematica.c).
 
 Para cada eslabón i: M = M_acum * (Rfix_i * Rz(theta_i)) y después M_acum = M * T(SALTO_i).
-A diferencia del C, también devuelve los puntos p0 a p5 y los ejes de giro de los servos.
+A diferencia del C, también devuelve los ejes de giro de los servos.
 """
 from dataclasses import dataclass
 

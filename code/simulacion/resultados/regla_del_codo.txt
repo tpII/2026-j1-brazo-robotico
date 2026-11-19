@@ -1,5 +1,5 @@
 Implementación 7.3: fronteras de la regla del codo
-  α = 0 con la pinza en θ4 = 83.32°; por debajo, α < 0 y la frontera θ2 = -180° - α queda dentro del rango del codo
-  s = T_r·E_h - T_h·E_r contra l1·l2·sin(-(θ2 + α)), θ2 de -180° a 0°: diferencia máxima 4.6e-14
-  θ4 = 90° (α = 2.39°), θ1 = 40°, θ2 = -2°: s = -0.558 < 0 -> espejo θ1' = 40.49°, θ2' = -2.77° (fórmula -2.77°), en rango: True, misma punta a 3.6e-15 cm
-  θ4 = 60° (α = -8.22°), θ1 = 40°, θ2 = -176°: s = -5.859 < 0 -> espejo θ1' = 19.13°, θ2' = -167.56° (fórmula -167.56°), en rango: True, misma punta a 2.0e-15 cm
+  α = 0 con la pinza en θ4 = 90.00°; por debajo, α < 0 y la frontera θ2 = -180° - α queda dentro del rango del codo
+  s = T_r·E_h - T_h·E_r contra l1·l2·sin(-(θ2 + α)), θ2 de -180° a 0°: diferencia máxima 2.7e-14
+  θ4 = 100° (α = 3.76°), θ1 = 40°, θ2 = -2°: s = -2.200 < 0 -> espejo θ1' = 42.28°, θ2' = -5.52° (fórmula -5.52°), en rango: True, misma punta a 4.0e-15 cm
+  θ4 = 60° (α = -11.20°), θ1 = 40°, θ2 = -176°: s = -8.733 < 0 -> espejo θ1' = 7.57°, θ2' = -161.59° (fórmula -161.59°), en rango: True, misma punta a 5.4e-15 cm

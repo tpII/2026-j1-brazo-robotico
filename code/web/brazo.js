@@ -118,7 +118,12 @@ function armar(fijo, eslabones, m, saltos, conBase) {
   armarPala(eslabones[4], m, Math.hypot(...saltos[4]));
 }
 
-/** El soporte en X y el servo de la base, parado en la caja con las orejas sobre la tapa. */
+/**
+ * El soporte en X y el servo de la base, parado en la caja con las orejas sobre la tapa.
+ *
+ * @param {THREE.Group} grupo
+ * @param {Record<string, THREE.Material>} m
+ */
 function armarSoporte(grupo, m) {
   grupo.add(pieza("Foot", m.pla, [MM, 0, 0, 0, 0, MM, 0, 0, 0, 0, MM, 0]));
   const fondo = FOOT.tapaCaja - MG90S.orejas.desdeFondo;
@@ -127,7 +132,11 @@ function armarSoporte(grupo, m) {
 
 /**
  * La base giratoria (Swing), con su horn debajo y el servo del hombro acostado en la cuna. El eje
- * de ese servo queda a la altura del hombro, `alturaHombro` cm.
+ * de ese servo queda a la altura del hombro.
+ *
+ * @param {THREE.Group} grupo
+ * @param {Record<string, THREE.Material>} m
+ * @param {number} alturaHombro - De la mesa al eje del hombro (cm).
  */
 function armarBaseGiratoria(grupo, m, alturaHombro) {
   const aBase = [MM, 0, 0, 0, 0, MM, 0, 0, 0, 0, MM, alturaHombro - SWING.ejeServo * MM];
@@ -136,7 +145,13 @@ function armarBaseGiratoria(grupo, m, alturaHombro) {
   grupo.add(servo(m, componer(aBase, servoEnCuna())));
 }
 
-/** El brazo (Arm), estirado hasta `largo` cm, con el horn del hombro y el servo del codo en su caja. */
+/**
+ * El brazo (Arm), estirado hasta su largo, con el horn del hombro y el servo del codo en su caja.
+ *
+ * @param {THREE.Group} grupo
+ * @param {Record<string, THREE.Material>} m
+ * @param {number} largo - Del hombro al codo (cm).
+ */
 function armarBrazo(grupo, m, largo) {
   const estirar = largo / MM - ARM.codo;
   grupo.add(pieza("Arm", m.pla, A_ESLABON.brazo, ARM.estirarDesde, estirar));
@@ -168,7 +183,13 @@ function armarAntebrazo(grupo, m, salto, largoMuneca) {
   grupo.add(servo(m, componer(A_ESLABON.brazo, ubicacion)));
 }
 
-/** La base de la mano (otro Swing), con el horn de la muñeca debajo y el servo 4, cuyo eje pasa por p4. */
+/**
+ * La base de la mano (otro Swing), con el horn de la muñeca debajo y el servo 4, cuyo eje pasa por p4.
+ *
+ * @param {THREE.Group} grupo
+ * @param {Record<string, THREE.Material>} m
+ * @param {number} largoMuneca - De p3 a p4 (cm).
+ */
 function armarBaseMano(grupo, m, largoMuneca) {
   const aBase = A_ESLABON.baseMano.slice();
   aBase[11] = SWING.ejeServo * MM - largoMuneca;
@@ -177,7 +198,13 @@ function armarBaseMano(grupo, m, largoMuneca) {
   grupo.add(servo(m, componer(aBase, servoEnCuna())));
 }
 
-/** La pala (otro ArmFront), estirada hasta `largo` cm de p4 a p5, con el horn del servo 4. */
+/**
+ * La pala (otro ArmFront), estirada hasta su largo, con el horn del servo 4.
+ *
+ * @param {THREE.Group} grupo
+ * @param {Record<string, THREE.Material>} m
+ * @param {number} largo - De p4 a p5 (cm).
+ */
 function armarPala(grupo, m, largo) {
   grupo.add(pieza("ArmFront", m.pla, A_ESLABON.pala, ARMFRONT.estirarDesde, largo / MM - ARMFRONT.punta));
   grupo.add(horn(m, componer(A_ESLABON.pala, HORN_EN_PLACA)));
@@ -186,6 +213,10 @@ function armarPala(grupo, m, largo) {
 /**
  * Dónde va un servo acostado en la cuna de un Swing o en la caja del Arm (mm del STL): el eje
  * sobre +y en (x, z) y el cuerpo hacia -x, con el fondo contra la pared de atrás.
+ *
+ * @param {number} [x=0]
+ * @param {number} [z=SWING.ejeServo]
+ * @returns {number[]} Las tres primeras filas de la transformación, en 12 números.
  */
 function servoEnCuna(x = 0, z = SWING.ejeServo) {
   return [0, 1, 0, x, 0, 0, 1, SWING.paredCuna, 1, 0, 0, z];
@@ -221,6 +252,10 @@ function pieza(nombre, material, filas, desde = 0, estirar = 0) {
 /**
  * Un servo MG90S con su transformación. En su marco (mm) el eje de salida va sobre +z y pasa por el
  * origen, el fondo del cuerpo está en z = 0 y el cuerpo se extiende hacia -y desde el eje.
+ *
+ * @param {Record<string, THREE.Material>} m
+ * @param {number[]} filas - Las tres primeras filas de su transformación, en 12 números.
+ * @returns {THREE.Group}
  */
 function servo(m, filas) {
   const grupo = new THREE.Group();
@@ -237,21 +272,42 @@ function servo(m, filas) {
   return grupo;
 }
 
-/** Un horn redondo con su transformación: un disco sobre +z con la cara de abajo en el origen (mm). */
+/**
+ * Un horn redondo con su transformación: un disco sobre +z con la cara de abajo en el origen (mm).
+ *
+ * @param {Record<string, THREE.Material>} m
+ * @param {number[]} filas - Las tres primeras filas de su transformación, en 12 números.
+ * @returns {THREE.Mesh}
+ */
 function horn(m, filas) {
   const malla = disco(m.horn, 3.5, HORN, [0, 0, HORN / 2]);
   malla.applyMatrix4(matrizDe(filas));
   return malla;
 }
 
-/** Una caja de medidas [x, y, z] centrada en un punto. */
+/**
+ * Una caja centrada en un punto.
+ *
+ * @param {THREE.Material} material
+ * @param {number[]} medidas - Los lados [x, y, z].
+ * @param {number[]} centro
+ * @returns {THREE.Mesh}
+ */
 function caja(material, medidas, centro) {
   const malla = new THREE.Mesh(new THREE.BoxGeometry(...medidas), material);
   malla.position.set(...centro);
   return malla;
 }
 
-/** Un cilindro con el eje en z, centrado en un punto. */
+/**
+ * Un cilindro con el eje en z, centrado en un punto.
+ *
+ * @param {THREE.Material} material
+ * @param {number} radio
+ * @param {number} alto
+ * @param {number[]} centro
+ * @returns {THREE.Mesh}
+ */
 function disco(material, radio, alto, centro) {
   const geometria = new THREE.CylinderGeometry(radio, radio, alto, 32);
   geometria.rotateX(Math.PI / 2); // CylinderGeometry viene a lo largo de y
@@ -260,6 +316,11 @@ function disco(material, radio, alto, centro) {
   return malla;
 }
 
+/**
+ * Los materiales con los colores del brazo real.
+ *
+ * @returns {Record<string, THREE.Material>}
+ */
 function materialesReales() {
   const material = (color, rugosidad) => new THREE.MeshStandardMaterial({ color, roughness: rugosidad });
   return {
@@ -270,12 +331,24 @@ function materialesReales() {
   };
 }
 
+/**
+ * Un mismo material transparente para todas las piezas, como en la pose final y la silueta.
+ *
+ * @param {number} color
+ * @param {number} opacidad
+ * @returns {Record<string, THREE.Material>}
+ */
 function materialesTransparentes(color, opacidad) {
   const material = new THREE.MeshStandardMaterial({ color, roughness: 0.6, transparent: true, opacity: opacidad, depthWrite: false });
   return { pla: material, servo: material, etiqueta: material, horn: material };
 }
 
-/** Un grupo cuya matriz se escribe a mano con `colocar`. */
+/**
+ * Un grupo cuya matriz se escribe a mano con `colocar`.
+ *
+ * @param {THREE.Object3D} padre
+ * @returns {THREE.Group}
+ */
 function marcoMovil(padre) {
   const grupo = new THREE.Group();
   grupo.matrixAutoUpdate = false;
@@ -283,23 +356,45 @@ function marcoMovil(padre) {
   return grupo;
 }
 
+/**
+ * Ubica un marco móvil con una matriz.
+ *
+ * @param {THREE.Group} grupo
+ * @param {THREE.Matrix4} matriz
+ */
 function colocar(grupo, matriz) {
   grupo.matrix.copy(matriz);
   grupo.matrixWorldNeedsUpdate = true;
 }
 
+/**
+ * Saca las piezas de un grupo y libera sus geometrías.
+ *
+ * @param {THREE.Group} grupo
+ */
 function vaciar(grupo) {
   grupo.traverse((objeto) => objeto.geometry?.dispose());
   grupo.clear();
 }
 
-/** La matriz 4x4 de tres filas de cuatro números: un marco de la telemetría o una transformación de 12 números. */
+/**
+ * La matriz 4x4 de tres filas de cuatro números: un marco de la telemetría o una transformación de 12 números.
+ *
+ * @param {number[][] | number[]} filas
+ * @returns {THREE.Matrix4}
+ */
 function matrizDe(filas) {
   const [a, b, c] = filas.length === 12 ? [filas.slice(0, 4), filas.slice(4, 8), filas.slice(8)] : filas;
   return new THREE.Matrix4().set(...a, ...b, ...c, 0, 0, 0, 1);
 }
 
-/** La transformación que aplica primero `b` y después `a`, las dos con sus tres primeras filas. */
+/**
+ * La transformación que aplica primero `b` y después `a`, las dos con sus tres primeras filas.
+ *
+ * @param {number[]} a
+ * @param {number[]} b
+ * @returns {number[]} Las tres primeras filas del resultado, en 12 números.
+ */
 function componer(a, b) {
   const e = matrizDe(a).multiply(matrizDe(b)).elements; // por columnas
   return [e[0], e[4], e[8], e[12], e[1], e[5], e[9], e[13], e[2], e[6], e[10], e[14]];
@@ -318,6 +413,13 @@ function saltosDe({ marcos, puntos }) {
   });
 }
 
+/**
+ * Si dos juegos de saltos coinciden, para no volver a armar las piezas con cada telemetría.
+ *
+ * @param {number[][]} a
+ * @param {number[][]} b
+ * @returns {boolean}
+ */
 function parecidos(a, b) {
   return a.every((salto, i) => salto.every((v, k) => Math.abs(v - b[i][k]) < 1e-6));
 }

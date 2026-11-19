@@ -13,69 +13,69 @@
 #let gris = rgb("#7F7F7F")
 
 #let objetivo = (5.0, -5.0, 7.0)
-#let objetivo-plano = (5.000, -5.000, 7.000)
-#let hombro = (0.0, 0.0, 4.0)
-#let u-plano = (0.707, -0.707)
-#let superior = (objetivo: (6.000, 1.000), phi: 9.462, theta0: -1.211, r-c: 5.978, d: 1.127)
+#let objetivo-plano = (5.328, -4.622, 7.000)
+#let hombro = (0.0, 0.0, 4.58)
+#let u-plano = (0.755, -0.655)
+#let superior = (objetivo: (6.000, 1.000), phi: 9.462, theta0: -1.517, r-c: 5.971, d: 1.158)
 #let poses = (
   home: (
     (0.000, 0.000, 0.000),
-    (0.000, 0.000, 4.000),
-    (6.900, 0.000, 4.000),
-    (11.400, 0.000, 4.500),
-    (14.600, 0.000, 4.500),
-    (14.600, 0.000, 0.200),
+    (0.000, 0.000, 4.580),
+    (6.250, 0.000, 4.580),
+    (12.140, -0.500, 4.580),
+    (13.430, -0.500, 4.580),
+    (13.430, -0.500, 0.250),
   ),
   inicial: (
     (0.000, 0.000, 0.000),
-    (0.000, 0.000, 4.000),
-    (4.879, -4.879, 4.000),
-    (8.061, -8.061, 4.500),
-    (10.324, -10.324, 4.500),
-    (13.364, -13.364, 4.500),
+    (0.000, 0.000, 4.580),
+    (4.721, -4.096, 4.580),
+    (8.842, -8.333, 4.580),
+    (9.817, -9.179, 4.580),
+    (13.087, -12.016, 4.580),
   ),
   arriba: (
     (0.000, 0.000, 0.000),
-    (0.000, 0.000, 4.000),
-    (-3.376, 3.376, 8.981),
-    (-0.190, 0.190, 8.544),
-    (2.025, -2.025, 7.885),
+    (0.000, 0.000, 4.580),
+    (-3.212, 2.786, 9.161),
+    (0.830, -1.382, 8.055),
+    (1.788, -2.213, 7.813),
     (5.000, -5.000, 7.000),
   ),
   abajo: (
     (0.000, 0.000, 0.000),
-    (0.000, 0.000, 4.000),
-    (0.186, -0.186, -2.895),
-    (1.815, -1.815, 1.003),
-    (3.174, -3.174, 3.562),
+    (0.000, 0.000, 4.580),
+    (-0.411, 0.357, -1.646),
+    (2.198, -2.569, 2.778),
+    (2.841, -3.127, 3.747),
     (5.000, -5.000, 7.000),
   ),
   sin-regla: (
     (0.000, 0.000, 0.000),
-    (0.000, 0.000, 4.000),
-    (0.721, -0.721, -2.824),
-    (2.208, -2.208, 1.185),
-    (3.474, -3.474, 3.838),
-    (5.175, -5.175, 7.402),
+    (0.000, 0.000, 4.580),
+    (0.037, -0.032, -1.670),
+    (2.505, -2.835, 2.912),
+    (3.117, -3.367, 3.915),
+    (5.173, -5.150, 7.283),
   ),
   con-regla: (
     (0.000, 0.000, 0.000),
-    (0.000, 0.000, 4.000),
-    (-2.969, 2.969, 9.475),
-    (0.198, -0.198, 8.811),
-    (2.386, -2.386, 7.995),
-    (5.326, -5.326, 6.899),
+    (0.000, 0.000, 4.580),
+    (-2.869, 2.489, 9.543),
+    (1.135, -1.646, 8.199),
+    (2.083, -2.469, 7.905),
+    (5.268, -5.232, 6.917),
   ),
 )
-#let codo-forward = (4.517, -4.517, -4.991)
-#let codo-reflejado = (-1.433, 1.433, 14.841)
+#let codo-forward = (2.589, -2.246, -3.924)
+#let codo-reflejado = (-1.900, 1.649, 13.397)
 #let latigo = (
   (0.000, 0.000, 0.000),
-  (-0.514, -0.009, 3.967),
-  (6.384, 0.112, 3.875),
-  (10.695, -0.813, 4.907),
-  (8.717, -3.063, 6.032),
-  (5.002, -4.999, 7.000),
+  (-1.161, -0.212, 4.425),
+  (4.983, 0.912, 4.200),
+  (9.738, -2.326, 5.558),
+  (8.714, -3.016, 5.933),
+  (5.012, -4.994, 6.997),
 )
 
 #let proy3d(p, az: -72deg, el: 22deg) = (
@@ -255,7 +255,7 @@
 #let figura-cadena = {
   set text(size: 7pt)
   diagram(
-    spacing: (9mm, 5mm),
+    spacing: (11mm, 5mm),
     node-shape: rect,
     node-corner-radius: 3pt,
     node-inset: 4pt,
@@ -272,11 +272,11 @@
       shape: fletcher.shapes.pill,
       stroke: 0.6pt,
     ),
-    edge(<s0>, <s1>, "-|>", [4], label-side: left),
-    edge(<s1>, <s2>, "-|>", [6.9], label-side: left),
-    edge(<s2>, <s3>, "-|>", [4.5; 0.5], label-side: left),
-    edge(<s3>, <s4>, "-|>", [3.2], label-side: left),
-    edge(<s4>, <p5>, "-|>", [4.3], label-side: left),
+    edge(<s0>, <s1>, "-|>", [4.58], label-side: left),
+    edge(<s1>, <s2>, "-|>", [6.25], label-side: left),
+    edge(<s2>, <s3>, "-|>", [5.89], label-side: left),
+    edge(<s3>, <s4>, "-|>", [1.29], label-side: left),
+    edge(<s4>, <p5>, "-|>", [4.33], label-side: left),
   )
 }
 
@@ -366,8 +366,8 @@
     node-inset: 5pt,
     edge-stroke: 0.6pt,
     node((0, 0), align(center)[*v0* \ modelo general \ 3D con rótulas \ no aplicable], name: <v0>, ..caja(bermellon)),
-    node((1, 0), align(center)[*v1* \ bisagras (Fig. 7) \ sin límites \ 36 % · 69 %], name: <v1>, ..caja(naranja)),
-    node((2, 0), align(center)[*v2* \ + límites en \ cada paso \ 41 % · 73 %], name: <v2>, ..caja(naranja)),
+    node((1, 0), align(center)[*v1* \ bisagras (Fig. 7) \ sin límites \ 38 % · 71 %], name: <v1>, ..caja(naranja)),
+    node((2, 0), align(center)[*v2* \ + límites en \ cada paso \ 42 % · 74 %], name: <v2>, ..caja(naranja)),
     node((3, 0), align(center)[*v3* \ + regla del codo \ (pole) \ 99 % · 99 %], name: <v3>, ..caja(azul)),
     edge(<v0>, <v1>, "-|>"),
     edge(<v1>, <v2>, "-|>"),
@@ -382,25 +382,25 @@
   escena-3d(
     (
       capa-brazo(poses.home, gris, grosor: 1.6pt),
-      capa-segmento((0, 1.4, 4), (0, -1.4, 4), verde, dash: "dashed", grosor: 0.9pt),
-      capa-segmento((6.9, 1.4, 4), (6.9, -1.4, 4), verde, dash: "dashed", grosor: 0.9pt),
-      capa-segmento((0, 0, 0), (0, 0, 5.4), verde, dash: "dashed", grosor: 0.9pt),
-      capa-segmento((10.1, 0, 4.5), (16.3, 0, 4.5), verde, dash: "dashed", grosor: 0.9pt),
-      capa-segmento((14.6, 1.4, 4.5), (14.6, -1.4, 4.5), verde, dash: "dashed", grosor: 0.9pt),
+      capa-segmento((0, 1.4, 4.58), (0, -1.4, 4.58), verde, dash: "dashed", grosor: 0.9pt),
+      capa-segmento((6.25, 1.4, 4.58), (6.25, -1.4, 4.58), verde, dash: "dashed", grosor: 0.9pt),
+      capa-segmento((0, 0, 0), (0, 0, 6.0), verde, dash: "dashed", grosor: 0.9pt),
+      capa-segmento((10.8, -0.5, 4.58), (15.1, -0.5, 4.58), verde, dash: "dashed", grosor: 0.9pt),
+      capa-segmento((13.43, 0.9, 4.58), (13.43, -1.9, 4.58), verde, dash: "dashed", grosor: 0.9pt),
       capa-nota((0, 0, 1.6), -1.6, 0.4, [base (servo 0): \ gira sobre $z$], ancla: "east"),
-      capa-nota((0, -1.0, 4), -1.4, 1.4, [hombro (servo 1): \ bisagra], ancla: "east"),
-      capa-nota((6.9, 0, 4), -2.0, 2.4, [codo (servo 2): \ bisagra paralela], ancla: "south"),
-      capa-nota((11.4, 0, 4.5), 1.2, 2.0, [muñeca (servo 3): rota \ sobre el antebrazo], ancla: "south"),
-      capa-nota((14.6, 0, 4.5), 1.6, 0.6, [pinza (servo 4): bisagra], ancla: "west"),
-      capa-nota((14.6, 0, 0.2), 1.6, -0.2, [$bold(p)_5$: punta de la pinza], ancla: "west"),
+      capa-nota((0, -1.0, 4.58), -1.4, 1.4, [hombro (servo 1): \ bisagra], ancla: "east"),
+      capa-nota((6.25, 0, 4.58), -2.0, 2.4, [codo (servo 2): \ bisagra paralela], ancla: "south"),
+      capa-nota((12.14, -0.5, 4.58), -0.6, 2.4, [muñeca (servo 3): rota \ sobre el antebrazo], ancla: "south"),
+      capa-nota((13.43, -0.5, 4.58), 1.6, 0.6, [pinza (servo 4): bisagra], ancla: "west"),
+      capa-nota((13.43, -0.5, 0.25), 1.6, -0.2, [$bold(p)_5$: punta de la pinza], ancla: "west"),
     ),
     az: az,
     el: el,
     u: (1, 0),
     plano: true,
-    alto: 6.5,
-    largo-plano: (-0.6, 16.6),
-    piso: ((-1, -3), (16, 2)),
+    alto: 7,
+    largo-plano: (-0.6, 15.6),
+    piso: ((-1, -3), (15, 2)),
     escala: 0.45cm,
   )
 }
@@ -459,8 +459,8 @@
       (
         capa-brazo(latigo, bermellon),
         capa-objetivo(objetivo),
-        capa-nota((-0.26, 0.0, 2.0), -1.3, 0.9, [columna \ inclinada 7.4°], ancla: "east", color: bermellon),
-        capa-nota(latigo.at(3), 1.3, -0.9, [muñeca \ doblada 111°], ancla: "west", color: bermellon),
+        capa-nota((-0.6, -0.11, 2.2), -1.3, 0.9, [columna \ inclinada 14.9°], ancla: "east", color: bermellon),
+        capa-nota(latigo.at(3), 1.3, -0.9, [muñeca \ doblada 106°], ancla: "west", color: bermellon),
       ),
       plano: false,
     ),
@@ -487,12 +487,12 @@
     ),
     (
       nombre: "Guitera Woida, Emma",
-      email: "emma.guitera.woida@gmail.com",
+      email: "emmagw04@gmail.com",
       legajo: "03352/2",
     ),
     (
       nombre: "Terruzzi, Ana Justina",
-      email: "justina.terruzzi@gmail.com",
+      email: "justinaterruzzi@gmail.com",
       legajo: "02557/9",
     ),
   ),
@@ -517,17 +517,17 @@ Como referencia principal se toma el paper original de FABRIK @aristidou2011fabr
 - la documentación de Blender y Maya sobre la técnica del _pole_ @blender_ik_constraint @maya_rp_solver @maya_pole_vector;
 - el informe final del grupo J5 (2025) @informe_final_j5_2025.
 
-Los valores numéricos salen de la simulación en Python, que usa la cadena cinemática de `configuracion.c`, replicada en `configuracion.py`, con las medidas del brazo armado (@sec-geometria). Las figuras del brazo se dibujaron con las coordenadas que calcula la cinemática directa del modelo.
+Los valores numéricos salen de la simulación en Python, que usa la cadena cinemática de `configuracion.c` y `cinematica.c`, replicada en `configuracion.py` y `cinematica.py`, con las medidas de las piezas del brazo (@sec-geometria). Las figuras del brazo se dibujaron con las coordenadas que calcula la simulación.
 
 = El brazo como cadena cinemática
 
 == Estructura física
 
-El brazo está formado por cinco servomotores SG90 conectados en serie. La @fig-cadena resume la cadena completa.
+El brazo está formado por cinco servomotores MG90S conectados en serie. La @fig-cadena resume la cadena completa.
 
 #figure(
   figura-cadena,
-  caption: [Cadena cinemática del brazo. Los números sobre las flechas son las distancias en cm entre articulaciones, medidas en el brazo armado, salvo el desvío de 0.5 cm del antebrazo, que es el de `configuracion.c`. En azul, los servos que calcula FABRIK; en naranja, la muñeca y la pinza, que elige la búsqueda de la @sec-incognitas.],
+  caption: [Cadena cinemática del brazo. Los números sobre las flechas son las distancias en cm entre articulaciones, sacadas de las piezas impresas. En azul, los servos que calcula FABRIK; en naranja, la muñeca y la pinza, que elige la búsqueda de la @sec-incognitas.],
 ) <fig-cadena>
 
 == Geometría del modelo <sec-geometria>
@@ -538,7 +538,7 @@ $
   M_"eslabón"^((i)) = M_"acum" dot.op R_"fix"^((i)) dot.op R_z (theta_i), quad M_"acum" <- M_"eslabón"^((i)) dot.op T("SALTO"_i)
 $
 
-Con las medidas del brazo, en la _pose cero_ (todos los ángulos del modelo en 0°) las articulaciones quedan en las posiciones de la @tab-home, que se dibujan en la @fig-home. El _home_ del firmware es otra pose. Lleva los servos a 400, 1400, 1200, 960 y 400 µs, que en ángulos del modelo son $(0°, 140°, -114.6°, 4.5°, 0°)$, con el brazo inclinado hacia atrás y el codo doblado. Es la pose en la que arranca el brazo y la misma que muestra el gemelo digital en la Figura 5 del informe final del grupo J5 @informe_final_j5_2025.
+Con las medidas del brazo, en la _pose cero_ (todos los ángulos del modelo en 0°) las articulaciones quedan en las posiciones de la @tab-home, que se dibujan en la @fig-home. El _home_ del firmware es otra pose. Lleva los servos a 550, 2006, 1199, 1550 y 450 µs, que en ángulos del modelo son $(0°, 140°, -114.6°, 4.5°, 0°)$, con el brazo inclinado hacia atrás y el codo doblado. Es la pose en la que arranca el brazo y la misma que muestra el gemelo digital en la Figura 5 del informe final del grupo J5 @informe_final_j5_2025.
 
 #figure(
   table(
@@ -548,29 +548,24 @@ Con las medidas del brazo, en la _pose cero_ (todos los ángulos del modelo en 0
     fill: (_, row) => if row == 0 { luma(220) } else if calc.even(row) { luma(245) } else { white },
     table.header([*Punto*], [*Articulación*], [*Posición en la pose cero (cm)*], [*Eje de giro en la pose cero*]),
     [$bold(p)_0$], [Base (servo 0)], [$(0, 0, 0)$], [$z$ (vertical)],
-    [$bold(p)_1$], [Hombro (servo 1)], [$(0, 0, 4)$], [$-y$ (horizontal)],
-    [$bold(p)_2$], [Codo (servo 2)], [$(6.9, 0, 4)$], [$-y$ (paralelo al hombro)],
-    [$bold(p)_3$], [Muñeca (servo 3)], [$(11.4, 0, 4.5)$], [$-x$ (a lo largo del antebrazo)],
-    [$bold(p)_4$], [Pinza (servo 4)], [$(14.6, 0, 4.5)$], [$-y$],
-    [$bold(p)_5$], [Punta de la pinza], [$(14.6, 0, 0.2)$], [---],
+    [$bold(p)_1$], [Hombro (servo 1)], [$(0, 0, 4.58)$], [$-y$ (horizontal)],
+    [$bold(p)_2$], [Codo (servo 2)], [$(6.25, 0, 4.58)$], [$-y$ (paralelo al hombro)],
+    [$bold(p)_3$], [Muñeca (servo 3)], [$(12.14, -0.5, 4.58)$], [$-x$ (a lo largo del antebrazo)],
+    [$bold(p)_4$], [Pinza (servo 4)], [$(13.43, -0.5, 4.58)$], [$-y$],
+    [$bold(p)_5$], [Punta de la pinza], [$(13.43, -0.5, 0.25)$], [---],
   ),
   caption: [Posición y eje de giro de cada articulación en la pose cero, calculados con la cinemática directa del modelo.],
 ) <tab-home>
 
 #figure(
   figura-home,
-  caption: [Brazo en la pose cero. En verde punteado se ven los ejes de giro. El de la base es vertical, los del hombro, el codo y la pinza son horizontales y paralelos, y el de la muñeca va a lo largo del antebrazo. Con la pinza en 0° la mano queda perpendicular al antebrazo, hacia abajo, y su punta queda 0.2 cm por encima del piso. La pose cero es una referencia del modelo y el brazo no la adopta. El plano celeste es el plano vertical del brazo.],
+  caption: [Brazo en la pose cero. En verde punteado se ven los ejes de giro. El de la base es vertical, los del hombro, el codo y la pinza son horizontales y paralelos, y el de la muñeca va a lo largo del antebrazo. Con la pinza en 0° la mano queda perpendicular al antebrazo, hacia abajo, y su punta queda 0.25 cm por encima del piso. La pose cero es una referencia del modelo y no es la pose en la que arranca el brazo. El plano celeste es el plano vertical del brazo.],
 ) <fig-home>
 
-Para FABRIK importan tres detalles del modelo:
-
-+ Las medidas se tomaron sobre el brazo armado, porque las de `configuracion.c` vienen del grupo J5, cuyo informe final no trae ninguna longitud. El eje del hombro está a 4 cm de la mesa, el brazo mide 6.9 cm y el antebrazo 7.7 cm hasta el eje de la pinza: 4.5 cm hasta el centro del servo de la muñeca y 3.2 cm más hasta el eje del servo 4. La punta de la pinza está a 4.3 cm de ese eje y a 5.3 cm de la base impresa de la pinza, donde se atornilla el horn de la muñeca. De estas medidas dependen la altura del hombro, $l_1$, $bold(v)$, $alpha$ y $d$, pero no el método.
-+ $bold(p)_5$ es la punta de la pinza, a 4.3 cm de $bold(p)_4$ a lo largo de la mano, en el plano en que gira la pinza. El servo 4 inclina la pinza y con eso mueve la punta. Con la pinza en 90° la mano queda alineada con el antebrazo y $bold(p)_5$ cae sobre el eje de la muñeca, así que girar la muñeca no lo mueve; con la pinza inclinada, la muñeca lo saca del plano del brazo. En `configuracion.c`, `SALTO_4` llega al extremo del eje de la pinza, 2 cm hacia un costado; el grupo J5 calculaba ese punto pero no lo usaba. `configuracion.py` usa la punta medida, y `configuracion.c` se corrige en el pasaje a C, junto con las demás medidas.
-+ El antebrazo tiene un pequeño desvío: de $bold(p)_2$ a $bold(p)_3$ hay 4.5 cm a lo largo del antebrazo y 0.5 cm hacia arriba. Los 0.5 cm son los de `configuracion.c`, porque no se midieron sobre el brazo. Este desvío y la inclinación de la pinza determinan el ángulo $alpha$, fijo para cada posición de la muñeca y la pinza, que se define en la @sec-cadena-virtual.
 
 == El brazo se mueve en un plano vertical
 
-Como la base gira todo el brazo alrededor de $z$ y el hombro y el codo son bisagras de ejes paralelos y horizontales, en el modelo el hombro, el codo, la muñeca y el servo de la pinza ($bold(p)_1$ a $bold(p)_4$) quedan siempre en un mismo plano vertical, que contiene al eje de la base y gira con ella. Solo $bold(p)_5$ puede salir de ese plano. Con la muñeca neutra la pinza gira dentro del plano y $bold(p)_5$ queda en él; con la muñeca girada y la pinza inclinada, queda hasta 4.3 cm hacia un costado (@tab-cadena-virtual).
+Como la base gira todo el brazo alrededor de $z$ y el hombro y el codo son bisagras de ejes paralelos y horizontales, en el modelo el hombro y el codo ($bold(p)_1$ y $bold(p)_2$) quedan siempre en un mismo plano vertical, que contiene al eje de la base y gira con ella. La muñeca y el servo de la pinza ($bold(p)_3$ y $bold(p)_4$) quedan en un plano paralelo. Con la muñeca neutra la pinza gira dentro de ese plano paralelo y $bold(p)_5$ queda en él; con la muñeca girada y la pinza inclinada, $bold(p)_5$ se aleja del plano del brazo (@tab-cadena-virtual).
 
 Por lo tanto, ubicar el efector final se puede dividir en dos problemas: elegir hacia dónde apunta el plano (la base) y resolver dentro de ese plano un brazo de dos eslabones (hombro y codo). El método de la @sec-plano se basa en esa división.
 
@@ -619,7 +614,7 @@ En los experimentos del paper con un modelo humano, esta técnica de bisagra se 
 
 == Resultados reportados en el paper
 
-La @tab-paper resume la Tabla 1 del paper, obtenida con una cadena de 10 articulaciones sin restricciones, un objetivo alcanzable y código MATLAB ejecutado en un Pentium 2 Duo de 2.2 GHz. Estos valores sirven para comparar los métodos entre sí, pero no para estimar tiempos en el ESP32.
+La @tab-paper resume la Tabla 1 del paper, obtenida con una cadena de 10 articulaciones sin restricciones, un objetivo alcanzable. Estos valores sirven para comparar los métodos entre sí, pero no para estimar tiempos en el ESP32.
 
 #figure(
   table(
@@ -639,7 +634,7 @@ La @tab-paper resume la Tabla 1 del paper, obtenida con una cadena de 10 articul
 
 == Limitación reportada
 
-En la sección 5.4 del paper se describe un caso singular poco frecuente: la cadena está completamente recta y el objetivo cae sobre esa misma recta, entre dos articulaciones. El forward acerca la cadena a la raíz pero la deja recta, y el backward la devuelve a su lugar, de modo que el algoritmo entra en un ciclo. El paper propone doblar la cadena un ángulo muy pequeño, dentro de los límites, corriendo el objetivo durante la primera etapa backward y devolviéndolo después a su lugar. En nuestro brazo este caso puede aparecer cuando queda recta la cadena virtual que forman el hombro, el codo y $bold(p)_5$ (@sec-cadena-virtual), y se trata en la @sec-pole.
+En la sección 5.4 del paper se describe un caso singular poco frecuente: la cadena está completamente recta y el objetivo cae sobre esa misma recta, entre dos articulaciones. El forward acerca la cadena a la raíz pero la deja recta, y el backward la devuelve a su lugar, de modo que el algoritmo entra en un ciclo. El paper propone doblar la cadena un ángulo muy pequeño, dentro de los límites, corriendo el objetivo durante la primera etapa backward y devolviéndolo después a su lugar. En nuestro brazo este caso aparece cuando el codo de la cadena virtual que forman el hombro, el codo y $bold(p)_5$ (@sec-cadena-virtual) queda sobre la recta que une el hombro con el objetivo, y se trata en la @sec-pole.
 
 = De rótulas libres a bisagras
 
@@ -653,7 +648,7 @@ Con el objetivo $(5, -5, 7)$ y el brazo en la pose cero, FABRIK 3D libre converg
 
 #figure(
   figura-latigo,
-  caption: [El mismo objetivo resuelto (a) con rótulas libres y (b) con el método de bisagras. En (a) la cadena se acomoda como un látigo: se inclina la columna de la base y se doblan puntos donde no hay ninguna bisagra.],
+  caption: [El mismo objetivo resuelto (a) con rótulas libres y (b) con el método de bisagras, sin revisar choques. En (a) la cadena se acomoda como un látigo: se inclina la columna de la base y se doblan puntos donde no hay ninguna bisagra.],
 ) <fig-latigo>
 
 #figure(
@@ -663,9 +658,9 @@ Con el objetivo $(5, -5, 7)$ y el brazo en la pose cero, FABRIK 3D libre converg
     inset: 6pt,
     fill: (_, row) => if row == 0 { luma(220) } else if calc.even(row) { luma(245) } else { white },
     table.header([*Qué se mide*], [*En el modelo del brazo*], [*FABRIK 3D libre*]),
-    [Columna de la base ($bold(p)_0 -> bold(p)_1$)], [vertical: el servo solo gira], [inclinada 7.4°],
-    [Hombro $bold(p)_1$], [fijo en $(0, 0, 4)$], [se mueve a $(-0.51, -0.01, 3.97)$],
-    [Ángulo del antebrazo en $bold(p)_3$], [6.3°, fijo: la muñeca solo rota], [111.4°],
+    [Columna de la base ($bold(p)_0 -> bold(p)_1$)], [vertical: el servo solo gira], [inclinada 14.9°],
+    [Hombro $bold(p)_1$], [fijo en $(0, 0, 4.58)$], [se mueve a $(-1.16, -0.21, 4.43)$],
+    [Ángulo del antebrazo en $bold(p)_3$], [4.9°, fijo: la muñeca solo rota], [106.2°],
   ),
   caption: [Restricciones mecánicas que viola la solución con rótulas libres, objetivo $(5, -5, 7)$.],
 ) <tab-latigo>
@@ -679,20 +674,20 @@ Como estas posiciones no respetan la estructura de bisagras, tampoco existen án
     inset: 6pt,
     fill: (_, row) => if row == 0 { luma(220) } else if calc.even(row) { luma(245) } else { white },
     table.header([*Ángulos reales del modelo (°)*], [*Resultado de la fórmula (°)*]),
-    [$(0, 0, 0, 0, 0)$], [$(0, 90, 90, 180, 90)$],
-    [$(-30, 60, -90, 20, 0)$], [$(0, 90, 90, 180, 90)$],
-    [$(-120, 100, -40, -60, 90)$], [$(0, 90, 90, 180, 90)$],
+    [$(0, 0, 0, 0, 0)$], [$(0, 90, 85.15, 180, 90)$],
+    [$(-30, 60, -90, 20, 0)$], [$(0, 90, 85.15, 180, 90)$],
+    [$(-120, 100, -40, -60, 90)$], [$(0, 90, 85.15, 180, 90)$],
   ),
   caption: [El ángulo entre cada eslabón y su propio eje, $op("atan2")(norm(bold(d)_i times bold(z)_i), bold(d)_i dot.op bold(z)_i)$, no depende de la pose.],
 ) <tab-formula>
 
-Esto pasa porque en una bisagra, como el hombro, el codo y la pinza, el eslabón siempre es perpendicular a su eje (90°), y en la base y la muñeca es paralelo (0° o 180°). Ninguno de esos valores cambia cuando gira el servo. El ángulo de una articulación debe medirse alrededor de su eje y con signo, como se hace en la @sec-angulos.
+Esto pasa porque en una bisagra, como el hombro, el codo y la pinza, el eslabón forma siempre el mismo ángulo con su eje (90°, y 85.15° en el codo por el desvío del antebrazo), y en la base y la muñeca es paralelo (0° o 180°). Ninguno de esos valores cambia cuando gira el servo. El ángulo de una articulación debe medirse alrededor de su eje y con signo, como se hace en la @sec-angulos.
 
 == Por qué se eligió el método de bisagras
 
-El método de bisagras coincide con la mecánica del brazo. Las figuras 2 y 4 del informe final del grupo J5 @informe_final_j5_2025 muestran una base giratoria y dos bisagras paralelas. La muñeca rota sobre el eje del antebrazo y el servo 4 inclina la pinza. Con la muñeca y la pinza quietas, todo lo que está después del codo se comporta como un cuerpo rígido. Es el caso de la Fig. 7 del paper, donde la bisagra se resuelve proyectando la cadena sobre un plano que contiene a la raíz y al objetivo y aplicando FABRIK en 2D, como propone la sección 4.3.
+El método de bisagras coincide con la mecánica del brazo. La muñeca rota sobre el eje del antebrazo y el servo 4 inclina la pinza. Con la muñeca y la pinza quietas, todo lo que está después del codo se comporta como un cuerpo rígido. Es el caso de la Fig. 7 del paper, donde la bisagra se resuelve proyectando la cadena sobre un plano que contiene a la raíz y al objetivo y aplicando FABRIK en 2D, como propone la sección 4.3.
 
-Además, sigue siendo FABRIK iterativo. Dentro del plano se hacen las mismas etapas forward y backward, con los tres criterios de corte del paper, y lo único que se calcula de forma directa es la orientación del plano. En el paper, ese plano pasa por la raíz y por el objetivo. En nuestro brazo es siempre vertical y, cuando $bold(p)_5$ sale del plano, queda a una distancia $d$ del objetivo (@sec-cadena-virtual).
+Además, sigue siendo FABRIK iterativo. Dentro del plano se hacen las mismas etapas forward y backward, con los tres criterios de corte del paper, y lo único que se calcula de forma directa es la orientación del plano. En el paper, ese plano pasa por la raíz y por el objetivo. En nuestro brazo es siempre vertical y, como $bold(p)_5$ queda a una distancia $d$ del plano, pasa a esa distancia del objetivo (@sec-cadena-virtual).
 
 Para el ESP32 también es más ligero, porque cada iteración trabaja con tres puntos en 2D en lugar de seis puntos en 3D. Los ángulos salen directos y con signo, ya que en el plano cada uno es un $op("atan2")$ entre dos direcciones conocidas. Por último, cada bisagra tiene un solo rango de ángulos, que se puede aplicar en cada paso como indica la sección 4.3.
 
@@ -704,7 +699,7 @@ El algoritmo completo se explica con el ejemplo que se usa en todo el informe, e
 
 Antes de iterar se verifican dos condiciones:
 + Como $bold(p)_5$ puede quedar a $|d|$ del plano del brazo (@sec-cadena-virtual), para que exista un plano que lo deje sobre el objetivo, la distancia horizontal del objetivo al eje de la base tiene que ser al menos $|d|$: #box($rho = sqrt(x^2 + y^2) >= |d|$).
-+ Dentro del plano del brazo, el objetivo tiene que quedar a lo sumo a #box($l_1 + l_2$) del hombro, #box($norm(bold(T)) <= l_1 + l_2$), con $bold(T)$ definido en el Paso 1. Esa suma vale 18.91~cm con la muñeca y la pinza neutras. Con la muñeca neutra va de 15.49~cm, con la pinza en 0°, a 18.92~cm, con la pinza en 93.5°.
++ Dentro del plano del brazo, el objetivo tiene que quedar a lo sumo a #box($l_1 + l_2$) del hombro, #box($norm(bold(T)) <= l_1 + l_2$), con $bold(T)$ definido en el Paso 1. Esa suma vale 17.76~cm con la muñeca y la pinza neutras, que es su valor máximo. Con la muñeca neutra y la pinza en 0° baja a 14.63~cm.
 
 Si alguna de las dos falla, el objetivo está fuera de alcance con esas posiciones de la muñeca y la pinza, y se prueba la siguiente (@sec-incognitas). Si no queda ninguna, no se itera y, como en el Algoritmo 1 del paper, se calcula la cadena estirada hacia el objetivo, sin tener en cuenta los límites de los servos. Esa cadena se muestra como silueta y el brazo no se mueve (@sec-validacion). En cambio, cumplir las dos condiciones no garantiza llegar respetando los límites, y eso se sabe recién durante la iteración.
 
@@ -718,13 +713,13 @@ $
 
 Existen dos planos candidatos. Con $r_c > 0$ el brazo apunta hacia el objetivo, mientras que con #box($r_c < 0$) el plano queda girado al revés y el brazo tiene que inclinarse hacia atrás, por encima de la base. Se descartan los candidatos que dejan la base fuera de su rango, se prueba primero el plano que apunta al objetivo y el otro se usa solo si con el primero no se llega.
 
-En el ejemplo, con la muñeca y la pinza neutras, $d = 0$: $r_c = rho = 7.07$ cm y la base apunta directo al objetivo, $theta_0 = phi = -45°$. El otro candidato, $theta_0 = 135°$, queda fuera del rango de la base. Dentro del plano, el objetivo queda en $bold(T) = (r_c, thin z - z_h) = (7.07, 3.00)$ cm respecto del hombro, donde $z_h = 4$ cm es la altura del hombro.
+En el ejemplo, con la muñeca y la pinza neutras, $d = -0.5$ cm, que es el desvío del antebrazo. Entonces $rho = 7.07$ cm, $r_c = 7.05$ cm y la base gira a $theta_0 = -45° - (-4.05°) = -40.95°$, un poco corrida respecto de la dirección del objetivo, para que el desvío deje la punta sobre él. El otro candidato, $theta_0 = 130.95°$, queda fuera del rango de la base. Dentro del plano, el objetivo queda en $bold(T) = (r_c, thin z - z_h) = (7.05, 2.42)$ cm respecto del hombro, donde $z_h = 4.58$ cm es la altura del hombro.
 
-La @fig-superior muestra un caso con $d != 0$, el objetivo $(6, 1, 6)$. Apuntarle exigiría girar la base a $phi = 9.46°$, fuera de su rango, y con la muñeca neutra no se llega. La búsqueda, sin revisar choques, lo resuelve con la muñeca en 20° y la pinza en 140° (@sec-incognitas): $bold(p)_5$ queda $d = 1.13$ cm al costado del plano, $r_c = 5.98$ cm y la base gira a $theta_0 = -1.21°$, dentro de su rango.
+La @fig-superior muestra un caso con un $d$ mayor, el objetivo $(6, 1, 6)$. Apuntarle exigiría girar la base a $phi = 9.46°$, fuera de su rango, y con la muñeca neutra no se llega. La búsqueda, sin revisar choques, lo resuelve con la muñeca en 30° y la pinza en 140° (@sec-incognitas): $bold(p)_5$ queda $d = 1.16$ cm al costado del plano, $r_c = 5.97$ cm y la base gira a $theta_0 = -1.52°$, dentro de su rango.
 
 #figure(
   figura-vista-superior,
-  caption: [Vista superior del Paso 1 para el objetivo $(6, 1, 6)$, con la muñeca en 20° y la pinza en 140°. La línea gris rayada apunta directo al objetivo, a $9.5°$, fuera del rango de la base ($-180°$ a $0°$). Como $bold(p)_5$ queda 1.13 cm al costado del plano, la base gira a $-1.2°$ y el desvío lateral lo lleva al objetivo.],
+  caption: [Vista superior del Paso 1 para el objetivo $(6, 1, 6)$, con la muñeca en 30° y la pinza en 140°. La línea gris rayada apunta directo al objetivo, a $9.5°$, fuera del rango de la base ($-180°$ a $0°$). Como $bold(p)_5$ queda 1.16 cm al costado del plano, la base gira a $-1.5°$ y el desvío lateral lo lleva al objetivo.],
 ) <fig-superior>
 
 == La cadena virtual hombro, codo, $bold(p)_5$ <sec-cadena-virtual>
@@ -732,11 +727,11 @@ La @fig-superior muestra un caso con $d != 0$, el objetivo $(6, 1, 6)$. Apuntarl
 Dentro del plano, FABRIK trabaja con tres puntos: el hombro (raíz fija), el codo y $bold(p)_5$. Para posiciones dadas de la muñeca y la pinza, todo lo que está después del codo (antebrazo, muñeca y pinza) se comporta como un cuerpo rígido y se puede reemplazar por un único segmento virtual desde el codo hasta $bold(p)_5$. Ese segmento depende de la muñeca $theta_3$ y de la pinza $theta_4$:
 
 $
-  l_1 = 6.9 "cm", quad bold(v) = (7.7 + 4.3 sin theta_4, thin 0.5 - 4.3 cos theta_3 cos theta_4), quad l_2 = norm(bold(v)), \
-  alpha = op("atan2")(v_z, v_r), quad d = -4.3 sin theta_3 cos theta_4
+  l_1 = 6.25 "cm", quad bold(v) = (7.18 + 4.33 sin theta_4, thin -4.33 cos theta_3 cos theta_4), quad l_2 = norm(bold(v)), \
+  alpha = op("atan2")(v_z, v_r), quad d = -0.5 - 4.33 sin theta_3 cos theta_4
 $
 
-donde $bold(v)$ es la parte contenida en el plano del segmento que va del codo a $bold(p)_5$, $alpha$ es el ángulo fijo entre ese segmento y el antebrazo, y $d$ es la distancia de $bold(p)_5$ al plano. Con la muñeca neutra, $d = 0$ con cualquier pinza: la pinza mueve $bold(p)_5$ dentro del plano. Con la pinza alineada, $bold(v) = (12.0, 0.5)$ y $d = 0$ con cualquier muñeca, porque $bold(p)_5$ queda sobre el eje de la muñeca.
+donde $bold(v)$ es la parte contenida en el plano del segmento que va del codo a $bold(p)_5$, $alpha$ es el ángulo fijo entre ese segmento y el antebrazo, y $d$ es la distancia de $bold(p)_5$ al plano. Con la muñeca neutra, $d = -0.5$ cm con cualquier pinza: la pinza mueve $bold(p)_5$ sin sacarlo del plano paralelo en que están la muñeca y el servo 4. Con la pinza alineada, $bold(v) = (11.51, 0)$ y $d = -0.5$ cm con cualquier muñeca, porque $bold(p)_5$ queda sobre el eje de la muñeca.
 
 #figure(
   table(
@@ -752,12 +747,12 @@ donde $bold(v)$ es la parte contenida en el plano del segmento que va del codo a
       [*$d$ (cm)*],
       [*$bold(p)_5$ con los demás ángulos en 0*],
     ),
-    [$0°$], [$0°$], [8.59], [$-26.27°$], [0], [$(14.6, 0, 0.2)$: 4.3 cm abajo de $bold(p)_4$],
-    [$0°$], [$90°$], [12.01], [$2.39°$], [0], [$(18.9, 0, 4.5)$: 4.3 cm adelante, alineada con el antebrazo],
-    [$0°$], [$180°$], [9.07], [$31.94°$], [0], [$(14.6, 0, 8.8)$: 4.3 cm arriba],
-    [$90°$], [$0°$], [7.72], [$3.72°$], [$-4.3$], [$(14.6, -4.3, 4.5)$: 4.3 cm a la derecha],
+    [$0°$], [$0°$], [8.38], [$-31.09°$], [$-0.5$], [$(13.43, -0.5, 0.25)$: 4.33 cm abajo de $bold(p)_4$],
+    [$0°$], [$90°$], [11.51], [$0°$], [$-0.5$], [$(17.76, -0.5, 4.58)$: 4.33 cm adelante, en línea con el antebrazo],
+    [$0°$], [$180°$], [8.38], [$31.09°$], [$-0.5$], [$(13.43, -0.5, 8.91)$: 4.33 cm arriba],
+    [$90°$], [$0°$], [7.18], [$0°$], [$-4.83$], [$(13.43, -4.83, 4.58)$: 4.33 cm a la derecha],
   ),
-  caption: [Parámetros de la cadena virtual según la muñeca y la pinza. Con la muñeca neutra la pinza mueve $bold(p)_5$ dentro del plano ($d = 0$); con la muñeca girada y la pinza inclinada, lo saca del plano.],
+  caption: [Parámetros de la cadena virtual según la muñeca y la pinza. Con la muñeca neutra la pinza mueve $bold(p)_5$ sin cambiar $d = -0.5$ cm; con la muñeca girada y la pinza inclinada, lo corre hacia un costado, hasta 4.83 cm del plano.],
 ) <tab-cadena-virtual>
 
 == Paso 2: iteración dentro del plano
@@ -788,29 +783,30 @@ La @tab-iteraciones muestra cómo evoluciona la cadena para el objetivo de ejemp
     inset: 6pt,
     fill: (_, row) => if row == 0 { luma(220) } else if calc.even(row) { luma(245) } else { white },
     table.header([*$k$*], [*Forward*], [*Backward*], [*Error*]),
-    [0], [---], [hombro y codo en 0°: codo $(6.90, 0)$, punta $(18.90, 0.50)$], [12.09 cm],
+    [0], [---], [hombro y codo en 0°: codo $(6.25, 0)$, punta $(17.76, 0)$], [10.98 cm],
     [1],
-    [codo en $(6.39, -8.99)$: lado prohibido, se espeja a $(-2.03, 10.84)$],
-    [codo $(-1.27, 6.78)$, punta $(9.67, 1.82)$],
-    [2.85 cm],
+    [codo en $(3.43, -8.50)$: lado prohibido, se espeja a $(-2.52, 8.82)$],
+    [codo $(-1.71, 6.01)$, punta $(8.94, 1.65)$],
+    [2.04 cm],
 
-    [2], [codo en $(-3.87, 7.96)$], [codo $(-3.01, 6.21)$, punta $(8.43, 2.57)$], [1.43 cm],
-    [3], [codo en $(-4.37, 6.64)$], [codo $(-3.80, 5.76)$, punta $(7.84, 2.80)$], [0.80 cm],
-    [4], [codo en $(-4.57, 5.96)$], [codo $(-4.20, 5.48)$, punta $(7.53, 2.90)$], [0.47 cm],
+    [2], [codo en $(-3.60, 6.78)$], [codo $(-2.93, 5.52)$, punta $(8.06, 2.11)$], [1.06 cm],
+    [3], [codo en $(-3.94, 5.83)$], [codo $(-3.50, 5.18)$, punta $(7.64, 2.27)$], [0.60 cm],
+    [4], [codo en $(-4.08, 5.33)$], [codo $(-3.80, 4.96)$, punta $(7.41, 2.34)$], [0.36 cm],
   ),
   caption: [Iteraciones para el objetivo $(5, -5, 7)$ con la versión v3. Coordenadas en cm dentro del plano, medidas desde el hombro.],
 ) <tab-iteraciones>
 
-Después del espejo de la primera iteración el codo ya queda del lado permitido, y en las siguientes se acomoda hasta que el error baja de $epsilon = 0.5$ cm en la cuarta. Los ángulos resultantes son #box($(theta_0, theta_1, theta_2) = (-45°, 127.49°, -142.26°)$), y al aplicarles la cinemática directa se obtiene $bold(p)_5 = (5.33, -5.33, 6.90)$, a 0.47~cm del objetivo. La cadena virtual mide 12.01 cm, casi el doble que el brazo, así que para un objetivo tan cercano al hombro el codo se pliega mucho: el brazo queda inclinado hacia atrás y el antebrazo vuelve hacia el objetivo.
+Después del espejo de la primera iteración el codo ya queda del lado permitido, y en las siguientes se acomoda hasta que el error baja de $epsilon = 0.5$ cm en la cuarta. Los ángulos resultantes son #box($(theta_0, theta_1, theta_2) = (-40.95°, 127.43°, -140.62°)$), y al aplicarles la cinemática directa se obtiene $bold(p)_5 = (5.27, -5.23, 6.92)$, a 0.36~cm del objetivo. La cadena virtual mide 11.51 cm, casi el doble que el brazo, así que para un objetivo tan cercano al hombro el codo se pliega mucho: el brazo queda inclinado hacia atrás y el antebrazo vuelve hacia el objetivo. Este resultado es el de FABRIK sin revisar choques. Con el codo en $-140.62°$ se pasa el tope de $-139°$ (@sec-validacion), así que la búsqueda completa lo descarta y, desde la misma pose de partida, llega con la pinza en 80° y el codo en $-136.62°$, a 0.35~cm.
 
+#pagebreak()
 = El problema del codo abajo <sec-problema>
 
 == Dos maneras de llegar al mismo punto
 
-El codo del modelo va de $-180°$ a $0°$, así que el antebrazo solo puede caer respecto del brazo. Sin embargo, para llegar a un mismo punto, el triángulo que forman el hombro, el codo y la punta se puede armar de dos maneras: con el codo por arriba o por debajo de la recta que une el hombro con el objetivo. Ambas tienen las mismas longitudes y ubican $bold(p)_5$ exactamente sobre el objetivo, pero el brazo solo puede hacer una:
+El codo del modelo va de $-180°$ a $0°$, así que el antebrazo solo puede caer respecto del brazo. Sin embargo, para llegar a un mismo punto, el triángulo que forman el hombro, el codo y la punta se puede armar de dos maneras: con el codo por arriba o por debajo de la recta que une el hombro con el objetivo. Ambas tienen las mismas longitudes y ubican $bold(p)_5$ exactamente sobre el objetivo, pero solo una respeta los rangos de los servos:
 
-- *Codo arriba* ($theta_1 = 133.79°$, $theta_2 = -145.67°$): válida.
-- *Codo abajo* ($theta_1 = -87.81°$, $theta_2 = +140.90°$): imposible, porque el codo doblaría al revés y el hombro bajaría de 0°.
+- *Codo arriba* ($theta_1 = 132.87°$, $theta_2 = -143.69°$): respeta los rangos, aunque el codo pasa el tope de $-139°$ (@sec-validacion).
+- *Codo abajo* ($theta_1 = -94.99°$, $theta_2 = +143.69°$): imposible, porque el codo doblaría al revés y el hombro bajaría de 0°.
 
 #figure(
   [
@@ -838,8 +834,8 @@ El codo del modelo va de $-180°$ a $0°$, así que el antebrazo solo puede caer
 
 FABRIK no distingue cuál de las dos soluciones es la permitida. En general converge a la del lado en que el primer forward deja el codo, que depende de la pose inicial. Partiendo del hombro y el codo en 0°, con el brazo estirado y horizontal:
 
-+ El primer forward coloca $bold(p)_5$ sobre el objetivo y arrastra el codo sin cambiarlo de lado. El codo queda en $(6.39, -8.99)$, por debajo de la recta hombro→objetivo.
-+ El backward conserva ese lado y el algoritmo converge en cuatro iteraciones con un error de 0.47 cm, pero con el codo abajo: $theta_1 = -81.51°$ y $theta_2 = +137.49°$, ambos fuera de rango (@fig-sin-regla).
++ El primer forward coloca $bold(p)_5$ sobre el objetivo y arrastra el codo sin cambiarlo de lado. El codo queda en $(3.43, -8.50)$, por debajo de la recta hombro→objetivo.
++ El backward conserva ese lado y el algoritmo converge en cuatro iteraciones con un error de 0.36 cm, pero con el codo abajo: $theta_1 = -89.56°$ y $theta_2 = +140.62°$, ambos fuera de rango (@fig-sin-regla).
 
 #figure(
   [
@@ -850,8 +846,8 @@ FABRIK no distingue cuál de las dos soluciones es la permitida. En general conv
         capa-nota(poses.sin-regla.at(2), -2.2, 0.3, [converge con \ el codo abajo], ancla: "east", color: bermellon),
       ),
       extra-plano: (
-        capa-nota(codo-forward, 1.6, -1.9, [codo tras \ el forward], ancla: "north-west", color: naranja),
-        capa-nota(poses.sin-regla.at(2), -1.2, 0.6, [converge con \ el codo abajo], ancla: "east", color: bermellon),
+        capa-nota(codo-forward, 2.2, 0.6, [codo tras \ el forward], ancla: "west", color: naranja),
+        capa-nota(poses.sin-regla.at(2), -1.2, -0.4, [converge con \ el codo abajo], ancla: "east", color: bermellon),
       ),
     )
     #leyenda((gris, none, [pose inicial]), (naranja, "dashed", [forward]), (bermellon, none, [resultado: codo abajo]))
@@ -861,11 +857,11 @@ FABRIK no distingue cuál de las dos soluciones es la permitida. En general conv
 
 == Ajustar los ángulos al final no resuelve el problema
 
-Una alternativa sería ajustar cada ángulo a su rango después de converger y declarar inválida la pose si hubo que ajustar alguno. En el ejemplo, el hombro pasa de $-81.51°$ a $0°$, el tope más cercano medido en ángulo, y el codo de $137.49°$ a $-180°$. El brazo queda plegado sobre sí mismo, con $bold(p)_5$ a 12.66 cm del objetivo. La pose se declara inválida, aunque el objetivo era alcanzable con el codo arriba.
+Una alternativa sería ajustar cada ángulo a su rango después de converger y declarar inválida la pose si hubo que ajustar alguno. En el ejemplo, el hombro pasa de $-89.56°$ a $0°$, el tope más cercano medido en ángulo, y el codo de $140.62°$ a $-180°$. El brazo queda plegado sobre sí mismo, con $bold(p)_5$ a 12.55 cm del objetivo. La pose se declara inválida, aunque el objetivo era alcanzable con el codo arriba.
 
 == Limitar en cada paso tampoco alcanza
 
-Si se aplican los rangos en cada paso pero no se controla el lado del codo, el resultado depende de hacia qué tope cae el recorte. En el ejemplo, el primer backward deja el hombro en $-54.61°$, más cerca del tope de 0° que del de 180°, y el recorte lo lleva a $0°$. El brazo queda recto, el error se mantiene en 12.09 cm y, como esa iteración deja $bold(p)_5$ donde estaba, el algoritmo corta por falta de mejora. Con el objetivo un centímetro más arriba, en $(5, -5, 8)$, pasa lo mismo: el primer backward deja el hombro en $-50.66°$, el recorte lo lleva a $0°$ y el error queda en 12.34 cm. La cadena queda trabada en la pose recta porque choca con el límite del codo por el lado equivocado.
+Si se aplican los rangos en cada paso pero no se controla el lado del codo, el resultado depende de hacia qué tope cae el recorte. En el ejemplo, el primer backward deja el hombro en $-68.05°$, más cerca del tope de 0° que del de 180°, y el recorte lo lleva a $0°$. El brazo queda recto, el error se mantiene en 10.98 cm y, como esa iteración deja $bold(p)_5$ donde estaba, el algoritmo corta por falta de mejora. Con el objetivo un centímetro más arriba, en $(5, -5, 8)$, pasa lo mismo: el primer backward deja el hombro en $-60.41°$, el recorte lo lleva a $0°$ y el error queda en 11.24 cm. La cadena queda trabada en la pose recta porque choca con el límite del codo por el lado equivocado.
 
 == Magnitud del problema
 
@@ -878,10 +874,10 @@ Para medirlo se generaron 2000 objetivos alcanzables a partir de ángulos válid
     inset: 6pt,
     fill: (_, row) => if row == 0 { luma(220) } else if calc.even(row) { luma(245) } else { white },
     table.header([*Variante*], [*Desde la pose cero*], [*Desde pose al azar*]),
-    [v1: plano sin límites y chequeo al final], [723 (36 %)], [1383 (69 %)],
-    [v1 + espejo del codo una sola vez, al final], [1947 (97 %)], [1902 (95 %)],
-    [v2: límites en cada paso, sin regla del codo], [823 (41 %)], [1451 (73 %)],
-    [v3: límites en cada paso y regla del codo], [1980 (99 %)], [1980 (99 %)],
+    [v1: plano sin límites y chequeo al final], [757 (38 %)], [1410 (71 %)],
+    [v1 + espejo del codo una sola vez, al final], [1951 (98 %)], [1902 (95 %)],
+    [v2: límites en cada paso, sin regla del codo], [848 (42 %)], [1487 (74 %)],
+    [v3: límites en cada paso y regla del codo], [1980 (99 %)], [1975 (99 %)],
   ),
   caption: [Objetivos resueltos (error $<= 0.5$ cm y ángulos en rango) sobre 2000 objetivos alcanzables. Simulación en Python, con los límites del firmware (@tab-convencion).],
 ) <tab-medicion>
@@ -921,7 +917,7 @@ El espejo no altera el funcionamiento de FABRIK. El hombro (origen) y el objetiv
         capa-nota(codo-reflejado, -1.2, 0.3, [espejado], ancla: "east", color: purpura),
       ),
       extra-plano: (
-        capa-nota(codo-forward, 1.6, -1.9, [codo tras \ el forward], ancla: "north-west", color: naranja),
+        capa-nota(codo-forward, 2.2, 0.6, [codo tras \ el forward], ancla: "west", color: naranja),
       ),
     )
     #leyenda(
@@ -931,16 +927,16 @@ El espejo no altera el funcionamiento de FABRIK. El hombro (origen) y el objetiv
       (azul, none, [resultado: codo arriba]),
     )
   ],
-  caption: [FABRIK con la regla del codo. El codo que dejó el forward se espeja respecto de la recta hombro→objetivo (punteada) y, tres iteraciones después, el brazo llega a 0.47 cm del objetivo con el codo arriba.],
+  caption: [FABRIK con la regla del codo. El codo que dejó el forward se espeja respecto de la recta hombro→objetivo (punteada) y, tres iteraciones después, el brazo llega a 0.36 cm del objetivo con el codo arriba.],
 ) <fig-con-regla>
 
 == Detalles de la regla
 
 En Maya el pole vector suele apuntar a un objeto de la escena @maya_pole_vector, y la cadena puede invertirse cuando el vector de la cadena lo cruza o queda opuesto a él @maya_rp_solver. En nuestro brazo el pole es «el lado permitido de la recta hombro→objetivo» y se define respecto de esa misma recta, así que nunca queda alineado con ella y no se producen vuelcos.
 
-El ángulo $alpha$ corre las fronteras de la regla. Con la cadena virtual, $s = l_1 l_2 sin(-(theta_2 + alpha))$. Entonces $s$ se anula en $theta_2 = -alpha$ y en $theta_2 = -180° - alpha$, y no en $theta_2 = 0$. Si el codo está casi recto, con $theta_2$ entre $-alpha$ y $0°$, la configuración es válida pero queda apenas del lado prohibido. La regla la reemplaza por su espejo, $theta'_2 = -theta_2 - 2 alpha$, que también es válida y llega al mismo punto con el codo un poco más doblado. Algo parecido ocurre con el codo casi plegado cuando, con la muñeca neutra, la pinza baja de unos $83.3°$, porque entonces $alpha < 0$ y la segunda frontera queda dentro del rango del codo. En ese caso el espejo, tomado módulo 360°, vale $theta'_2 = -theta_2 - 2 alpha - 360°$. Los dos casos pueden importar cerca de los topes.
+El ángulo $alpha$ corre las fronteras de la regla. Con la cadena virtual, $s = l_1 l_2 sin(-(theta_2 + alpha))$. Entonces $s$ se anula en $theta_2 = -alpha$ y en $theta_2 = -180° - alpha$, y no en $theta_2 = 0$. Si $alpha > 0$, como pasa con la muñeca neutra y la pinza por encima de 90°, y el codo está casi recto, con $theta_2$ entre $-alpha$ y $0°$, la configuración es válida pero queda apenas del lado prohibido. La regla la reemplaza por su espejo, $theta'_2 = -theta_2 - 2 alpha$, que también es válida y llega al mismo punto con el codo un poco más doblado. Algo parecido ocurre con el codo casi plegado cuando, con la muñeca neutra, la pinza baja de 90°, porque entonces $alpha < 0$ y la segunda frontera queda dentro del rango del codo. En ese caso el espejo, tomado módulo 360°, vale $theta'_2 = -theta_2 - 2 alpha - 360°$. Los dos casos pueden importar cerca de los topes.
 
-Por último está la cadena recta de la sección 5.4 del paper. Si el codo cae sobre la recta, $s$ vale 0 y espejarlo no lo mueve. Entonces el efector no avanza, la iteración corta por $eta$ y la búsqueda de la @sec-incognitas pasa a otra posición. Como cada posición de la pinza tiene su propio $alpha$, con la siguiente la cadena virtual ya no queda recta y FABRIK sigue normalmente. Por esta razón, no hace falta la corrección que propone el paper.
+Por último está la cadena recta de la sección 5.4 del paper. Si el codo cae sobre la recta hombro→objetivo, $s$ vale 0 y espejarlo no lo mueve. El forward lo deja sobre esa recta, y el backward también, salvo que el hombro salga de su rango y el recorte lo saque de ella. Si el recorte no actúa, $bold(p)_5$ deja de avanzar y la iteración corta por $eta$. Otra posición de la muñeca o de la pinza (@sec-incognitas) a veces lo destraba, porque cambia $l_2$ y, a través de $d$, la dirección de $bold(T)$. Con el objetivo a la altura del hombro y el brazo horizontal no lo destraba ninguna, porque con cualquier posición la recta es la horizontal y sus dos lados quedan dentro del rango del hombro. En la simulación, $(8, -8, 4.58)$ desde el hombro y el codo en 0° termina en «bloqueado por límites» después de probar todas las posiciones, y con el objetivo 0.1 mm más arriba se resuelve con la muñeca y la pinza neutras. Como hace falta que el codo quede exactamente sobre la recta, el caso es muy poco frecuente y no se agregó la corrección que propone el paper.
 
 #pagebreak()
 
@@ -970,26 +966,26 @@ Se usan los tres criterios del paper, en este orden:
     table.header([*Parámetro*], [*Valor*], [*Significado*]),
     [$epsilon$ (tolerancia)],
     [0.5 cm],
-    [Corta cuando $norm(bold(p)_5 - bold(t)) <= epsilon$. Con las medidas del brazo, un grado en el hombro mueve la punta hasta 0.33 cm, y se supone que 0.5 cm cubre además el juego de los engranajes de los SG90.],
+    [Corta cuando $norm(bold(p)_5 - bold(t)) <= epsilon$. Con las medidas del brazo, un grado en el hombro mueve la punta hasta 0.31 cm, y se supone que 0.5 cm cubre además el juego de los engranajes de los MG90S.],
 
     [$eta$ (sin cambio)],
     [$10^(-4)$ cm],
-    [Corta cuando $bold(p)_5$ se mueve menos que $eta$ entre dos iteraciones. Es el caso de un objetivo que no se alcanza por los límites; la cadena recta de la sección 5.4 del paper también lo activa, y entonces la búsqueda prueba la siguiente posición (@sec-pole).],
+    [Corta cuando $bold(p)_5$ se mueve menos que $eta$ entre dos iteraciones. Es el caso de un objetivo que no se alcanza por los límites; la cadena recta de la sección 5.4 del paper también lo activa (@sec-pole).],
 
     [$k_max$ (iteraciones)],
     [20],
-    [Tope de seguridad. En la medición de la @tab-medicion el promedio es 3.1 iteraciones. Sin embargo, en la búsqueda de la @sec-incognitas una de cada doce ejecuciones que no llegan termina por este criterio, y casi la mitad de ellas porque la cadena sigue deslizándose contra un tope del codo.],
+    [Tope de seguridad. En la medición de la @tab-medicion el promedio es 3.1 iteraciones. Sin embargo, en la búsqueda de la @sec-incognitas una de cada doce ejecuciones que no llegan termina por este criterio, y cuatro de cada diez de ellas porque la cadena sigue deslizándose contra un tope del codo.],
   ),
   caption: [Parámetros de corte de la iteración.],
 )
 
 == Validación final, silueta y colisiones <sec-validacion>
 
-Al terminar la iteración se hace el control final que plantea la investigación: todos los ángulos deben estar en rango y el error debe ser $<= epsilon$. Con las restricciones aplicadas en cada paso este control normalmente se cumple, pero se mantiene como protección. Si no se cumple, se prueba el otro plano candidato y, si tampoco llega, la siguiente posición de la pinza o de la muñeca (@sec-incognitas).
+Al terminar la iteración se hace el control final que plantea la investigación: todos los ángulos deben estar en rango y el error debe ser $<= epsilon$. Con las restricciones aplicadas en cada paso los ángulos siempre quedan en rango, así que esa parte del control se mantiene solo como protección. Si no se cumple, se prueba el otro plano candidato y, si tampoco llega, la siguiente posición de la pinza o de la muñeca (@sec-incognitas).
 
-Si la pose es válida, se arma el camino desde la pose actual, con un paso cada 20 ms, y en cada paso se evalúa el modelo de esferas, que detecta autocolisiones entre eslabones y contacto con el piso. El último paso es la pose final, así que también se revisa. Si la pose o algún paso del camino choca, la pose se descarta igual que una que no llega: se prueba el otro plano y, después, la siguiente posición de la pinza o de la muñeca. Solo una pose válida con un camino sin choques pasa al movimiento suavizado. Mientras el brazo se mueve, cada paso se vuelve a revisar antes de mandarlo a los servos.
+Si la pose es válida, se arma el camino desde la pose actual, con un paso cada 20 ms, y en cada paso se evalúa el modelo de esferas, que detecta autocolisiones entre eslabones y, junto con las esquinas de la mano, el contacto con el piso. También se revisa el tope del codo, porque con el codo más cerrado que $-139°$ el antebrazo toca el brazo. El último paso es la pose final, así que también se revisa. Si la pose o algún paso del camino choca, la pose se descarta igual que una que no llega: se prueba el otro plano y, después, la siguiente posición de la pinza o de la muñeca. Solo una pose válida con un camino sin choques pasa al movimiento suavizado. Mientras el brazo se mueve, cada paso se vuelve a revisar antes de mandarlo a los servos.
 
-Si ninguna posición llega sin chocar, el brazo no se mueve, y la simulación dibuja en gris el mejor intento con uno de tres mensajes. El mensaje «colisión» aparece cuando alguna posición llega, pero todas las que llegan chocan o tienen un camino que choca. Se dibuja la primera de ellas, o el primer paso de su camino que choca, con las esferas que chocan en rojo. «Fuera de alcance» indica que el Paso 0 falló con todas las posiciones probadas. En ese caso se dibuja la cadena estirada hacia el objetivo con la muñeca y la pinza neutras, como en el Algoritmo 1 del paper, y puede no respetar los límites de los servos.
+Si ninguna posición llega sin chocar, el brazo no se mueve, y el gemelo digital dibuja en gris el mejor intento con uno de tres mensajes. El mensaje «colisión» aparece cuando alguna posición llega, pero todas las que llegan chocan o tienen un camino que choca. Se dibuja la primera de ellas, o el primer paso de su camino que choca, con las esferas que chocan en rojo. «Fuera de alcance» indica que el Paso 0 falló con todas las posiciones probadas. En ese caso se dibuja la cadena estirada hacia el objetivo con la muñeca y la pinza neutras, como en el Algoritmo 1 del paper, y puede no respetar los límites de los servos.
 
 El tercer mensaje, «bloqueado por límites», aparece cuando con alguna posición la distancia alcanza, pero los límites impiden llegar. En ese caso se dibuja el intento más cercano, que respeta todos los límites. Para elegir ese intento se toma la pose de menor error de todas las iteraciones, porque una ejecución que termina por $k_max$ puede quedar más lejos del objetivo que en una iteración anterior. La @fig-flujo resume el recorrido completo.
 
@@ -1007,21 +1003,21 @@ El usuario solo indica el punto $(x, y, z)$ al que tiene que llegar la pinza. Co
 
 FABRIK necesita esos dos valores antes de iterar, porque de ellos dependen $l_2$, $alpha$ y $d$ (@tab-cadena-virtual) y, a través de $d$, también el ángulo de la base. Si tuviera que calcularlos, habría cinco incógnitas para tres ecuaciones y el resultado dependería de la pose de partida. Por esta razón, el programa los elige con una búsqueda:
 + Prueba la muñeca en $theta_3 = 0°$ (servo en 90°) y la pinza alineada con el antebrazo.
-+ Si el objetivo queda fuera de alcance o bloqueado por los límites, prueba otras posiciones de la pinza de a 10°, de la más cercana a la neutra a la más lejana ($+10°$, $-10°$, $+20°$, $-20°$, y así hasta los topes).
++ Si el objetivo queda fuera de alcance o bloqueado por los límites, o si la pose o el camino hasta ella chocan, prueba otras posiciones de la pinza de a 10°, de la más cercana a la neutra a la más lejana ($+10°$, $-10°$, $+20°$, $-20°$, y así hasta los topes).
 + Si ninguna llega, prueba cada posición de la muñeca, en el mismo orden, con todas las de la pinza.
-+ Se queda con la primera posición que llega. Si ninguna llega, el brazo no se mueve (@sec-validacion).
++ Se queda con la primera posición que llega sin chocar. Si ninguna llega, el brazo no se mueve (@sec-validacion).
 
-La pinza va primero porque inclinarla corre su punta dentro del plano del brazo. La muñeca va después y siempre junto con la pinza: con la pinza alineada, $bold(p)_5$ queda sobre el eje de la muñeca y girarla no lo mueve. Con la pinza inclinada, girar la muñeca saca la punta del plano, y eso permite llegar a puntos a los que la base no puede apuntar, como el de la @fig-superior. Una posición con la misma cadena virtual que otra que ya falló se saltea sin iterar, como pasa con la muñeca girada y la pinza alineada.
+La pinza va primero porque inclinarla corre su punta sin alejarla del plano del brazo. La muñeca va después y siempre junto con la pinza: con la pinza alineada, $bold(p)_5$ queda sobre el eje de la muñeca y girarla no lo mueve. Con la pinza inclinada, girar la muñeca corre la punta hacia un costado, y eso permite llegar a puntos a los que la base no puede apuntar, como el de la @fig-superior. Una posición con la misma cadena virtual que otra que ya falló se saltea sin iterar, como pasa con la muñeca girada y la pinza alineada.
 
-Para medir la búsqueda se usaron los mismos 2000 objetivos de la @tab-medicion, partiendo del home del firmware, sin revisar choques y sin usar la muñeca ni la pinza con las que se generó cada uno. Con la muñeca y la pinza neutras se resuelve el 84.95~%, y con la búsqueda, el 99.75~%: 213 objetivos más con la pinza inclinada y 83 con la muñeca girada y la pinza. La mediana es de 2 iteraciones por objetivo, y los pocos objetivos que necesitan muchas posiciones suben el promedio a 6.7 posiciones y 24.1 iteraciones.
+Para medir la búsqueda se usaron los mismos 2000 objetivos de la @tab-medicion, partiendo del home del firmware, sin revisar choques y sin usar la muñeca ni la pinza con las que se generó cada uno. Con la muñeca y la pinza neutras se resuelve el 82.55~%, y con la búsqueda, el 99.75~%: 205 objetivos más con la pinza inclinada y 139 con la muñeca girada y la pinza. La mediana es de 2 iteraciones por objetivo, y los pocos objetivos que necesitan muchas posiciones suben el promedio a 7.6 posiciones y 23.5 iteraciones.
 
-Por ejemplo, $(3, -3, 0)$ está sobre el piso, cerca de la base. Con la pinza alineada, la cadena virtual es demasiado larga para un punto tan cercano al hombro y, aun con el codo plegado del todo, la punta queda a 0.68~cm. La búsqueda lo resuelve con la pinza en 30°, a 0.41~cm, después de 13 posiciones. Quedan cinco objetivos sin resolver. Uno, $(0.71, 0.16, 22.90)$, está casi sobre el eje de la base y en el borde del alcance. Se generó con la pinza en 93.2°, cerca de los 93.5° del alcance máximo (@sec-plano), y la búsqueda, que prueba la pinza de a 10°, no pasa por esos ángulos. Los otros cuatro están del lado $+y$, a 3 o 4 cm del eje de la base. La base no puede apuntarles y, con el brazo inclinado hacia atrás, los límites no lo dejan llegar.
+Por ejemplo, $(3, -3, 0)$ está sobre el piso, cerca de la base. Con la pinza alineada, dentro del plano el punto queda a 6.22~cm del hombro, cerca del alcance mínimo de la cadena virtual (5.26~cm), y desde el home FABRIK se acerca tan despacio que corta por $k_max$ con la punta a 0.52~cm y el codo en $-164.67°$, sin que los límites recorten ningún ángulo. La búsqueda lo resuelve con la pinza en 110°, a 0.47~cm, después de 4 posiciones. Quedan cinco objetivos sin resolver, todos del lado $+y$, a 3 o 4 cm del eje de la base. La base no puede apuntarles y, con el brazo inclinado hacia atrás, los límites no lo dejan llegar.
 
 = Convención de ángulos y límites <sec-convencion>
 
 Se trabaja con dos sistemas de grados:
 
-- *Grados del servo* ($s$, de 0 a 180°): el ángulo de cada SG90 que el firmware obtiene del ancho de pulso con las tablas de `main.ino`.
+- *Grados del servo* ($s$, de 0 a 180°): el ángulo de cada MG90S que el firmware obtiene del ancho de pulso con las tablas de calibración de `configuracion.c`, medidas en el brazo.
 - *Grados del modelo* ($theta$): los que usan la cinemática directa, las colisiones y FABRIK.
 
 El firmware convierte de uno a otro invirtiendo el signo de la base y del codo y restando 90° a la muñeca. La implementación usa la misma conversión y expresa los límites en grados del servo (@tab-convencion).
@@ -1032,17 +1028,17 @@ El firmware convierte de uno a otro invirtiendo el signo de la base y del codo y
     stroke: 0.5pt + gray,
     inset: 6pt,
     fill: (_, row) => if row == 0 { luma(220) } else if calc.even(row) { luma(245) } else { white },
-    table.header([*Servo*], [*Pulso en `main.ino`*], [*Rango del servo*], [*Conversión*], [*Rango del modelo*]),
-    [Base (0)], [400 a 2600 µs], [$0$ a $180°$], [$theta_0 = -s_0$], [$-180°$ a $0°$],
-    [Hombro (1)], [400 a 1800 µs], [$0$ a $180°$], [$theta_1 = s_1$], [$0°$ a $180°$],
-    [Codo (2)], [400 a 2600 µs], [$0$ a $180°$], [$theta_2 = -s_2$], [$-180°$ a $0°$],
-    [Muñeca (3)], [400 a 2000 µs], [$0$ a $180°$], [$theta_3 = s_3 - 90°$], [$-90°$ a $90°$],
-    [Pinza (4)], [400 a 2600 µs], [$0$ a $180°$], [$theta_4 = s_4$], [$0°$ a $180°$],
+    table.header([*Servo*], [*Pulso en `configuracion.c`*], [*Rango del servo*], [*Conversión*], [*Rango del modelo*]),
+    [Base (0)], [550 a 2450 µs], [$0$ a $180°$], [$theta_0 = -s_0$], [$-180°$ a $0°$],
+    [Hombro (1)], [550 a 2450 µs], [$0$ a $180°$], [$theta_1 = s_1$], [$0°$ a $180°$],
+    [Codo (2)], [550 a 2500 µs], [$0$ a $180°$], [$theta_2 = -s_2$], [$-180°$ a $0°$],
+    [Muñeca (3)], [550 a 2450 µs], [$0$ a $180°$], [$theta_3 = s_3 - 90°$], [$-90°$ a $90°$],
+    [Pinza (4)], [450 a 2400 µs], [$0$ a $180°$], [$theta_4 = s_4$], [$0°$ a $180°$],
   ),
-  caption: [Límites de cada servo según `main.ino` y conversión a ángulos del modelo.],
+  caption: [Límites de cada servo según `configuracion.c` y conversión a ángulos del modelo.],
 ) <tab-convencion>
 
-Los rangos son los que permite el firmware del grupo J5. `main.ino` limita el ancho de pulso de cada servo y, con sus tablas, ese ancho equivale a un rango de 0° a 180° en los cinco.
+Los rangos son los que permite el firmware. Las tablas de calibración de `configuracion.c` se midieron en el brazo, de 45° en 45° a partir de la pose en L en que se montan los horns, con todos los servos a 1500 µs. El firmware limita el ancho de pulso de cada servo a los extremos de su tabla, y ese ancho equivale a un rango de 0° a 180° en los cinco. Para que la pinza llegue a 450 µs, la ESP32Servo se tiene que compilar con `MIN_PULSE_WIDTH` en 450 o menos, porque la del gestor de librerías no manda pulsos de menos de 500 µs.
 
 = Versionado del modelo <sec-versionado>
 
@@ -1050,7 +1046,7 @@ El modelo pasó por las versiones de la @tab-versiones y la @fig-versiones. Los 
 
 #figure(
   figura-versiones,
-  caption: [Versiones del modelo de FABRIK. Los porcentajes son: desde la pose cero · desde pose al azar.],
+  caption: [Versiones del modelo de FABRIK. Los porcentajes son: desde la pose cero · desde una pose al azar.],
 ) <fig-versiones>
 
 #figure(
@@ -1067,12 +1063,12 @@ El modelo pasó por las versiones de la @tab-versiones y la @fig-versiones. Los 
 
     [v1],
     [Método de bisagras: Paso 1 (plano) y FABRIK 2D, sin restricciones; chequeo de límites al final],
-    [Converge al codo abajo según la pose inicial: 36 % y 69 %],
+    [Converge al codo abajo según la pose inicial: 38 % y 71 %],
     [Descartada],
 
     [v2],
     [v1 con restricciones de hombro y codo en cada paso (sec. 4.3)],
-    [Se traba recto al chocar el límite del codo por el lado equivocado: 41 % y 73 %],
+    [Se traba recto al chocar el límite del codo por el lado equivocado: 42 % y 74 %],
     [Descartada],
 
     [v3],
@@ -1100,21 +1096,21 @@ Para la medición, cada objetivo se generó eligiendo al azar los cinco ángulos
   - objetivos fuera de alcance;
   - ángulos siempre dentro de rango;
   - el ejemplo $(5, -5, 7)$ como caso fijo;
-  - la búsqueda de la muñeca y la pinza, con $(3, -3, 0)$ y $(6, 1, 6)$ como casos fijos (se resuelven con la pinza en 30° y con la muñeca en 20° y la pinza en 140°);
+  - la búsqueda de la muñeca y la pinza, con $(3, -3, 0)$ y $(6, 1, 6)$ como casos fijos (sin revisar choques, se resuelven con la pinza en 110° y con la muñeca en 30° y la pinza en 140°);
   - los números de la @tab-medicion y de la @sec-incognitas.
-- La interfaz es el gemelo digital, una página web que sirve el emulador del ESP32 (`servidor.py`) con los mismos pedidos que va a atender el firmware. Dibuja el brazo en 3D y permite:
+- La interfaz es el gemelo digital, una página web que sirve el emulador del ESP32 (`servidor.py`) con los mismos pedidos que atiende el firmware. Dibuja el brazo en 3D y permite:
   - escribir el objetivo $x, y, z$;
   - elegirlo con dos clics sobre la vista: el primero, sobre el piso, fija $x$ e $y$, y el segundo, sobre una línea vertical, la altura;
   - ver la silueta gris con su mensaje cuando el brazo no llega.
 
 == Pasaje a C (ESP32)
 
-Una vez validada la simulación en Python, se porta a C y se prueba su correcto funcionamiento utilizando el hardaware.
+Una vez validada, la simulación en Python se portó a C (`code/firmware/`) y se prueba con el brazo.
 
 
 == Mejora a futuro: la pinza dentro de FABRIK <sec-mejora>
 
-Esta mejora se evalúa recién cuando FABRIK con tres puntos esté validado en la simulación.
+Esta mejora se puede evaluar ahora que FABRIK con tres puntos está validado en la simulación.
 
 Con la muñeca en su posición neutra, el eje de la pinza queda paralelo a los del hombro y el codo, así que la pinza es una tercera bisagra dentro del plano del brazo. La cadena del plano podría pasar de tres puntos a cuatro (hombro, codo, eje de la pinza y su punta), y FABRIK calcularía la base, el hombro, el codo y la pinza, cuatro de los cinco servos. El paper hace sus pruebas con cadenas de ese tipo, con más articulaciones que coordenadas del objetivo, como la de 10 articulaciones de su Tabla 1 (@tab-paper). En animación es el uso habitual. Unreal Engine trae un nodo FABRIK @unreal_fabrik y Final IK lo incluye para Unity @final_ik. En robots industriales, en cambio, la cinemática inversa suele ser analítica o numérica, y el objetivo incluye la orientación de la herramienta @moveit_kinematics.
 
@@ -1137,7 +1133,7 @@ El punto extra no cambia el costo de forma apreciable. Para decidir, las dos opc
 + Dentro del plano aparece el problema del codo abajo, en el que FABRIK converge a la solución espejo que este brazo no puede hacer. Ajustar los ángulos al final o aplicar los límites en cada paso, por sí solos, no lo resuelven.
 + La técnica _pole_ de Blender y Maya resuelve esta ambigüedad. En nuestro brazo se traduce en espejar el codo respecto de la recta hombro→objetivo cuando cae del lado prohibido; como el espejo conserva las distancias, no altera el funcionamiento de FABRIK.
 + Con restricciones en cada paso y la regla del codo (v3), la simulación resuelve el 99 % de los objetivos alcanzables partiendo de la pose cero, con 3.1 iteraciones en promedio.
-+ El usuario solo indica el punto. La muñeca y la pinza las elige una búsqueda que empieza en su posición neutra y prueba otras de a 10°, primero en la pinza y después en la muñeca junto con la pinza. La búsqueda resuelve el 99.75 % de los objetivos de la prueba, contra el 84.95 % con la muñeca y la pinza siempre neutras.
++ El usuario solo indica el punto. La muñeca y la pinza las elige una búsqueda que empieza en su posición neutra y prueba otras de a 10°, primero en la pinza y después en la muñeca junto con la pinza. Sin revisar choques, la búsqueda resuelve el 99.75 % de los objetivos de la prueba, contra el 82.55 % con la muñeca y la pinza siempre neutras.
 
 #pagebreak()
 #bibliography("referencias.bib", title: "Referencias", style: "ieee")

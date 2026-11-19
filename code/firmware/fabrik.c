@@ -8,7 +8,8 @@
  * 3. backward: el codo a l1 del hombro, con el hombro recortado a su rango, y la punta a l2
  *    del codo, con el giro relativo theta2 + alpha recortado a [-180° + alpha, alpha].
  * Corta por epsilon (llegó), por eta (p5 dejó de moverse) o por k_max, en ese orden.
- * Implementación J1.
+ *
+ * En la simulación es fabrik.py. Implementación J1.
  */
 #include "fabrik.h"
 #include "configuracion.h"

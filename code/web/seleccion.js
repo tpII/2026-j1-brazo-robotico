@@ -155,10 +155,22 @@ function crearGuias(escena) {
   return guias;
 }
 
+/**
+ * Redondea a dos decimales, como se muestran las coordenadas.
+ *
+ * @param {number} valor
+ * @returns {number}
+ */
 function redondear(valor) {
   return Math.round(valor * 100) / 100;
 }
 
+/**
+ * Las coordenadas con dos decimales, separadas por comas, como se escriben en el campo del objetivo.
+ *
+ * @param {...number} valores
+ * @returns {string}
+ */
 function texto(...valores) {
   return valores.map((v) => v.toFixed(2)).join(", ");
 }

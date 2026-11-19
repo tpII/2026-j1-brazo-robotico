@@ -25,10 +25,10 @@ const int servoHomeUs[SERVO_COUNT] = {
     2006, // Servo 1: Hombro (140° en modelo)
     1199, // Servo 2: Codo (-114.6° en modelo)
     1550, // Servo 3: Muñeca (+4.5° en modelo)
-    500   // Servo 4: Pinza (Cerrada)
+    450   // Servo 4: Pinza (Cerrada)
 };
 
-const int servoMinUs[SERVO_COUNT] = {550, 550, 550, 550, 500};
+const int servoMinUs[SERVO_COUNT] = {550, 550, 550, 550, 450};
 const int servoMaxUs[SERVO_COUNT] = {2450, 2450, 2500, 2450, 2400};
 
 // Pose de cada eslabón con el servo a 1500 us, para montar el horn (brazo en L),

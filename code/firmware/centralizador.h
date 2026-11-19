@@ -1,6 +1,7 @@
 /*
  * Módulo central de lógica.
- * Implementación J1.
+ *
+ * En la simulación es centralizador.py. Implementación J1.
  */
 #ifndef CENTRALIZADOR_H
 #define CENTRALIZADOR_H
@@ -28,51 +29,70 @@ typedef struct {
 
 /**
  * El brazo en el home del firmware, como setup().
- * @param c El Centralizador.
+ *
+ * Args:
+ *     c: el Centralizador.
  */
 void iniciar(Centralizador *c);
 
 /**
  * Busca una pose para el objetivo y, si llega, empieza a moverse.
- * @param c El Centralizador.
- * @param x Coordenada x del objetivo (cm).
- * @param y Coordenada y del objetivo (cm).
- * @param z Coordenada z del objetivo (cm).
- * @param respuesta (Salida) El JSON de /set: resultado, error_cm y metricas. Si el brazo se está
- *        moviendo, el resultado es "ocupado" y no se busca nada.
- * @param largo El tamaño de respuesta.
- * @return NULL, o el motivo del rechazo si algún valor no es un número finito o si z está debajo
- *         del piso. Entonces no se busca nada ni se escribe la respuesta.
+ *
+ * Args:
+ *     c: el Centralizador.
+ *     x: coordenada x del objetivo (cm).
+ *     y: coordenada y del objetivo (cm).
+ *     z: coordenada z del objetivo (cm).
+ *     respuesta: donde se escribe el JSON de /set: resultado, error_cm y metricas. Si el brazo se
+ *         está moviendo, el resultado es "ocupado" y no se busca nada.
+ *     largo: el tamaño de respuesta.
+ *
+ * Returns:
+ *     NULL, o el motivo del rechazo si algún valor no es un número finito o si z está debajo del
+ *     piso. Entonces no se busca nada ni se escribe la respuesta.
  */
 const char *pedir_objetivo(Centralizador *c, double x, double y, double z, char *respuesta, size_t largo);
 
 /**
  * Un paso del movimiento. Antes de aplicarlo revisa que no choque.
- * @param c El Centralizador.
+ *
+ * Args:
+ *     c: el Centralizador.
  */
 void avanzar(Centralizador *c);
 
 /**
  * Frena el brazo en el paso en que está.
- * @param c El Centralizador.
+ *
+ * Args:
+ *     c: el Centralizador.
  */
 void detener(Centralizador *c);
 
 /**
  * Planifica el movimiento hacia la posición original (Home) y lo empieza si ningún paso choca.
- * @param c El Centralizador.
- * @param respuesta (Salida) El JSON de /home: resultado ("ok", "colision" u "ocupado") y estado.
- * @param largo El tamaño de respuesta.
- * @return NULL si se aceptó, o el mensaje de error.
+ *
+ * Args:
+ *     c: el Centralizador.
+ *     respuesta: donde se escribe el JSON de /home: resultado ("ok", "colision" u "ocupado") y
+ *         estado.
+ *     largo: el tamaño de respuesta.
+ *
+ * Returns:
+ *     NULL si se aceptó, o el mensaje de error si no hubo memoria para planificar el camino.
  */
 const char *pedir_home(Centralizador *c, char *respuesta, size_t largo);
 
 /**
  * El JSON de /data, con las claves de J5 y las nuevas.
- * @param c El Centralizador.
- * @param json (Salida) El texto del JSON.
- * @param largo El tamaño de json.
- * @return El largo del JSON. Si no es menor que largo, el JSON quedó cortado.
+ *
+ * Args:
+ *     c: el Centralizador.
+ *     json: donde se escribe el texto del JSON.
+ *     largo: el tamaño de json.
+ *
+ * Returns:
+ *     El largo del JSON. Si no es menor que largo, el JSON quedó cortado.
  */
 size_t telemetria(const Centralizador *c, char *json, size_t largo);
 

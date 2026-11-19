@@ -97,10 +97,7 @@ $("home").addEventListener("click", async () => {
     const { ok, codigo, datos } = await irAHome();
     if (!ok) avisar(datos.error ?? `No se pudo volver a Home (HTTP ${codigo})`, "error");
     else if (datos.resultado === "ocupado") avisar(OCUPADO, "alerta");
-    else if (datos.resultado === "colision") olvidarAviso(); // el mensaje del estado dice que el camino choca
-    else {
-      avisar("Moviendo a posición original (Home)…", "ok");
-    }
+    else olvidarAviso(); // el mensaje del estado dice si vuelve a Home o si el camino choca
     pedirAhora();
   } catch {
     avisar("No se pudo volver a Home: sin conexión", "error");

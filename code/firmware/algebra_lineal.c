@@ -1,6 +1,10 @@
+/*
+ * Rotaciones y traslaciones 4x4 en coordenadas homogéneas.
+ *
+ * Archivo de 2025 (grupo J5, code/C/main/algebra_lineal.c). En la simulación es algebra_lineal.py.
+ */
 #include "algebra_lineal.h"
 #include "numpy.h"
-#include <stdio.h>
 
 // El archivo numpy.h ya incluye math.h (implícitamente) y los typedefs.
 

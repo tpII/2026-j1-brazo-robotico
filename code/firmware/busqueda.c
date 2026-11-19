@@ -14,7 +14,8 @@
  * la pose actual chocan. Si choca, se descarta igual que una que no llega: se prueba el otro plano y
  * después la siguiente posición. Una posición con la misma cadena que otra que llegó pero chocaba
  * reusa sus ángulos con su propia muñeca y su propia pinza.
- * Implementación J1.
+ *
+ * En la simulación es busqueda.py. Implementación J1.
  */
 #include "busqueda.h"
 #include "configuracion.h"

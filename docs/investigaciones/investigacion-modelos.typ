@@ -15,12 +15,12 @@
     ),
     (
       nombre: "Guitera Woida, Emma",
-      email: "emma.guitera.woida@gmail.com",
+      email: "emmagw04@gmail.com",
       legajo: "03352/2",
     ),
     (
       nombre: "Terruzzi, Ana Justina",
-      email: "justina.terruzzi@gmail.com",
+      email: "justinaterruzzi@gmail.com",
       legajo: "02557/9",
     ),
   ),
@@ -48,7 +48,7 @@ Antes de avanzar con modelos nuevos, se mencionan los modelos implementados por 
 
 == Cinemática Directa (FK) - Implementada en 2025
 
-El grupo J5 adoptó la convención *Denavit-Hartenberg (DH)* como marco teórico para modelar la cinemática directa. La implementación en C resultante construye cada matriz $T_(i-1)^i$ combinando una rotación de corrección de montaje ($R_"fix"$), la rotación del servo y la traslación del eslabón, lo que es equivalente al producto DH estándar.
+El grupo J5 modeló la cinemática directa con matrices homogéneas de rotación y traslación que se aplican en cadena. La implementación en C resultante construye cada matriz $T_(i-1)^i$ combinando una rotación de corrección de montaje ($R_"fix"$), la rotación del servo y la traslación del eslabón.
 
 La cadena cinemática del brazo de 5 grados de libertad se modela como:
 
@@ -68,9 +68,9 @@ La cinemática inversa se implementa en nuestro proyecto 2026.
 
 == Detección de Autocolisiones - Implementada en 2025
 
-El grupo J5 implementó un sistema de detección de autocolisiones basado en *esferas delimitadoras* @grupo_j5_2025. El modelo define 9 esferas distribuidas en los 5 eslabones con radio uniforme $r = 1.0 "cm"$, verificando pares de esferas filtrados por una matriz booleana 5x5 para evitar falsos positivos entre eslabones adyacentes.
+El grupo J5 implementó un sistema de detección de autocolisiones basado en *esferas delimitadoras* @grupo_j5_2025. El modelo define 9 esferas distribuidas en los 5 eslabones con radio uniforme $r = 1.0 "cm"$, verificando pares de esferas filtrados por una matriz booleana 5×5 para evitar falsos positivos entre eslabones adyacentes.
 
-Se hereda para el proyecto 2026.
+Se hereda para el proyecto 2026, con otra cantidad, tamaño y ubicación de las esferas, otros pares verificados (@sec-esferas).
 
 #pagebreak()
 = Cinemática Inversa Iterativa - Hito 1.2
@@ -148,7 +148,7 @@ FABRIK es un algoritmo que resuelve la cinemática inversa de forma iterativa, a
 
 Se selecciona *FABRIK* como algoritmo de cinemática inversa para el proyecto 2026. La decisión se tomó por los siguientes motivos:
 
-- *Sin inversión matricial:* Opera con sumas, restas y normalizaciones de vectores 3D. No necesita calcular jacobianos ni inversiones de matrices. Por lo tanto, su implementación en C es más simple y rápida que las otras alternativas.
+- *Sin inversión matricial:* Opera con sumas, restas y normalizaciones de vectores 3D. No necesita calcular jacobianos ni inversiones de matrices. Por lo tanto, su implementación en C es más simple y rápida que la de los métodos basados en el Jacobiano.
 - *Inmunidad a singularidades:* Al no depender de derivadas, no existe configuración del brazo que genere una matriz singular.
 - *Convergencia rápida:* Aristidou & Lasenby reportan que, en sus pruebas, FABRIK resultó unas 10 veces más rápido que CCD y unas mil veces más rápido que los métodos basados en el Jacobiano @aristidou2011fabrik.
 - *Implementación real disponible:* Existe una librería de código abierto (NocKinematics) que implementa FABRIK en 3D para Arduino y ESP32, aunque sin límites articulares @nockinematics.
@@ -164,7 +164,7 @@ Antes de iterar, se comprueba si el objetivo está dentro del rango máximo del 
 
 $ norm(bold(p)^* - bold(p)_0) <= sum_(i=1)^n l_i $
 
-Si no se cumple, el objetivo es inalcanzable y no se ejecuta ninguna iteración. En nuestro brazo, el error HTTP al Gemelo Digital se envía recién cuando ninguna posición de la muñeca y la pinza llega (@sec-aplicacion).
+Si no se cumple, el objetivo es inalcanzable y no se ejecuta ninguna iteración.
 
 
 === Paso 1 — Fase Forward (llevar la punta al objetivo)
@@ -212,7 +212,7 @@ Con restricciones, la verificación del Paso 0 es necesaria pero no suficiente. 
     inset: 6pt,
     fill: (_, row) => if row == 0 { luma(220) } else { white },
     [*Parámetro*], [*Valor*], [*Justificación*],
-    [$epsilon$ (tolerancia)], [0.5 cm], [Resolución mecánica del SG90 (~1° ≈ 0.33 cm en el extremo)],
+    [$epsilon$ (tolerancia)], [0.5 cm], [Resolución mecánica del MG90S (~1° ≈ 0.31 cm en el extremo)],
     [$eta$ (sin movimiento)], [$10^(-4)$ cm], [Detecta que el efector dejó de moverse entre dos iteraciones],
     [$k_"max"$ (iteraciones)], [20], [Se reportan convergencias en 5–15 iteraciones para cadenas similares],
   )
@@ -226,11 +226,11 @@ $ theta_i = op("atan2")(bold(z)_i dot.op (bold(r)_i times bold(d)_i), quad bold(
 
 donde $bold(d)_i = bold(p)_(i+1) - bold(p)_i$ es el vector director del eslabón, $bold(z)_i$ es el eje de rotación del servo $i$ expresado en coordenadas globales y $bold(r)_i$ es la dirección que tendría el eslabón con $theta_i = 0$. Los vectores $bold(d)_i$ y $bold(r)_i$ se toman proyectados sobre el plano perpendicular a $bold(z)_i$. Tanto $bold(z)_i$ como $bold(r)_i$ se obtienen de la cadena FK con los ángulos ya recuperados de los servos anteriores, así que el cálculo avanza en orden, desde la base hacia la pinza. El signo surge del propio $op("atan2")$, que da un valor positivo cuando el giro de $bold(r)_i$ a $bold(d)_i$ es antihorario visto desde la punta de $bold(z)_i$.
 
-Medir en cambio el ángulo entre el eslabón y su propio eje, $op("atan2")(norm(bold(d)_i times bold(z)_i), bold(d)_i dot.op bold(z)_i)$, no sirve, porque una rotación alrededor de $bold(z)_i$ no cambia el ángulo que forma un vector con $bold(z)_i$. Con la geometría actual del modelo de nuestro brazo, ese cálculo da siempre $(0°, 90°, 90°, 180°, 90°)$, sin importar la pose.
+Medir en cambio el ángulo entre el eslabón y su propio eje, $op("atan2")(norm(bold(d)_i times bold(z)_i), bold(d)_i dot.op bold(z)_i)$, no sirve, porque una rotación alrededor de $bold(z)_i$ no cambia el ángulo que forma un vector con $bold(z)_i$. Con las medidas de nuestro brazo, ese cálculo da siempre $(0°, 90°, 85.15°, 180°, 90°)$, sin importar la pose.
 
-Por último, los ángulos recuperados solo reproducen las posiciones de FABRIK si esas posiciones respetan la estructura del brazo. En el modelo actual, en el hombro y el codo cada eslabón tiene que quedar perpendicular a su eje, y en la base y la muñeca, alineado con él. Un eslabón alineado con su eje no cambia al girar, así que en la base y la muñeca el ángulo no se puede obtener de su propio eslabón. En nuestro brazo, el de la base surge de la orientación del plano del brazo y los de la muñeca y la pinza los elige el programa antes de iterar (@sec-aplicacion).
+Por último, los ángulos recuperados solo reproducen las posiciones de FABRIK si esas posiciones respetan la estructura del brazo. Un eslabón alineado con su eje no cambia al girar, así que en la base y la muñeca el ángulo no se puede obtener de su propio eslabón. En nuestro brazo, el de la base surge de la orientación del plano del brazo y los de la muñeca y la pinza los elige el programa antes de iterar (@sec-aplicacion).
 
-Los rangos de los servos son los que permite el firmware (`main.ino`). Se expresan en grados del servo, que el firmware obtiene a partir del ancho de pulso con sus tablas de calibración, y se convierten a los ángulos del modelo con la misma regla que usa el firmware:
+Los rangos de los servos son los que permite el firmware (`configuracion.c`). Se expresan en grados del servo, que el firmware obtiene a partir del ancho de pulso con sus tablas de calibración, medidas en el brazo, y se convierten a los ángulos del modelo con la misma regla que usa el firmware:
 
 #align(center)[
   #table(
@@ -251,7 +251,7 @@ Recortar los ángulos recién después de converger no alcanza. El recorte cambi
 
 == Aplicación de FABRIK en nuestro brazo <sec-aplicacion>
 
-Hasta aquí se describió FABRIK en su forma general. En nuestro brazo las articulaciones no son rótulas libres. La base gira alrededor del eje vertical, el hombro y el codo son bisagras de ejes paralelos, la muñeca rota sobre el eje del antebrazo y el servo de la pinza inclina hacia adelante y hacia atrás. Por esta razón, se va a aplicar una adaptación de la técnica que propone el paper para bisagras @aristidou2011fabrik. La base gira el plano vertical del brazo para que $bold(p)_5$, que según la muñeca puede quedar fuera de ese plano, caiga sobre el objetivo. Dentro del plano, FABRIK resuelve el hombro y el codo en 2D, con los límites aplicados en cada paso. Si hay dos orientaciones posibles para la base, se prueba primero la que apunta hacia el objetivo. Para elegir entre las dos posiciones posibles del codo, y evitar que termine doblado hacia abajo, se agrega una regla similar al _pole_ que usan programas de animación como Blender y Maya @blender_ik_constraint @maya_rp_solver. El usuario solo indica el punto al que tiene que llegar la pinza. La muñeca y la pinza empiezan en su posición neutra y, si con ellas el punto queda fuera de alcance o bloqueado por los límites, el programa prueba otras posiciones de a 10°, primero en la pinza y después en la muñeca, hasta encontrar una que llegue.
+Hasta aquí se describió FABRIK en su forma general. En nuestro brazo las articulaciones no son rótulas libres. La base gira alrededor del eje vertical, el hombro y el codo son bisagras de ejes paralelos, la muñeca rota sobre el eje del antebrazo y el servo de la pinza inclina hacia adelante y hacia atrás. Por esta razón, se va a aplicar una adaptación de la técnica que propone el paper para bisagras @aristidou2011fabrik. La base gira el plano vertical del brazo para que $bold(p)_5$, que queda al costado de ese plano y caiga sobre el objetivo. Dentro del plano, FABRIK resuelve el hombro y el codo en 2D, con los límites aplicados en cada paso. Si hay dos orientaciones posibles para la base, se prueba primero la que apunta hacia el objetivo. Para elegir entre las dos posiciones posibles del codo, y evitar que termine doblado hacia abajo, se agrega una regla similar al _pole_ que usan programas de animación como Blender y Maya @blender_ik_constraint @maya_rp_solver. El usuario solo indica el punto al que tiene que llegar la pinza. La muñeca y la pinza empiezan en su posición neutra y, si con ellas el punto queda fuera de alcance o bloqueado por los límites, o si la pose o el camino hasta ella chocan, el programa prueba otras posiciones de a 10°, primero en la pinza y después en la muñeca, hasta encontrar una que llegue sin chocar.
 
 Esta aplicación se encuentra documentada en detalle en el informe *Implementación FABRIK* (`implementacion-fabrik.pdf`).
 
@@ -268,9 +268,9 @@ Se evaluaron otras alternativas, como *cápsulas* o *AABB / OBB*. Sin embargo, s
 
 - *Ya está implementado:* El grupo J5 lo programó en C y lo integró al firmware del ESP32 @grupo_j5_2025.
 - *Costo computacional bajo:* La evaluación de colisión entre dos esferas se reduce a una sola operación de distancia euclidiana.
-- *Suficiente para el caso de uso:* Los eslabones del brazo SG90 son cilindros cortos; las esferas proporcionan un margen de seguridad adecuado sin precisar geometrías más complejas.
+- *Suficiente para el caso de uso:* Los eslabones del brazo son piezas cortas. En las pruebas sobre las piezas alcanzó con esferas a lo largo de cada eslabón, un tope para el codo y las esquinas de la mano contra el suelo, sin precisar geometrías más complejas.
 
-Las cápsulas (Swept Sphere Volumes) serían una mejora futura si se detectan falsos negativos con el hardware real, por el momento se mantendrá el modelo de esferas.
+Las cápsulas (Swept Sphere Volumes) serían una mejora futura si se detectan falsos negativos con el hardware real. Por el momento, se mantendrá el modelo de esferas.
 
 == Fundamentación matemática
 
@@ -278,15 +278,15 @@ La intersección entre dos esferas $S_A$ y $S_B$ en $RR^3$ se evalúa con una ú
 
 $ d(bold(c)_A, bold(c)_B) = sqrt((c_A^x - c_B^x)^2 + (c_A^y - c_B^y)^2 + (c_A^z - c_B^z)^2) <= r_A + r_B + delta $
 
-Para el prototipo, se usa radio uniforme $r_"esf" = 1.0 "cm"$ (heredado del año anterior) y tolerancia numérica $delta = 10^(-9)$ cm. La condición de colisión se simplifica a:
+Se usa radio uniforme $r_"esf" = 1.5 "cm"$, elegido con pruebas sobre las piezas del brazo (@sec-esferas), y tolerancia numérica $delta = 10^(-9)$ cm. La condición de colisión se simplifica a:
 
 $ d(bold(c)_A, bold(c)_B) <= 2 dot.op r_"esf" $
 
-== Distribución de esferas por eslabón
+== Distribución de esferas por eslabón <sec-esferas>
 
-Las coordenadas se definen en el espacio local de cada eslabón como vectores homogéneos $tilde(c)_(i,j)^"loc" = (x, y, z, 1)^T$. La transformación a coordenadas globales reutiliza la misma cadena de matrices $M_"eslabon"^((i))$ calculada por la FK:
+Las coordenadas se definen en el espacio local de cada eslabón como vectores homogéneos $tilde(c)_(i,j)^"loc" = (x, y, z, 1)^T$. La transformación a coordenadas globales reutiliza la misma cadena de matrices $M_"eslabón"^((i))$ calculada por la FK:
 
-$ c_(i,j)^"glob" = M_"eslabon"^((i)) dot.op tilde(c)_(i,j)^"loc" $
+$ c_(i,j)^"glob" = M_"eslabón"^((i)) dot.op tilde(c)_(i,j)^"loc" $
 
 #align(center)[
   #table(
@@ -295,29 +295,29 @@ $ c_(i,j)^"glob" = M_"eslabon"^((i)) dot.op tilde(c)_(i,j)^"loc" $
     inset: 6pt,
     fill: (_, row) => if row == 0 { luma(220) } else if calc.even(row) { luma(245) } else { white },
     [*Eslabón*], [*Articulación*], [*Centros locales $(x, y, z)$*], [*Cant.*],
-    [0], [Base], [$(0, 0, 0)$], [1],
-    [1], [Hombro], [$(0, 0, 0)$; $(2, 0, 0)$], [2],
-    [2], [Codo], [$(0, 0, 0)$; $(2, 0.5, 0)$; $(4, 0.5, 0)$], [3],
+    [0], [Base], [$(0, 0, 0)$; $(0, 0, 1.145)$; $(0, 0, 2.29)$; $(0, 0, 3.435)$], [4],
+    [1], [Hombro], [$(0, 0, 0)$; $(1.25, 0, 0)$; $(2.5, 0, 0)$; $(3.75, 0, 0)$; $(5, 0, 0)$], [5],
+    [2], [Codo], [$(0, 0, 0)$; $(1.4725, 0, 0.125)$; $(2.945, 0, 0.25)$; $(4.4175, 0, 0.375)$], [4],
     [3], [Muñeca], [$(0, 0, 0)$], [1],
-    [4], [Pinza], [$(0, 0, 0)$; $(0, -2, 0)$], [2],
+    [4], [Pinza], [$(0, 0, 0)$; $(0, -1.415, 0)$; $(0, -2.83, 0)$], [3],
     table.hline(stroke: 1pt),
-    [], [*Total*], [], [*9 esferas*],
+    [], [*Total*], [], [*17 esferas*],
   )
 ]
 
-_Estos valores son los documentados en_ `configuracion.c` _del prototipo 2025_ @grupo_j5_2025. _Serán validados contra el hardware físico real una vez ensamblado, ajustando posiciones y radio si corresponde._
+Las esferas van sobre la recta que une cada articulación con la siguiente o, en la pinza, con la punta. Hay una en cada articulación y otra cada 1.5 cm como máximo. En la pinza, la última queda a un radio de la punta, para que la esfera no sobresalga de la mano. La cantidad y el radio se eligieron con pruebas sobre las piezas del brazo y reemplazan a los de `configuracion.c` del prototipo 2025 @grupo_j5_2025.
 
 #pagebreak()
 == Matriz booleana de exclusión 5×5
 
-Sin optimización, verificar colisiones entre las 9 esferas requeriría $binom(9, 2) = 36$ evaluaciones de distancia en cada ciclo. La *Matriz de Colisiones* booleana de `configuracion.c` (heredada de @grupo_j5_2025) filtra los pares que no hace falta verificar:
+Sin optimización, verificar colisiones entre las 17 esferas requeriría $binom(17, 2) = 136$ evaluaciones de distancia en cada ciclo. La *Matriz de Colisiones* booleana filtra los pares de eslabones que no hace falta verificar y deja 52 distancias:
 
 $
   M_"colisiones" = mat(
-    0, 0, 0, 0, 1;
-    0, 0, 1, 0, 1;
-    0, 1, 0, 0, 0;
-    0, 0, 0, 0, 0;
+    0, 0, 1, 1, 1;
+    0, 0, 0, 1, 1;
+    1, 0, 0, 0, 0;
+    1, 1, 0, 0, 0;
     1, 1, 0, 0, 0;
   )
 $
@@ -327,31 +327,31 @@ $M[i, j] = 1 arrow.r$ verifica colisión entre eslabón $i$ y eslabón $j$.
 === Reglas de exclusión
 
 - *Diagonal* ($i = j$): Un eslabón no colisiona consigo mismo.
-- *Adyacentes* ($|i - j| = 1$): Los eslabones consecutivos comparten una articulación física. Sus esferas extremas se superponen por diseño mecánico. Por eso no se verifican, salvo el par hombro–codo $(1, 2)$, porque el codo llega a $-180°$ y puede plegar el antebrazo sobre el brazo.
-- *Casi-adyacentes* ($|i - j| = 2$): En los pares $(0, 2)$ y $(1, 3)$, con las medidas actuales, cada choque también lo detecta el chequeo contra el piso u otro par verificado. En el par $(2, 4)$, la última esfera del codo y la primera de la pinza quedan siempre a 2 cm, así que se tocarían en cualquier pose.
-- *Base y muñeca* ($i = 0$, $j = 3$): La esfera de la muñeca coincide con la última del codo. Por eso sus choques con la base son los mismos que los del par $(0, 2)$.
+- *Adyacentes* ($|i - j| = 1$): Los eslabones consecutivos comparten una articulación física, y la última esfera de uno queda siempre a menos de $2 r_"esf"$ de la primera del siguiente, entre 1.1 y 1.5 cm. Se tocarían en cualquier pose, así que no se verifican. El choque del brazo con el antebrazo lo detecta el tope del codo (@sec-tope-codo).
+- *Codo y pinza* $(2, 4)$: La base de la mano mide 1.29 cm y deja la pinza junto al antebrazo. La última esfera del codo y la primera de la pinza quedan siempre a 2.77 cm, menos que $2 r_"esf" = 3$ cm, y por eso este par tampoco se verifica.
+- *Pares verificados* $(0, 2)$, $(0, 3)$, $(0, 4)$, $(1, 3)$ y $(1, 4)$: En 100~000 poses al azar dentro de los rangos del firmware, cada uno choca en miles de ellas, entre 7221 y 16~764.
 
-=== Exclusión de articulación compartida
+=== Tope del codo <sec-tope-codo>
 
-En el único par adyacente que la matriz sí verifica, el $(1, 2)$, se excluye además el cruce entre la última esfera del eslabón $i$ y la primera del eslabón $j$, porque con las medidas actuales sus centros quedan siempre a 1.3 cm y se superponen en cualquier pose:
+Con las piezas del brazo, el antebrazo toca el brazo cuando el codo está más cerrado que $-139°$ en grados del modelo. Como las esferas de esos dos eslabones se tocan en cualquier pose, ese choque se detecta con el ángulo del codo y cuenta como choque del par $(1, 2)$:
 
-$ text("Excluir: ") (c_(i, text("última")), quad c_(j, text("primera"))) $
+$ theta_2 < -139° $
 
 == Colisión contra el plano base
 
-Adicionalmente, cada esfera (excepto las del eslabón 0, que es la base) se verifica contra el plano del suelo ($Z = 0$):
+Adicionalmente, las esferas de los eslabones 1 a 3 se verifican contra el plano del suelo ($Z = 0$):
 
-$ c_(i,j)^"glob" [z] <= r_"esf" quad forall i in {1, 2, 3, 4}, quad forall j $
+$ c_(i,j)^"glob" [z] <= r_"esf" quad forall i in {1, 2, 3}, quad forall j $
 
-Si cualquier esfera penetra el plano, la pose se rechaza inmediatamente.
+La base (eslabón 0) está apoyada sobre el suelo y no se verifica. La mano (eslabón 4) es una bandeja plana y, con sus esferas de 1.5 cm, no podría acercarse al suelo ni con la bandeja paralela a él. Por eso, en lugar de sus esferas, se verifican las 8 esquinas de la caja que la contiene, que tocan el suelo si $z <= 0$. Si alguna esfera o esquina toca el plano, la pose se rechaza.
 
 #pagebreak()
 = Conclusión
 
 La investigación establece que:
 
-+ El modelo de *cinemática directa* (FK) del año anterior es matemáticamente correcto y se adopta sin cambios en su lógica. Sus medidas se reemplazaron por las del brazo armado, y `configuracion.c` se corrige en el pasaje a C.
-+ El modelo de *esferas delimitadoras* para colisiones fue implementado por el grupo J5 y es el más adecuado para las restricciones del ESP32. Se adopta, y sus posiciones y radio se van a validar con el brazo armado.
++ El modelo de *cinemática directa* (FK) del año anterior es matemáticamente correcto y se adopta sin cambios en su lógica. Sus medidas se reemplazaron por las de las piezas del brazo, en la simulación y en `configuracion.c`.
++ El modelo de *esferas delimitadoras* para colisiones fue implementado por el grupo J5 y es el más adecuado para las restricciones del ESP32. Se adopta con 17 esferas de 1.5 cm a lo largo de los eslabones, un tope para el codo y las esquinas de la mano contra el suelo, elegidos con pruebas sobre las piezas del brazo.
 + *FABRIK* es el algoritmo óptimo para IK en nuestro contexto: sin matrices, convergencia rápida, implementación simple en C. Es la contribución técnica nueva del grupo J1.
 
 #pagebreak()

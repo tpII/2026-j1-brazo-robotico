@@ -14,8 +14,8 @@ class TestPlano(unittest.TestCase):
     """Lo común a las versiones de FABRIK en el plano."""
     def test_cadena_virtual(self):
         """l2, alpha y d según la muñeca y la pinza."""
-        filas = {(0, 0): (8.38, -31.09, -0.3), (0, 90): (11.51, 0.0, -0.3), (0, 180): (8.38, 31.09, -0.3),
-                 (90, 0): (7.18, 0.0, -4.63)}
+        filas = {(0, 0): (8.38, -31.09, -0.5), (0, 90): (11.51, 0.0, -0.5), (0, 180): (8.38, 31.09, -0.5),
+                 (90, 0): (7.18, 0.0, -4.83)}
         for (t3, t4), (l2, alfa, d) in filas.items():
             c = plano.cadena_virtual(t3, t4)
             self.assertAlmostEqual(c.l2, l2, delta=0.005)
@@ -27,7 +27,7 @@ class TestPlano(unittest.TestCase):
         self.assertEqual([(f["theta3"], f["theta4"]) for f in filas_experimento], list(filas))
 
     def test_cadena_virtual_igual_a_la_formula(self):
-        """La fórmula cerrada de la cadena virtual: la muñeca corre p5 0.3 cm fuera del plano."""
+        """La fórmula cerrada de la cadena virtual: la muñeca corre p5 0.5 cm fuera del plano."""
         for t3 in range(-90, 91, 15):
             for t4 in range(0, 181, 15):
                 c = plano.cadena_virtual(t3, t4)
@@ -36,7 +36,7 @@ class TestPlano(unittest.TestCase):
                 v = (7.18 + 4.33 * s4, -4.33 * c3 * c4)
                 self.assertAlmostEqual(c.l2, math.hypot(*v), places=9)
                 self.assertAlmostEqual(c.alfa, math.degrees(math.atan2(v[1], v[0])), places=9)
-                self.assertAlmostEqual(c.d, -0.3 - 4.33 * s3 * c4, places=9)
+                self.assertAlmostEqual(c.d, -0.5 - 4.33 * s3 * c4, places=9)
 
     def test_supuestos_del_metodo(self):
         """Los supuestos del método en el plano valen con las medidas del modelo."""
@@ -63,14 +63,14 @@ class TestPlano(unittest.TestCase):
         self.assertAlmostEqual(r["cm_por_grado"], 0.31, delta=0.005)
 
     def test_paso_1_ejemplo(self):
-        """p5 queda a 0.3 cm del plano (d = -0.3): theta0 = -42.57°, r_c = 7.06 y T = (7.06, 2.42)."""
+        """p5 queda a 0.5 cm del plano (d = -0.5): theta0 = -40.95°, r_c = 7.05 y T = (7.05, 2.42)."""
         objetivo = np.array([5.0, -5.0, 7.0])
         c = plano.cadena_virtual(0, 90)
         (t0, rc), = plano.planos_candidatos(objetivo, c.d)
-        self.assertAlmostEqual(t0, -42.57, delta=0.005)
-        self.assertAlmostEqual(rc, 7.06, delta=0.005)
+        self.assertAlmostEqual(t0, -40.95, delta=0.005)
+        self.assertAlmostEqual(rc, 7.05, delta=0.005)
         T = plano.objetivo_en_plano(objetivo, rc, c)
-        np.testing.assert_allclose(T, [7.06, 2.42], atol=0.005)
+        np.testing.assert_allclose(T, [7.05, 2.42], atol=0.005)
 
     def test_planos_de_5_5_7(self):
         """El plano de 45° deja la base fuera de rango: queda el de -135°, inclinado hacia atrás."""
@@ -119,9 +119,9 @@ class TestPlano(unittest.TestCase):
                                c.z_hombro + c.l1 + c.l2, places=9)
 
     def test_formula_ingenua(self):
-        """La fórmula con el propio eje da siempre (0, 90, 87.08, 180, 90), por el desvío de la muñeca."""
+        """La fórmula con el propio eje da siempre (0, 90, 85.15, 180, 90), por el desvío de la muñeca."""
         for fila in experimentos.formula_ingenua.calcular()["filas"]:
-            np.testing.assert_allclose(fila["resultado"], [0, 90, 87.08, 180, 90], atol=0.01)
+            np.testing.assert_allclose(fila["resultado"], [0, 90, 85.15, 180, 90], atol=0.01)
 
 
 if __name__ == "__main__":

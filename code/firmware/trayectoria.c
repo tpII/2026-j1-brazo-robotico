@@ -7,7 +7,8 @@
  * - ningún punto del brazo (p1 a p5 y los centros de las esferas) va más rápido que VEL_MAX_PUNTO (cm/s);
  * - el movimiento arranca y frena con rampas de T_RAMPA segundos.
  * Se toma un paso cada DT, y después se verifica paso por paso que ninguno pase los límites.
- * Implementación J1.
+ *
+ * En la simulación es trayectoria.py. Implementación J1.
  */
 #include "trayectoria.h"
 #include "cinematica.h"

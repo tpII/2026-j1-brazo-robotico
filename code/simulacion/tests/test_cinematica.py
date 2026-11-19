@@ -1,4 +1,4 @@
-"""cinematica.py: misma cadena que calcular_configuracion_modular (cinematica.c)."""
+"""cinematica.py: misma cadena que cinematica_directa (cinematica.c)."""
 import unittest
 
 import numpy as np
@@ -12,14 +12,14 @@ class TestCinematica(unittest.TestCase):
     def test_pose_cero(self):
         """Puntos y ejes de la pose cero."""
         g = cinematica.cinematica_directa((0, 0, 0, 0, 0))
-        np.testing.assert_allclose(g.puntos, [[0, 0, 0], [0, 0, 4.58], [6.25, 0, 4.58], [12.14, -0.3, 4.58],
-                                              [13.43, -0.3, 4.58], [13.43, -0.3, 0.25]], atol=1e-12)
+        np.testing.assert_allclose(g.puntos, [[0, 0, 0], [0, 0, 4.58], [6.25, 0, 4.58], [12.14, -0.5, 4.58],
+                                              [13.43, -0.5, 4.58], [13.43, -0.5, 0.25]], atol=1e-12)
         np.testing.assert_allclose(g.ejes, [[0, 0, 1], [0, -1, 0], [0, -1, 0], [-1, 0, 0], [0, -1, 0]], atol=1e-12)
 
     def test_p5_es_la_punta_de_la_pinza(self):
         """p5 está a 4.33 cm del eje del servo 4, hacia la pala y en el plano que gira con la pinza."""
         g = cinematica.cinematica_directa((0, 0, 0, 0, 90))
-        np.testing.assert_allclose(g.puntos[5], [17.76, -0.3, 4.58], atol=1e-12)
+        np.testing.assert_allclose(g.puntos[5], [17.76, -0.5, 4.58], atol=1e-12)
         for pose in ((-30, 60, -90, 20, 0), (-120, 100, -40, -60, 150)):
             g = cinematica.cinematica_directa(pose)
             mano = g.puntos[5] - g.puntos[4]
@@ -41,7 +41,7 @@ class TestCinematica(unittest.TestCase):
     def test_pinza_neutra_a_lo_largo_del_antebrazo(self):
         """Con la pinza en 90°, la pinza queda alineada con el antebrazo."""
         g = cinematica.cinematica_directa((0, 0, 0, 0, 90))
-        np.testing.assert_allclose(g.esferas[4][-1], [16.26, -0.3, 4.58], atol=1e-12)
+        np.testing.assert_allclose(g.esferas[4][-1], [16.26, -0.5, 4.58], atol=1e-12)
 
     def test_marcos(self):
         """Rotación y origen de cada eslabón, con los que la página dibuja el brazo."""

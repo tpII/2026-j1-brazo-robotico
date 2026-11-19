@@ -8,7 +8,8 @@
  * - Un objetivo con valores que no son números finitos, o debajo del piso, se rechaza sin buscar:
  *   p5 no tiene esfera, así que las esferas no lo detectarían.
  * El loop() de firmware.ino lo llama y les manda los pulsos a los servos.
- * Implementación J1.
+ *
+ * En la simulación es centralizador.py. Implementación J1.
  */
 #include "centralizador.h"
 #include "cinematica.h"
@@ -318,7 +319,7 @@ size_t telemetria(const Centralizador *c, char *json, size_t largo) {
     escribir(&j, ", \"collision_detected\": %s, \"colliding_centers\": ", choque.hay_choque ? "true" : "false");
     centros(&j, &g, &choque);
     escribir(&j, ", \"sphere_radius\": ");
-    numero(&j, RADIO_ESFERA_MEDIDO);
+    numero(&j, RADIO_ESFERA);
     escribir(&j, ", \"spheres\": ");
     lista_esferas(&j, &g);
     escribir(&j, ", \"puntos\": ");

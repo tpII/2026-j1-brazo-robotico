@@ -19,6 +19,7 @@ import colisiones
 import configuracion as cfg
 import plano
 import servos
+import trayectoria
 
 
 def _dibujo(pose, choque=None):
@@ -151,34 +152,21 @@ class Centralizador:
         """
         if self.estado == "moviendo":
             return {"resultado": "ocupado"}
-        import trayectoria
         destino = servos.home_modelo()
         t = trayectoria.planificar(self.angulos, destino)
         i = trayectoria.primer_choque(t.pasos)
+        self.objetivo = None
+        self._indice = 0
         if i is not None:   # el brazo no se mueve y se dibuja el paso que choca
             silueta = busqueda.Silueta(t.pasos[i], None, colisiones.detectar_colisiones(t.pasos[i]))
             self.resultado = busqueda.Resultado("colision", None, None, silueta, 0, 0, 0, 0, 0.0)
-            self.objetivo = None
-            self._pasos, self._indice = [], 0
+            self._pasos = []
             self.estado = "quieto"
-            return {"resultado": "colision", "estado": self.estado}
-        self.resultado = busqueda.Resultado(
-            estado="ok",
-            angulos=tuple(destino),
-            error=0.0,
-            posiciones=0,
-            ejecuciones=0,
-            iteraciones=0,
-            iteraciones_totales=0,
-            tiempo_ms=0.0,
-            detalle_ejecuciones=[],
-            silueta=None,
-        )
-        self.objetivo = None
-        self._pasos = t.pasos
-        self._indice = 0
-        self.estado = "moviendo" if len(self._pasos) > 0 else "quieto"
-        return {"resultado": "ok", "estado": self.estado}
+        else:
+            self.resultado = busqueda.Resultado("ok", tuple(destino), 0.0, None, 0, 0, 0, 0, 0.0)
+            self._pasos = t.pasos
+            self.estado = "moviendo"
+        return {"resultado": self.resultado.estado, "estado": self.estado}
 
     def _error(self):
         """El error de la última búsqueda en cm, o None."""

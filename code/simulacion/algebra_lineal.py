@@ -1,7 +1,6 @@
-# algebra_lineal.py
 """Rotaciones y traslaciones 4x4 en coordenadas homogéneas.
 
-Archivo de 2025 (grupo J5, code/python/modular/algebra_lineal.py). En C equivale a algebra_lineal.c.
+Archivo de 2025. En C equivale a algebra_lineal.c.
 """
 
 import numpy as np

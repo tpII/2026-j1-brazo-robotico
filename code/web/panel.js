@@ -104,6 +104,7 @@ function mostrarIntento(silueta) {
   );
 }
 
+/** Escribe el aviso vigente o, si no hay, el mensaje que corresponde al estado. */
 function pintarMensaje() {
   const vigente = aviso && performance.now() < aviso.hasta;
   const [texto, clase] = vigente ? [aviso.texto, aviso.clase] : mensajeDe(ultima);
@@ -124,6 +125,12 @@ function mensajeDe(t) {
     case null:
       return ["Listo. Escribí un objetivo o elegilo con dos clics sobre la vista.", ""];
     case "ok":
+      if (!t.objetivo) {
+        // Home no tiene objetivo
+        if (t.estado === "moviendo") return ["Moviendo a la posición original (Home)", "ok"];
+        if (t.estado === "detenido") return ["Detenido antes de llegar a la posición original (Home)", "alerta"];
+        return ["En la posición original (Home)", "ok"];
+      }
       if (t.estado === "moviendo") return ["Moviendo hacia el objetivo", "ok"];
       if (t.estado === "detenido") return ["Detenido antes de llegar al objetivo", "alerta"];
       return [`Objetivo alcanzado (error ${numero(t.error_cm)} cm)`, "ok"];
@@ -143,6 +150,13 @@ function mensajeDe(t) {
   }
 }
 
+/**
+ * Un número con los decimales pedidos, o una raya si no hay número.
+ *
+ * @param {*} valor
+ * @param {number} [decimales=2]
+ * @returns {string}
+ */
 function numero(valor, decimales = 2) {
   return typeof valor === "number" ? valor.toFixed(decimales) : "—";
 }

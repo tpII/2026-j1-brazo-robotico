@@ -35,7 +35,7 @@ class TestColisiones(unittest.TestCase):
         self.assertEqual(_resumen((0, 0, -5, 0, 0)), (True, [], [(4, 2)], [(4, 2)]))
 
     def test_pala_acostada_cerca_de_la_mesa(self):
-        """La pala acostada a 1.4 mm de la mesa no la toca, aunque sus esferas estén a menos de un radio."""
+        """La pala acostada a 1.9 mm de la mesa no la toca, aunque sus esferas estén a menos de un radio."""
         pose = (0, 0, -30, 0, 120)
         self.assertTrue(all(c[2] < cfg.RADIO_ESFERA for c in cinematica.cinematica_directa(pose).esferas[4]))
         self.assertFalse(colisiones.detectar_colisiones(pose).hay_choque)
@@ -48,8 +48,8 @@ class TestColisiones(unittest.TestCase):
     def test_reglas_esferas_rapido(self):
         """Los pares que no se revisan chocarían en todas las poses; los que se revisan, solo en algunas."""
         r = experimentos.reglas_esferas.calcular(n=5000)
-        distancias = {"(0, 1)": 4.58 / 4, "(1, 2)": 6.25 / 5, "(2, 3)": math.hypot(5.89, 0.3) / 4, "(3, 4)": 1.29,
-                      "(2, 4)": math.hypot(5.89 / 4 + 1.29, 0.3 / 4)}
+        distancias = {"(0, 1)": 4.58 / 4, "(1, 2)": 6.25 / 5, "(2, 3)": math.hypot(5.89, 0.5) / 4, "(3, 4)": 1.29,
+                      "(2, 4)": math.hypot(5.89 / 4 + 1.29, 0.5 / 4)}
         for par, distancia in distancias.items():
             self.assertAlmostEqual(r["sin_revisar"][par][0], distancia, places=9)
             self.assertAlmostEqual(r["sin_revisar"][par][1], distancia, places=9)

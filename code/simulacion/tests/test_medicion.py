@@ -40,31 +40,31 @@ class TestMedicion(unittest.TestCase):
         """Las reglas de las esferas con 100000 poses al azar."""
         r = experimentos.reglas_esferas.calcular()
         self.assertEqual(r["n"], 100000)
-        self.assertEqual(r["revisados"], {"(0, 2)": 7549, "(0, 3)": 14402, "(0, 4)": 16251, "(1, 3)": 16943,
-                                          "(1, 4)": 14045})
+        self.assertEqual(r["revisados"], {"(0, 2)": 7221, "(0, 3)": 14239, "(0, 4)": 16142, "(1, 3)": 16764,
+                                          "(1, 4)": 13917})
 
     def test_versiones(self):
         """Cuántos objetivos resuelve cada versión y cuántas iteraciones usa la v3."""
         r = experimentos.medicion_versiones.calcular()
-        esperado = {"v1": (756, 1406), "v1+espejo": (1952, 1901), "v2": (848, 1483), "v3": (1981, 1975)}
+        esperado = {"v1": (757, 1410), "v1+espejo": (1951, 1902), "v2": (848, 1487), "v3": (1980, 1975)}
         for version, (cero, azar) in esperado.items():
             self.assertEqual((r[version]["cero"]["resueltos"], r[version]["azar"]["resueltos"]), (cero, azar), version)
-        self.assertAlmostEqual(r["v3"]["cero"]["iteraciones"], 3.07, delta=0.005)   # «3.1 iteraciones»
+        self.assertAlmostEqual(r["v3"]["cero"]["iteraciones"], 3.08, delta=0.005)   # «3.1 iteraciones»
 
     def test_busqueda_y_k_max(self):
         """La búsqueda sobre los 2000 objetivos y los cortes por k_max."""
         r = experimentos.medicion_busqueda.calcular()
-        self.assertEqual((r["neutra"], r["resueltos"], r["con_muneca"]), (1675, 1996, 117))   # 83.75 % y 99.8 %
-        self.assertAlmostEqual(r["posiciones_promedio"], 7.397, delta=0.0005)  # «7.4 posiciones»
+        self.assertEqual((r["neutra"], r["resueltos"], r["con_muneca"]), (1651, 1995, 139))   # 82.55 % y 99.75 %
+        self.assertAlmostEqual(r["posiciones_promedio"], 7.571, delta=0.0005)  # «7.6 posiciones»
         self.assertEqual((r["posiciones_mediana"], r["posiciones_maximo"]), (1.0, 325))
-        self.assertAlmostEqual(r["iteraciones_promedio"], 24.1385, delta=0.0005)  # «24.1 iteraciones»
+        self.assertAlmostEqual(r["iteraciones_promedio"], 23.5295, delta=0.0005)  # «23.5 iteraciones»
         self.assertEqual(r["iteraciones_mediana"], 2.0)
-        self.assertEqual((r["no_llegan"], r["por_kmax"], r["por_eta"]), (11578, 897, 10681))
-        self.assertEqual((r["kmax_con_recortes"], r["kmax_tope_codo"]), (576, 379))
-        # Cuatro del lado +y, cerca de la base, que no llegan inclinándose hacia atrás.
+        self.assertEqual((r["no_llegan"], r["por_kmax"], r["por_eta"]), (11068, 898, 10170))
+        self.assertEqual((r["kmax_con_recortes"], r["kmax_tope_codo"]), (583, 394))
+        # Cinco del lado +y, cerca de la base, que no llegan inclinándose hacia atrás.
         self.assertEqual([(f["indice"], f["estado"]) for f in r["fallas"]],
                          [(145, "bloqueado_por_limites"), (696, "bloqueado_por_limites"), (846, "bloqueado_por_limites"),
-                          (847, "bloqueado_por_limites")])
+                          (847, "bloqueado_por_limites"), (1356, "bloqueado_por_limites")])
         e = r["ejemplo"]
         self.assertFalse(e["valida_neutra"])
         self.assertAlmostEqual(e["error_neutra"], 0.52, delta=0.005)

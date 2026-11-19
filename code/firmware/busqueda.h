@@ -1,6 +1,7 @@
 /*
  * La búsqueda de la muñeca y la pinza.
- * Implementación J1.
+ *
+ * En la simulación es busqueda.py. Implementación J1.
  */
 #ifndef BUSQUEDA_H
 #define BUSQUEDA_H
@@ -39,11 +40,15 @@ typedef struct {
 
 /**
  * Busca una pose que llegue al objetivo desde la pose actual, en una sola llamada.
- * @param objetivo El punto (x, y, z) en cm.
- * @param actual La pose donde está el brazo (cinco ángulos del modelo, en grados).
- * @param revisar_colisiones Con false no se revisan choques ni trayectoria; es el modo con el que
- *        se midieron los números del informe.
- * @return El Resultado.
+ *
+ * Args:
+ *     objetivo: el punto (x, y, z) en cm.
+ *     actual: la pose donde está el brazo (cinco ángulos del modelo, en grados).
+ *     revisar_colisiones: con false no se revisan choques ni trayectoria; es el modo con el que
+ *         se midieron los números del informe.
+ *
+ * Returns:
+ *     El Resultado.
  */
 Resultado buscar(const Vector3D objetivo, const double actual[5], bool revisar_colisiones);
 

@@ -38,22 +38,22 @@ class TestBusquedaSinChoques(unittest.TestCase):
         """Del lado +y la base no apunta al objetivo: llega con la muñeca girada y la pinza inclinada."""
         r = busqueda.buscar(np.array([6.0, 1.0, 6.0]), HOME, revisar_colisiones=False)
         self.assertEqual(r.estado, "ok")
-        self.assertEqual(r.angulos[3:], (20.0, 160.0))
+        self.assertEqual(r.angulos[3:], (30.0, 140.0))
         self.assertLessEqual(r.error, 0.5)
 
     def test_ejemplo_3_3_0(self):
         """(3, -3, 0) está sobre el piso, cerca de la base; se resuelve con la pinza en 110°, a 0.47 cm."""
         r = busqueda.buscar(np.array([3.0, -3.0, 0.0]), HOME, revisar_colisiones=False)
         self.assertEqual((r.estado, r.posiciones, r.iteraciones), ("ok", 4, 20))
-        np.testing.assert_allclose(r.angulos, [-40.95, 95.05, -168.68, 0.0, 110.0], atol=0.005)
+        np.testing.assert_allclose(r.angulos, [-38.23, 95.21, -168.84, 0.0, 110.0], atol=0.005)
         self.assertAlmostEqual(r.error, 0.47, delta=0.005)
 
     def test_bloqueado_5_5_7(self):
         """La silueta es la iteración de menor error de todas."""
         r = busqueda.buscar(np.array([5.0, 5.0, 7.0]), HOME, revisar_colisiones=False)
         self.assertEqual(r.estado, "bloqueado_por_limites")
-        self.assertAlmostEqual(r.silueta.error, 4.596, delta=0.0005)
-        np.testing.assert_allclose(r.silueta.angulos, [-175.90, 180.0, -110.52, 90.0, 0.0], atol=0.005)
+        self.assertAlmostEqual(r.silueta.error, 4.528, delta=0.0005)
+        np.testing.assert_allclose(r.silueta.angulos, [-178.08, 180.0, -114.16, 90.0, 0.0], atol=0.005)
 
     def test_fuera_de_alcance(self):
         """La silueta es la cadena estirada con la muñeca y la pinza neutras."""
