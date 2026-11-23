@@ -47,8 +47,8 @@ function pedirDatosCada(ms, alLlegar, alCambiarConexion) {
 const ESP32 = "http://192.168.0.167";
 
 /**
- * A quién le pide la página. Abierta con doble clic, al ESP32; servida por un servidor, como el
- * emulador de code/simulacion, a ese servidor. `?servidor=http://IP` elige otra dirección.
+ * A quién le pide la página: a `?servidor=http://IP` si la dirección lo tiene y, si no, al ESP32.
+ * El emulador de code/simulacion abre la página con `?servidor=` apuntando a sí mismo.
  */
 const SERVIDOR =
   new URLSearchParams(location.search).get("servidor") ?? ESP32;
@@ -56,7 +56,7 @@ const SERVIDOR =
 /**
  * La URL de un pedido.
  *
- * @param {string} ruta - "data", "set" o "detener".
+ * @param {string} ruta - "data", "set", "detener" o "home".
  * @returns {string}
  */
 function url(ruta) {

@@ -92,7 +92,7 @@ typedef struct {
     double grados;
 } PuntoCalibracion;
 
-extern const PuntoCalibracion LUT_POR_SERVO[5][7];
+extern const PuntoCalibracion LUT_POR_SERVO[5][5];
 
 extern const int SIGNO_MODELO[5];
 extern const double DESVIO_MODELO[5];

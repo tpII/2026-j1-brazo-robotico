@@ -111,23 +111,23 @@ const double PLANO_PISO_Z = 0.0;
 const double TOL_COLISION = 1e-9;
 
 // --- 5. SERVOS MG90S --- //
-// Según el datasheet, el MG90S queda en el medio con 1.5 ms y llega a -90 y +90 grados con unos 1 y
-// 2 ms, así que 0 a 180 grados del servo van de 1000 a 2000 us. Los horns se montan con los servos a
-// 1500 us y el brazo en L: el brazo vertical; el antebrazo, la muñeca y la pinza horizontales y en
-// línea, y la base a 90 grados del frente. Los pulsos y las tablas de J5 en firmware.ino quedan con
-// los SG90, igual que en la simulación.
-const int SERVO_MIN_US[5] = {1000, 1000, 1000, 1000, 1000};
-const int SERVO_MAX_US[5] = {2000, 2000, 2000, 2000, 2000};
+// Los horns se montan con los servos a 1500 us y el brazo en L: el brazo vertical; el antebrazo, la
+// muñeca y la pinza horizontales y en línea, y la base a 90 grados del frente. La pinza baja hasta
+// 450 us. La ESP32Servo del gestor de librerías no manda pulsos de menos de 500 us (MIN_PULSE_WIDTH
+// en ESP32Servo.h), así que el firmware se tiene que compilar con ese mínimo en 450 o menos.
+const int SERVO_MIN_US[5] = {550, 550, 550, 550, 450};
+const int SERVO_MAX_US[5] = {2450, 2450, 2500, 2450, 2400};
 // El mismo home que con los SG90: (0, 140, -114.6, 4.5, 0) grados del modelo.
-const int SERVO_HOME_US[5] = {1000, 1778, 1363, 1525, 1000};
+const int SERVO_HOME_US[5] = {550, 2006, 1199, 1550, 450};
 
-// Tablas de calibración (us, grados del servo), una por servo. La del codo va al revés, como LUT2 de J5.
-const PuntoCalibracion LUT_POR_SERVO[5][7] = {
-    {{1000, 0.0}, {1167, 30.0}, {1333, 60.0}, {1500, 90.0}, {1667, 120.0}, {1833, 150.0}, {2000, 180.0}}, // base
-    {{1000, 0.0}, {1167, 30.0}, {1333, 60.0}, {1500, 90.0}, {1667, 120.0}, {1833, 150.0}, {2000, 180.0}}, // hombro
-    {{1000, 180.0}, {1167, 150.0}, {1333, 120.0}, {1500, 90.0}, {1667, 60.0}, {1833, 30.0}, {2000, 0.0}}, // codo
-    {{1000, 0.0}, {1167, 30.0}, {1333, 60.0}, {1500, 90.0}, {1667, 120.0}, {1833, 150.0}, {2000, 180.0}}, // muñeca
-    {{1000, 0.0}, {1167, 30.0}, {1333, 60.0}, {1500, 90.0}, {1667, 120.0}, {1833, 150.0}, {2000, 180.0}}  // pinza
+// Tablas de calibración (us, grados del servo) medidas en el brazo, de 45 en 45 grados a partir de la L,
+// que son 90 grados del servo. La del codo va al revés: con más pulso, menos grados.
+const PuntoCalibracion LUT_POR_SERVO[5][5] = {
+    {{550, 0.0}, {1000, 45.0}, {1500, 90.0}, {2050, 135.0}, {2450, 180.0}}, // base
+    {{550, 0.0}, {1000, 45.0}, {1500, 90.0}, {1950, 135.0}, {2450, 180.0}}, // hombro
+    {{550, 180.0}, {950, 135.0}, {1500, 90.0}, {2050, 45.0}, {2500, 0.0}},  // codo
+    {{550, 0.0}, {1050, 45.0}, {1500, 90.0}, {2000, 135.0}, {2450, 180.0}}, // muñeca
+    {{450, 0.0}, {900, 45.0}, {1500, 90.0}, {2000, 135.0}, {2400, 180.0}}   // pinza
 };
 
 // Grados del modelo: theta = signo * s + desvío (home() y loop() de firmware.ino).
